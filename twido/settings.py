@@ -54,20 +54,33 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'twido.urls'
 
+CONTEXT_PROCESSORS = [
+    'django.template.context_processors.debug',
+    'django.template.context_processors.request',
+    'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
+]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
+            'context_processors': CONTEXT_PROCESSORS,
         },
     },
+
+    # {
+    #     # 'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    #     'BACKEND': 'django.template.backends.jinja2.Jinja2',
+    #     'DIRS': [],
+    #     'APP_DIRS': True,
+    #     'OPTIONS': {
+    #         'environment': 'twido.jinja2env.environment',
+    #         'context_processors': CONTEXT_PROCESSORS,
+    #     },
+    # },
 ]
 
 WSGI_APPLICATION = 'twido.wsgi.application'
@@ -108,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 

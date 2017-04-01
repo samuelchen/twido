@@ -1,0 +1,23 @@
+<!-- BEGIN message & error -->
+<div>
+{% if error %}<div id="error" class="ui-state-error">{{ error|safe|linebreaksbr }}</div>{% endif %}
+{% if message %}<div id="message" class="ui-state-default">{{ message|safe|linebreaksbr }}</div>{% endif %}
+</div>
+<script language="Javascript">
+    function _sys_msg(msg, is_err, clear) {
+        var m = is_err ? $("#error") : $("#message");
+        if (m.length == 0) {
+            m = $(".system-message");
+        };
+        if (clear) {m.text('');};
+        if (is_err) { msg = '<span style="color:red;">' + msg + '</span>'; };
+        m.html(m.html() + "<br/>" + msg);
+    };
+
+    function append_msg(msg) { _sys_msg(msg, false, false); };
+    function append_err(msg) { _sys_msg(msg, true, false); };
+    function show_msg(msg) { _sys_msg(msg, false, true); };
+    function show_err(msg) { _sys_msg(msg, true, true); };
+</script>
+
+<!-- END message & error -->

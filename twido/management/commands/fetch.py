@@ -20,10 +20,20 @@ class Command(BaseCommand):
 
         parser.add_argument(
             '--storage-types', '-t',
-            action='store_true',
+            action='store',
             dest='storage_types',
+            type=int,
             default=1,
             help=storage_help,
+        )
+
+        parser.add_argument(
+            '--max', '-m',
+            action='store',
+            dest='max',
+            type=int,
+            default=0,
+            help='Max count to fetch.',
         )
 
         parser.add_argument(
@@ -37,11 +47,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         config_file = options['config_file']
+        storage = int(options['storage_types'])
+        max = int(options['max'])
+
         cfgs = load_config(config_file=config_file)
         spider = TwitterSpider(consumer_key=cfgs.twitter.consumer_key,
                                consumer_secret=cfgs.twitter.consumer_secret,
                                access_token=cfgs.twitter.access_token,
                                access_token_secret=cfgs.twitter.access_token_secret,
-                               storage=StorageType.FILE + StorageType.DB,
+                               storage=storage,
                                proxy=cfgs.common.proxy)
-        spider.fetch()
+        spider.fetch(limited=max)
