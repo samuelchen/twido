@@ -15,6 +15,8 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.urls import reverse
+from django.views.generic import TemplateView
+from .models import RawTweet
 
 import logging
 log = logging.getLogger(__name__)
@@ -31,6 +33,13 @@ if __debug__ and settings.DEBUG:
         return render(request, t('test.html'))
 
 
+class IndexView(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['tweets'] = RawTweet.objects.all()[:10]
+        return context
+
+
 @require_http_methods(['GET', ])
 def index(request):
     context = {}
@@ -44,3 +53,17 @@ def index(request):
     #     # "setting_keys": models.SETTING_NAMES,
     # }
     return render(request, t('index.html'), context=context)
+
+@require_http_methods(['GET', ])
+def test(request):
+    context = {}
+    if request.user.is_authenticated:
+        context['user'] = 'authoried'
+    elif request.user.is_staff:
+        context['user'] = 'staff'
+    else:
+        context['user'] = 'forbiden'
+    # context = {
+    #     # "setting_keys": models.SETTING_NAMES,
+    # }
+    return render(request, t('test.html'), context=context)

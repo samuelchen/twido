@@ -15,9 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from . import views
+from . import view
+
+
+# to render full template path
+def t(template):
+    return 'twido/' + template
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.index, name='index'),
+    url(r'^$', view.IndexView.as_view(template_name=t('index.html')), name='index'),
+    url(r'^test/', view.test, name='test'),
 ]

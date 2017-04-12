@@ -1,50 +1,36 @@
-{% load staticfiles %}
+{% load staticfiles i18n %}
+{% load bootstrap_themes %}
 <!DOCTYPE html>
 <html>
 <head lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>{% block title %}<!--TITLE BLOCK-->{% endblock %} - twido</title>
-{#    <link href="{% static 'pyqueuer/jqueryui-1.12.1/jquery-ui.min.css' %}" rel="stylesheet">#}
-{#    <script src="{% static 'pyqueuer/js/jquery-3.1.1.min.js' %}"></script>#}
-{#    <script src="{% static 'pyqueuer/jqueryui-1.12.1/jquery-ui.min.js' %}"></script>#}
-{#    <link href="{% static 'pyqueuer/css/portal.css' %}" rel="stylesheet">#}
-{#    <script src="{% static 'pyqueuer/js/main.js' %}"></script>#}
-    {% block head %}<!--HEAD BLOCK-->{% endblock %}
-</head>
-<body>
-<div class="topnav">
-    <div class="toolbar">
-        <div style="float:left">
-            <a href="/">Home</a>
-{#            <a href="{% url 'setting' %}">Setting</a>#}
-{#            <a href="{% url 'send' %}">Send</a>#}
-{#            <a href="{% url 'consume' %}">Consume</a>#}
-{#            <a href="{% url 'plugin' %}">Plugin</a>#}
-{#            {% if request.user.is_staff %}#}
-{#            <a href="/admin" target="_blank">^Admin</a>#}
-{#            {% endif %}#}
-        </div>
+    <title>{% block title %}{# TITLE BLOCK #}{% endblock %} - My WishList 2</title>
+{#    <script src="{% static 'twido/js/jquery-3.1.1.min.js' %}"></script>#}
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js"></script> {# bootstrap requires 1.9.1 < jquery < 3.0.0  #}
+    {% bootstrap_styles theme='simplex' type='min.css' %}
+    {#{% bootstrap_styles theme='simplex' type='css' %}#}
+    {#{% bootstrap_styles theme='simplex' type='less' %}#}
+    {% bootstrap_script use_min=True %}
 
-        <div style="float:right">
-            {% if request.user.is_authenticated %}
-            <span>{{ request.user }}. </span>
-{#            <a href="{% url 'logout' %}">Logout</a>#}
-{#            {% else %}#}
-{#            <a href="{% url 'login' %}">Login</a> |#}
-{#            <a href="{% url 'register' %}">Register</a>#}
-            {% endif %}
-        </div>
-        <div style="clear: both"></div>
-    </div>
+    <link href="{% static 'twido/css/open-sans.css' %}" rel="stylesheet">
+    <link href="{% static 'twido/css/main.css' %}" rel="stylesheet">
+
+    {% block head %}{# HEAD BLOCK #}{% endblock %}
+</head>
+<body background="{% static 'twido/img/bg.jpg' %}">
+
+{% include "includes/topnavbar.html" %}
+
+<div class="">
+
 </div>
-<hr/>
 
 {% include "includes/message.html" %}
 
-{% block content %}<!--CONTENT BLOCK-->{% endblock %}
+{% block content %}{# CONTENT BLOCK #}{% endblock %}
 
-{% block script %}<!--SCRIPT BLOCK-->{% endblock %}
+{% block script %}{# SCRIPT BLOCK #}{% endblock %}
 
 </body>
 

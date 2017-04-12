@@ -1,0 +1,80 @@
+    {# ----- top nav bar ----- #}
+    <div class="bs-component">
+        {# responsive menu button for small screen (hide in large screen) #}
+{#        <nav class="navbar navbar-inverse navbar-fixed-top">#}
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#bs-navbar-collapse-top">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">TWIDO</a>
+                </div>
+
+                {# A dropdown menu on top nav bar #}
+                <div class="collapse navbar-collapse" id="bs-navbar-collapse-top">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+                        <li><a href="#">Link</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false">Dropdown <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">One more separated link</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    {# search form in top nav bar #}
+                    <form class="navbar-form navbar-left" role="search">
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Search" type="text">
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                    {# right part of top nav bar #}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                        {% if request.user.is_authenticated %}
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false">{{ request.user | capfirst }} <i class="caret"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Wish List</a></li>
+                                <li><a href="#">Todo List</a></li>
+                                <li><a href="#">Calendar</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Setting</a></li>
+{#                                {% if request.user.is_staff %}#}
+                                <li><a href="/admin" target="_blank">Admin <i class="glyphicon glyphicon-share-alt small"></i></a></li>
+{#                                {% endif %}#}
+                                <li><a href="#">Help</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Logout</a></li>
+                            </ul>
+                        {% else %}
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false">Login <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Sign Up</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Forget Password</a></li>
+                            </ul>
+                            {#            <a href="{% url 'login' %}">Login</a> |#}
+                            {#            <a href="{% url 'register' %}">Register</a>#}
+                        {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    {# ----- END of top nav bar ----- #}

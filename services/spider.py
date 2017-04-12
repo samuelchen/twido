@@ -62,7 +62,9 @@ class TwitterSpider(Spider):
         count = 0
 
         log.debug('last_id = %s' % last_id)
-        cursor = tweepy.Cursor(self.api.search, q='#todo', lang='en', since_id=last_id).items()
+        cursor = tweepy.Cursor(self.api.search,
+                               q='#todo list:mywishlistto/tester', lang='en',
+                               since_id=last_id).items()
         for tweet in self._limit_handled(cursor):
             self.save_entry(tweet)
             # TODO: last_id logic needs to be clear. (tweepy result-set is not sorted)

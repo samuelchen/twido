@@ -2,7 +2,8 @@ django>=1.10
 tweepy>=3.5.0
 simplejson
 requests
-jinja2
+#jinja2
 #dateparser
 #egenix-mx-base
 #sutime
+django-bootstrap-themes
