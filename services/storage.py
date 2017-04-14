@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from twido.models import Config
+from twido.models import Config, RawStatus
+from django.utils.timezone import utc
 from django.db.utils import IntegrityError
 from pyutils.langutil import MutableEnum
+from twido.utils import parse_datetime
+
+import simplejson as json
 import os
 import abc
 import logging
@@ -15,9 +19,9 @@ StorageType = MutableEnum(
     DB=1,
     FILE=2,
 )
-StorageType.has_FILE = lambda t: StorageType.FILE & t > 0
-StorageType.has_DB = lambda t: StorageType.DB & t > 0
-StorageType.has_NONE = lambda t: not(StorageType.has_FILE(t) or StorageType.has_DB(t))
+StorageType.contains_FILE = lambda t: StorageType.FILE & t > 0
+StorageType.contains_DB = lambda t: StorageType.DB & t > 0
+StorageType.contains_NONE = lambda t: not(StorageType.contains_FILE(t) or StorageType.contains_DB(t))
 
 
 class StorageMixin(object):
@@ -27,7 +31,6 @@ class StorageMixin(object):
     __data_folder = './data'    # storage folder if storage type is FILE
     __last_id_entry_prefix = 'last_id_'
 
-
     def __init__(self, storage=StorageType.DB):
         """
         Initial with given storage type.
@@ -35,6 +38,10 @@ class StorageMixin(object):
         :return:
         """
         self.__storage = storage
+        log.info('Storage Tpye : DB(%s) FILE(%s)' % (
+            bool(StorageType.contains_DB(self.__storage)),
+            bool(StorageType.contains_FILE(self.__storage))
+        ))
 
     @property
     def storage(self):
@@ -42,7 +49,7 @@ class StorageMixin(object):
 
     @property
     def data_folder(self):
-        return self.__data_folder
+        return self.__data_folder + '/' + self.social_platform
 
     @property
     def last_id_config_key(self):
@@ -58,13 +65,13 @@ class StorageMixin(object):
         :return:
         """
 
-        if StorageType.has_DB(self.storage):
+        if StorageType.contains_DB(self.storage):
             opt, created = Config.objects.get_or_create(name=self.last_id_config_key)
             opt.value = last_id
             opt.save()
 
-        elif StorageType.has_FILE(self.storage):
-            path = os.path.join(self.__data_folder, self.last_id_config_key)
+        elif StorageType.contains_FILE(self.storage):
+            path = os.path.join(self.data_folder, self.last_id_config_key)
             with open(path, 'wt', encoding='utf-8') as f:
                 f.write(last_id)
 
@@ -77,15 +84,15 @@ class StorageMixin(object):
         :return:
         """
         last_id = '0'
-        if StorageType.has_DB(self.storage):
+        if StorageType.contains_DB(self.storage):
             opt, created = Config.objects.get_or_create(name=self.last_id_config_key)
             if created:
                 opt.value = last_id
                 opt.save()
             else:
                 last_id = opt.value         # str
-        elif StorageType.has_FILE(self.storage):
-            path = os.path.join(self.__data_folder, self.last_id_config_key)
+        elif StorageType.contains_FILE(self.storage):
+            path = os.path.join(self.data_folder, self.last_id_config_key)
             try:
                 with open(path, 'rt', encoding='utf-8') as f:
                     last_id = f.readline()  # str
@@ -97,26 +104,24 @@ class StorageMixin(object):
 
         return last_id
 
-    def save_entry(self, raw_obj):
+    def save_status(self, status):
         """
-        save an entry
-        :param raw_obj: raw object of an entry (such as a tweet object)
+        Save a status into database
+        :param status: raw status object (RawStatus model entity)
         :return: N/A
         """
-        entry = self.generate_entry(raw_obj)
-        # assert isinstance(entry, self.Entry)
 
-        if StorageType.has_NONE(self.storage):
+        if StorageType.contains_NONE(self.storage):
             raise ValueError('%s is not valid combination of storage types.' % self.storage)
 
-        if StorageType.has_DB(self.storage):
+        if StorageType.contains_DB(self.storage):
             try:
-                entry.save()
+                status.save()
             except IntegrityError:
-                log.error('Entry "%s" is already existed.' % entry.rawid)
+                log.error('Entry "%s" is already existed.' % status.rawid)
 
-        if StorageType.has_FILE(self.storage):
-            name = entry.rawid
+        if StorageType.contains_FILE(self.storage):
+            name = status.rawid
             subfolder = self.get_sub_folder(name)
 
             path = os.path.join(self.data_folder, subfolder)
@@ -127,14 +132,32 @@ class StorageMixin(object):
             path = os.path.join(self.data_folder, subfolder, name) + '.json'
 
             with open(path, 'wt', encoding='utf-8') as f:
-                t = entry.raw
+                t = status.raw
                 f.write(t)
 
-    @abc.abstractmethod
-    def generate_entry(self, raw_obj):
+    def generate_status(self, raw_obj):
         """
-        Generate entry from raw entry object (such as a tweet object)
-        :param raw_obj:
-        :return: MUST return an instance of RawEntry or children.
+        Generate status model instance from raw status object (such as a tweet object)
+        :param raw_obj: The status object from SDK or REST API
+        :return: an instance of RawStatus.
+        """
+        tweet = raw_obj
+        status = RawStatus()
+        status.source = self.social_platform
+        status.rawid = tweet.id_str
+        if isinstance(tweet.created_at, str):
+            status.created_at = parse_datetime(tweet.created_at).replace(tzinfo=utc)
+        else:
+            status.created_at = tweet.created_at.replace(tzinfo=utc)
+        status.username = tweet.user.screen_name
+        status.text = tweet.text
+        status.raw = json.dumps(tweet._json, ensure_ascii=False, indent=2)
+        return status
+
+    @abc.abstractproperty
+    def social_platform(self):
+        """
+        abstract property to tell which social platform
+        :return: social platform code name. (from model.SocialPlatform)
         """
         pass

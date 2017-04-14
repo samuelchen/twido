@@ -22,3 +22,11 @@ def load_config(config_file):
     else:
         raise IOError('Fail to access %s' % config_file)
     return options
+
+
+from email.utils import parsedate
+from datetime import datetime
+
+
+def parse_datetime(string):
+    return datetime(*(parsedate(string)[:6]))

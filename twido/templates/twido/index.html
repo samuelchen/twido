@@ -2,9 +2,15 @@
 
 {% block title %}Home{% endblock %}
 
+{% block head %}
+<style type="text/css">
+    {{ css | safe }}
+</style>
+{% endblock %}
+
 {% block content %}
 
-    <div class="container-fluid">
+    <div class="container-fluid container-responsive">
         <div class="page-header">
             <div class="row">
                 <div class="col-xs-1"></div>
@@ -12,7 +18,8 @@
                 <div class="col-xs-6">
                     <h4 class="section-header">Latest #TODOs</h4>
                 </div>
-                <div class="col-xs-3"><h4 class="section-header">New users</h4></div>
+                <div class="col-xs-2"><h4 class="section-header">New users</h4></div>
+                <div class="col-xs-1"></div>
             </div>
         </div>
         <div class="row">
@@ -21,30 +28,66 @@
                 <div class="bs-component">
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <h3 class="panel-title">bbb</h3>
+                                <h3 class="panel-title">-</h3>
                             </div>
                             <div class="panel-body">
-                                aaa
+                                -
                             </div>
                         </div>
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="bs-component">
-                    {% for tweet in tweets %}
+                    {% for task in todos %}
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{{ tweet.username | safe }}</h3>
-                                <h6 class="text">{{ tweet.created_at }}</h6>
+                                <h3 class="panel-title">{{ task.profile.user.username | safe }}</h3>
+                                <h5>{{ task.title }}</h5>
+                                <h6 class="text">{{ task.created_at }}</h6>
                             </div>
                             <div class="panel-body">
-                                {{ tweet.text | url2link | safe }}
+                                {{ task.text | url2link | safe }}
+                                {% for dt in task.dates %}
+                                <p>{{ dt.text }}({{ dt.v }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</p>
+                                {% endfor %}
                             </div>
                         </div>
                     {% endfor %}
                 </div>
-                <div class="col-xs-2"></div>
             </div>
+            <div class="col-xs-2">
+                <div class="bs-component small">
+                    {% for p in profiles %}
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <ul class="list-inline">
+                                <li class="pull-left"><img class="img-circle" src="{{ p.img_url }}"></li>
+                                <li class="pull-right ">
+{#                                    <h3 class="panel-title">{{ p.get_name | safe }}</h3>#}
+                                    <span style="color:white">{{ p.get_name }}</span><br>
+{#                                    <span class="small" style="color:silver">{{ p.location }}</span><br>#}
+{#                                    <span class="small" style="color:silver">{{ p.user.date_joined }}</span><br>#}
+                                </li>
+                                <li class="clearfix"></li>
+                            </ul>
+
+                        </div>
+                        <div class="panel-body">
+{#                            <img src="{{ p.img_url }}">#}
+                            <div class="small">
+                                <span>{{ p.user.date_joined }}</span><br>
+{#                                <span>Email: {{ p.get_email }}</span><br>#}
+{#                                <span>{{ p.lang }}</span><br>#}
+                                <span>{{ p.location }}</span><br>
+{#                                <span>{{ p.timezone }}</span><br>#}
+{#                                <span>UTC offset: {{ p.utc_offset }}</span><br>#}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-xs-1"></div>
 
         </div>
     </div>

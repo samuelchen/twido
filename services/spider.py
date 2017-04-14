@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from twido.models import RawTweet
-from django.utils.timezone import utc
+from twido.models import SocialPlatform
+from .storage import StorageType, StorageMixin
+from .import weibo
+
 import abc
 import tweepy
 import time
-import simplejson as json
-from .storage import StorageType, StorageMixin
 import logging
 log = logging.getLogger(__name__)
 
@@ -19,9 +19,9 @@ class Spider(StorageMixin):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def fetch(self):
+    def fetch(self, test=False, limited=0):
         """
-        Fetch entries
+        Fetch statuses
         :return: N/A
         """
         pass
@@ -45,28 +45,21 @@ class TwitterSpider(Spider):
                 log.debug('Reaches rate limitation. Waiting %d seconds ...' % dur)
                 time.sleep(dur)
 
-    # overrides abstract methods
-    def generate_entry(self, raw_obj):
+    @property
+    def social_platform(self):
+        return SocialPlatform.TWITTER
 
-        tweet = raw_obj
-        entry = RawTweet()
-        entry.rawid = tweet.id_str
-        entry.created_at = tweet.created_at.replace(tzinfo=utc)
-        entry.username = tweet.user.screen_name
-        entry.text = tweet.text
-        entry.raw = json.dumps(tweet._json, indent=2)
-        return entry
-
-    def fetch(self, limited=0):
+    def fetch(self, test=False, limited=0):
         last_id = self.get_last_id()
         count = 0
 
         log.debug('last_id = %s' % last_id)
-        cursor = tweepy.Cursor(self.api.search,
-                               q='#todo list:mywishlistto/tester', lang='en',
+        cursor = tweepy.Cursor(self.api.search, lang='en',
+                               q='#todo list:samuelchen/tester' if test else '#todo',
                                since_id=last_id).items()
         for tweet in self._limit_handled(cursor):
-            self.save_entry(tweet)
+            status = self.generate_status(tweet)
+            self.save_status(status)
             # TODO: last_id logic needs to be clear. (tweepy result-set is not sorted)
             if last_id < tweet.id_str:
                 last_id = tweet.id_str
@@ -81,3 +74,32 @@ class TwitterSpider(Spider):
 
         self.save_last_id(last_id)
         log.debug('last_id saved (%s)' % last_id)
+
+    # def generate_status(self, raw_obj):
+    #     """
+    #     Generate status model instance from raw status object (such as a tweet object)
+    #     :param raw_obj: The status object from SDK or REST API
+    #     :return: an instance of RawStatus.
+    #     """
+    #     tweet = raw_obj
+    #     status = RawStatus()
+    #     status.source = self.social_platform
+    #     status.rawid = tweet.id_str
+    #     status.created_at = tweet.created_at.replace(tzinfo=utc)
+    #     status.username = tweet.user.screen_name
+    #     status.text = tweet.text
+    #     status.raw = json.dumps(tweet._json, indent=2)
+    #     return status
+
+
+class WeiboSpider(Spider):
+
+    def __init__(self, app_key, app_secret,
+                 storage=StorageType.DB, proxy=''):
+        super(WeiboSpider, self).__init__(storage=storage)
+        # self.api = weibo.APIClient(app_key=app_key, app_secret=app_secret, redirect_uri=CALLBACK_URL)
+        # self.auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        # self.auth.set_access_token(access_token, access_token_secret)
+        # self.api = tweepy.API(self.auth, proxy=proxy or '')
+
+

@@ -37,6 +37,14 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
+            '--test', '-e',
+            action='store_true',
+            dest='test',
+            default=False,
+            help='If test specified, will only fetch tester users.',
+        )
+
+        parser.add_argument(
             '--config-file', '-f',
             action='store',
             type=str,
@@ -49,6 +57,7 @@ class Command(BaseCommand):
         config_file = options['config_file']
         storage = int(options['storage_types'])
         max = int(options['max'])
+        test = bool(options['test'])
 
         cfgs = load_config(config_file=config_file)
         spider = TwitterSpider(consumer_key=cfgs.twitter.consumer_key,
@@ -57,4 +66,4 @@ class Command(BaseCommand):
                                access_token_secret=cfgs.twitter.access_token_secret,
                                storage=storage,
                                proxy=cfgs.common.proxy)
-        spider.fetch(limited=max)
+        spider.fetch(test=test, limited=max)
