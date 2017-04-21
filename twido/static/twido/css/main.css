@@ -14,3 +14,11 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .section-header {
     color: white;
 }
+
+.avatar-sm { width: 16px; height: 16px;}
+.avatar { width: 24px; height: 24px;}
+.avatar-lg { width: 32px; height: 32px;}
+
+
+/* for select2 input width with bootstrap3 */
+/*input[placeholder] { width: 100% !important; }*/

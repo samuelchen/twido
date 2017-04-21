@@ -4,6 +4,7 @@
 from django.core.management.base import BaseCommand
 from services.storage import StorageType
 from services.parser import TwitterParser
+from ...utils import load_config
 
 
 class Command(BaseCommand):
@@ -27,18 +28,18 @@ class Command(BaseCommand):
             help=storage_help,
         )
 
-        # parser.add_argument(
-        #     '--config-file', '-f',
-        #     action='store',
-        #     type=str,
-        #     dest='config_file',
-        #     default='config.ini',
-        #     help='Specify a config file. Default is config.ini',
-        # )
+        parser.add_argument(
+            '--config-file', '-f',
+            action='store',
+            type=str,
+            dest='config_file',
+            default='config.ini',
+            help='Specify a config file. Default is config.ini',
+        )
 
     def handle(self, *args, **options):
-        # config_file = options['config_file']
-        # cfgs = load_config(config_file=config_file)
+        config_file = options['config_file']
         storage = int(options['storage_types'])
-        parser = TwitterParser(storage=storage)
+        cfgs = load_config(config_file=config_file)
+        parser = TwitterParser(endpoint=cfgs.common.parser_endpoint, storage=storage)
         parser.parse()

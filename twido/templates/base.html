@@ -16,17 +16,26 @@
     <link href="{% static 'twido/css/open-sans.css' %}" rel="stylesheet">
     <link href="{% static 'twido/css/main.css' %}" rel="stylesheet">
 
+{#    <script type="text/javascript" language="JavaScript">#}
+{#        window.csrftoken="{{csrftoken}}";#}
+{#    </script>#}
+
+    <script src="{% static 'twido/js/js.cookie.js' %}"></script>
+    <script src="{% static 'twido/js/main.js' %}"></script>
+
     {% block head %}{# HEAD BLOCK #}{% endblock %}
 </head>
-<body background="{% static 'twido/img/bg.jpg' %}">
+
+{#<body background="{% static 'twido/img/bg.jpg' %}">#}
+<body>
 
 {% include "includes/topnavbar.html" %}
 
-<div class="">
-
+<div class="row">
+    <div>&nbsp;</div>
 </div>
 
-{% include "includes/message.html" %}
+{#{% include "includes/message.html" %}#}
 
 {% block content %}{# CONTENT BLOCK #}{% endblock %}
 

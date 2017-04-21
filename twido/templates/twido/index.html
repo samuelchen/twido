@@ -13,36 +13,44 @@
     <div class="container-fluid container-responsive">
         <div class="page-header">
             <div class="row">
-                <div class="col-xs-1"></div>
-                <div class="col-xs-2"><h4 class="section-header">Popular</h4></div>
-                <div class="col-xs-6">
-                    <h4 class="section-header">Latest #TODOs</h4>
+                <div class="col-lg-2 col-lg-offset-1"><h4>#Wish es</h4></div>
+                <div class="col-lg-6">
+                    <h4>Latest #TODO s</h4>
                 </div>
-                <div class="col-xs-2"><h4 class="section-header">New users</h4></div>
-                <div class="col-xs-1"></div>
+                <div class="col-lg-2"><h4>New users</h4></div>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-1"></div>
-            <div class="col-xs-2">
+            <div class="col-lg-2 col-lg-offset-1">
                 <div class="bs-component">
-                        <div class="panel panel-info">
+                    {% for task in wishes %}
+                        <div class="panel panel-success">
                             <div class="panel-heading">
-                                <h3 class="panel-title">-</h3>
+                                <h3 class="panel-title">
+                                    <ul class="list-inline">
+                                        <li><h3 class="panel-title">{{ task.profile.user.username | safe }}</h3></li>
+{#                                        <li><span class="label label-warning">#wish</span></li>#}
+                                    </ul>
+{#                                    <h6 class="text">{{ task.created_at }}</h6>#}
+                                </h3>
                             </div>
                             <div class="panel-body">
-                                -
+                                {{ task.title | url2link | safe }}
                             </div>
                         </div>
+                    {% endfor %}
                 </div>
             </div>
-            <div class="col-xs-6">
+            <div class="col-lg-6">
                 <div class="bs-component">
                     {% for task in todos %}
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{{ task.profile.user.username | safe }}</h3>
-                                <h5>{{ task.title }}</h5>
+                                <ul class="list-inline">
+                                    <li><h3 class="panel-title">{{ task.profile.user.username | safe }}</h3></li>
+{#                                    <li><span class="label label-default">#todo</span></li>#}
+                                </ul>
+                                <h5>{{ task.title | url2link | safe  }}</h5>
                                 <h6 class="text">{{ task.created_at }}</h6>
                             </div>
                             <div class="panel-body">
@@ -55,13 +63,13 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-xs-2">
+            <div class="col-lg-2">
                 <div class="bs-component small">
                     {% for p in profiles %}
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <ul class="list-inline">
-                                <li class="pull-left"><img class="img-circle" src="{{ p.img_url }}"></li>
+                                <li class="pull-left"><img class="img-circle" src="{{ p.get_img_url }}"></li>
                                 <li class="pull-right ">
 {#                                    <h3 class="panel-title">{{ p.get_name | safe }}</h3>#}
                                     <span style="color:white">{{ p.get_name }}</span><br>
@@ -87,11 +95,10 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-xs-1"></div>
 
         </div>
     </div>
-    <p>Thanks for using. Enjoy.</p>
+
 {% endblock %}
 
 {% block script %}

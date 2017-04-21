@@ -1,0 +1,29 @@
+
+<!-- BEGIN Profile Card Simple -->
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <ul class="list-inline">
+                                <li class="pull-left"><img class="img-circle" src="{{ profile.img_url }}"></li>
+                                <li class="pull-right ">
+{#                                    <h3 class="panel-title">{{ p.get_name | safe }}</h3>#}
+                                    <span style="color:white">{{ profile.get_name }}</span><br>
+{#                                    <span class="small" style="color:silver">{{ profile.location }}</span><br>#}
+{#                                    <span class="small" style="color:silver">{{ profile.user.date_joined }}</span><br>#}
+                                </li>
+                                <li class="clearfix"></li>
+                            </ul>
+
+                        </div>
+                        <div class="panel-body">
+{#                            <img src="{{ profile.img_url }}">#}
+                            <div class="small">
+                                <span>{{ profile.user.date_joined }}</span><br>
+{#                                <span>Email: {{ profile.get_email }}</span><br>#}
+{#                                <span>{{ profile.lang }}</span><br>#}
+                                <span>{{ profile.location }}</span><br>
+{#                                <span>{{ profile.timezone }}</span><br>#}
+{#                                <span>UTC offset: {{ profile.utc_offset }}</span><br>#}
+                            </div>
+                        </div>
+                    </div>
+<!-- END Profile Card Simple -->

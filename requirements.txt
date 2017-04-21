@@ -8,3 +8,4 @@ django-bootstrap-themes
 #egenix-mx-base
 #sutime
 pygments
+#django-bootstrap-form

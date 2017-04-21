@@ -1,0 +1,227 @@
+{% extends "base.html" %}{% load staticfiles customer_tags %}
+
+{% block title %}Todo List{% endblock %}
+
+{% block head %}
+    <link href="{% static 'bootstrap3-editable/css/bootstrap-editable.css' %}" rel="stylesheet">
+    <script src="{% static 'bootstrap3-editable/js/bootstrap-editable.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid container-responsive">
+
+        {% include 'includes/blank-div-row.html' %}
+
+        <div class="row">
+            <!-- left col -->
+            <div class="col-lg-3">
+                <div class="bs-component">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">Todo Lists</h4>
+                        </a>
+                        {% for lst in todolists %}
+                            <a href="{% url 'todolist' lst.id %}" class="list-group-item">{{ lst.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <a href="#" id="btn-create" class="btn btn-default"><i class="glyphicon glyphicon-file small"></i> Create</a>
+                <a href="#" id="btn-edit" class="btn btn-default"><i class="glyphicon glyphicon-edit small"></i> Edit</a>
+
+            </div>
+
+            <!-- main col -->
+            <div class="col-lg-8">
+
+                <div class="row">
+
+                    <div class="bs-component">
+                        <h2 class="text-center">{{ thelist.name | upper }}</h2>
+{#                        <!-- todolist information form/panel -->#}
+{#                        <ul class="list-unstyled">#}
+{#                            <li><label>Reminder: <span>{{ thelist.reminder | default_if_none:'-'}}</span></label></li>#}
+{#                            <li><label>Related: <span>{{ thelist.related_users | default_if_none:''}}</span></label></li>#}
+{#                        </ul>#}
+{#                        <p class="lead">{{ thelist.text | default_if_none:''}}</p>#}
+
+                                  <div class="panel bs-component">
+
+                        {% if form.errors %}
+                            <div class="bs-component">
+                                <div class="alert alert-dismissible alert-danger">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <strong>Oops!</strong>
+                                    {% for err in form.errors.values %}{{ err }}{% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <form class="form-horizontal" method="post" action="{% url 'todolist' thelist.id %}">
+                            {% csrf_token %}
+                            <fieldset>
+                                <legend class="edit">{{ thelist.name }}</legend>
+                                <!-- reminder -->
+                                <div class="form-group">
+                                    <label for="id_name" class="col-lg-2 control-label">Name</label>
+
+                                    <div class="col-lg-10">
+                                        <span class="editable" id="id_name" data-name="name" data-type="text" data-pk="{{ thelist.id }}" data-url="" data-title="Enter list name">
+                                            {{ thelist.name }}
+                                        </span>
+{#                                        <span id="id_reminder_edit" class="disp">{{ thelist.reminder | default_if_none:''}}</span>#}
+{#                                        <input class="form-control edit" id="id_reminder_edit" placeholder="{{ thelist.reminder }}"#}
+{#                                               autofocus="" maxlength="254" name="reminder" type="datetime">#}
+                                    </div>
+                                </div>
+
+                                <!-- reminder -->
+                                <div class="form-group">
+                                    <label for="id_reminder" class="col-lg-2 control-label">Reminder</label>
+
+                                    <div class="col-lg-10">
+                                        <span id="id_reminder" class="editable" data-name="reminder" data-type="combodate" data-pk="{{ thelist.id }}" data-url="" data-title="Remind me on:">{{ thelist.reminder | default_if_none:'(unset)'}}</span>
+{#                                        <input class="form-control edit" id="id_reminder_edit" placeholder="{{ thelist.reminder }}"#}
+{#                                               autofocus="" maxlength="254" name="reminder" type="datetime">#}
+{#                                        <a href="#" class="disp"><i class="glyphicon glyphicon-edit"></i></a>#}
+                                    </div>
+                                </div>
+
+                                <!-- related users -->
+                                <div class="form-group">
+                                    <label for="id_related_edit" class="col-lg-2 control-label">Related</label>
+
+                                    <div class="col-lg-10">
+                                        <span id="id_related" class="disp">{{ thelist.related_users | default_if_none:''}}</span>
+{#                                        <input class="form-control edit" id="id_related_edit" name="related"#}
+{#                                               placeholder="related users (comma separated)" type="text">#}
+{#                                        <select multiple="" id="id_related_edit" name="related" class="form-control">#}
+{#                                            {% for uname in thelist.get_related_usernames %}#}
+{#                                            <option>{{ uname }}</option>#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+                                        <ul class="list-inline edit" id="id_related_edit">
+                                            {% for profile in thelist.get_related_profiles %}
+                                            <li><img src="{{ profile.get_img_url }}" class="avatar img-cycle" /></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- long text -->
+                                <div class="form-group">
+                                    <label for="id_text_edit" class="col-lg-2 control-label">Text</label>
+
+                                    <div class="col-lg-10 col-lg-offset-2">
+                                        <span id="id_text" class="disp">{{ thelist.text | default_if_none:''}}</span>
+                                        <textarea class="form-control edit" id="id_text_edit" name="text">{{ thelist.text }}</textarea>
+                                        <span class="help-block edit">A longer block of help text that breaks onto a new line and may extend beyond one line.</span>
+                                    </div>
+
+                                </div>
+
+                                <!-- form buttons -->
+                                <div class="form-group edit">
+                                    <div class="col-lg-10 col-lg-offset-2">
+                                        <button id="btn-cancel" type="reset" class="btn btn-default">Cancel</button>
+                                        <button id="btn-submit" type="submit" class="btn btn-primary">Submit</button>
+                                        <input id="id_list_id" type="hidden" name="id" value="{{ thelist.id }}"/>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                        </form>
+                                  </div>
+
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="bs-component">
+                        <div class="list-group">
+                            <ul>
+                                {% for todo in page %}
+                                    <li class="list-group-item">
+                    {#                                                <h4 class="list-group-item-heading">{{ todo.profile.get_name }}</h4>#}
+                                        <p class="list-group-item-text">{{ todo.title | url2link | safe }}</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bs-component text-center">
+                        {% include 'includes/paginatition.html' %}
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+            <!-- right col -->
+{#            <div class="col-lg-2">#}
+{#                <div class="bs-component small">#}
+{##}
+{#                </div>#}
+{#            </div>#}
+
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {#    <script type="text/javascript" src="{% static 'pyqueuer/js/GitHub-Repo-Widget.min.js' %}"></script>#}
+
+    <script type="text/javascript" language="JavaScript">
+        disp();
+
+        function edit(){
+            $(".disp").hide();
+            $(".edit").show();
+        };
+        function disp(){
+            $(".disp").show();
+            $(".edit").hide();
+        };
+
+        $("#btn-edit").click(function(e){
+            $("#id_reminder_edit").val('{{ thelist.reminder }}');
+            $("#id_related_edit").val('{{ thelist.related }}');
+            $("#id_text_edit").val('{{ thelist.text }}');
+            $("#id_list_id").val('{{ thelist.id }}');
+            edit();
+        });
+
+        $("#btn-cancel").click(function(e){
+            disp();
+        });
+
+        $("#btn-create").click(function(e){
+            $("#id_reminder_edit").val('');
+            $("#id_related_edit").val('');
+            $("#id_text_edit").val('');
+            $("#id_list_id").val('');
+            edit();
+        });
+
+    // ----------------------
+    $.fn.editable.defaults.mode = 'inline';
+{#    $.fn.editable.defaults.showbuttons = false;#}
+{#    $.fn.editable.defaults.onblur = 'submit';#}
+{#    $.fn.editable.defaults.ajaxOptions = {type: "PUT"};#}
+    $(document).ready(function() {
+        $('.editable').editable({
+            success: function (response, newValue) {
+                if (response.status == 'error') return response.msg; //msg will be shown in editable form
+            }
+        });
+    });
+    </script>
+{% endblock %}

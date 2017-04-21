@@ -25,7 +25,22 @@ def t(template):
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('django.contrib.auth.urls')),
+    url(r'^register/', view.register, name='register'),
+
     url(r'^$', view.IndexView.as_view(template_name=t('index.html')), name='index'),
-    url(r'^test/', view.test, name='test'),
+    url(r'^home/$', view.HomeView.as_view(template_name=t('home.html')), name='home'),
+    url(r'^test/$', view.test, name='test'),
+    url(r'^test/(?P<pk>[0-9]+)/$', view.test, name='test'),
+
+
+    url(r'^todolist/create/$', view.TodoListView.as_view(template_name=t('todolist-create.html')), name='todolist-create'),
+    url(r'^todolist/(?P<pk>[0-9]+)/$', view.TodoListView.as_view(template_name=t('todolist.html')), name='todolist'),
+
+    url(r'^todo/create/$', view.TodoCreateView.as_view(template_name=t('todo-create.html')), name='todo-create'),
+    url(r'^todo/(?P<pk>[0-9]+)/$', view.TodoUpdateView.as_view(template_name=t('todo.html')), name='todo'),
+
+    url(r'^json/usernames/$', view.ProfileUsernamesJsonView.as_view()),
+
     # url(r'^', include('user.urls')),
 ]

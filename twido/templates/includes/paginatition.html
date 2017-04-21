@@ -1,0 +1,59 @@
+{% if page.paginator.num_pages > 1 %}
+    <!-- BEGIN pagination -->
+    <ul class="pagination pagination-sm">
+
+        <!-- page 1 -->
+{#        {% if page.number > 1 %}#}
+            <li><a href="?p=1">1</a></li>
+{#        {% endif %}#}
+
+        <!-- fast forward -->
+        <li>
+            <a href="?p={% if page.number|add:"-10" <= 0 %}1{% else %}{{ page.number | add:'-10' }}{% endif %}" aria-label="Prev">
+            <span aria-hidden="true"><i class="glyphicon glyphicon-fast-backward"></i></span>
+        </a></li>
+
+        <!-- forward -->
+        <li {% if not page.has_previous %}class="disabled"{% endif %}>
+            <a href="{% if page.has_previous %}?p={{ page.previous_page_number }}{% endif %}" aria-label="Prev">
+            <span aria-hidden="true"><i class="glyphicon glyphicon-chevron-left"></i></span>
+        </a></li>
+
+{#        <li class="active btn"><a href="#">{{ page.number }}<span class="sr-only">(current)</span><i class="caret"></i></a></li>#}
+
+        <!-- list all pages in dropdown -->
+        <li class="btn-group dropup active">
+            <!-- current page -->
+            <a href="#">{{ page.number }}<span class="sr-only">(current)</span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li class="container small" style="width:350px;">
+                        <ul class="pagination pagination-sm">
+                            {% for i in page.paginator.page_range %}
+                                <li {% if page.number == i %}class="active"{% endif %}><a href="?p={{ i }}">{{ i }}</a></li>
+                            {% endfor %}
+                        </ul>
+                </li>
+            </ul>
+        </li>
+
+        <!-- backward -->
+        <li {% if not page.has_next %}class="disabled"{% endif %}>
+            <a href="{% if page.has_next %}?p={{ page.next_page_number }}{% endif %}" aria-label="Next">
+                <span aria-hidden="true"><i class="glyphicon glyphicon-chevron-right"></i></span>
+            </a>
+        </li>
+
+        <!-- fast backward -->
+        <li>
+            <a href="?p={% if page.number|add:"10" > page.paginator.num_pages %}{{ page.painator.num_pages }}{% else %}{{ page.number|add:'10' }}{% endif %}" aria-label="Prev">
+            <span aria-hidden="true"><i class="glyphicon glyphicon-fast-forward"></i></span>
+        </a></li>
+
+        <!-- last page -->
+{#        {% if page.number < page.paginator.num_pages %}#}
+            <li><a href="?p={{ page.paginator.num_pages }}">{{ page.paginator.num_pages }}</a></li>
+{#        {% endif %}#}
+    </ul>
+    <!-- END pagination -->
+{% endif %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}{% load staticfiles customer_tags %}
+
+{% block title %}Home{% endblock %}
+
+{#{% block head %}#}
+{#<style type="text/css">#}
+{#    {{ css | safe }}#}
+{#</style>#}
+{#{% endblock %}#}
+
+{% block content %}
+
+    <div class="container-fluid container-responsive">
+
+        {% include 'includes/blank-div-row.html' %}
+
+{#        <div class="page-header">#}
+{#            <div class="row">#}
+{#                <div class="col-lg-2 col-lg-offset-1"><h4>Wish List</h4></div>#}
+{#                <div class="col-lg-6">#}
+{#                    <h4>Todo List</h4>#}
+{#                </div>#}
+{#                <div class="col-lg-2"><h4>New users</h4></div>#}
+{#            </div>#}
+{#        </div>#}
+
+        <div class="row">
+            <!-- left col -->
+            <div class="col-lg-3">
+                <div class="bs-component">
+                    <!-- wish list -->
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">Wish Lists</h4>
+                        </a>
+                            {% for lst in wishlists %}
+                            <a href="#" class="list-group-item">{{ lst.name }}</a>
+                            {% endfor %}
+                    </div>
+
+                    <!-- todo list -->
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">Todo Lists</h4>
+                        </a>
+                            {% for lst in todolists %}
+                            <a href="{% url 'todolist' lst.id %}" class="list-group-item">{{ lst.name }}</a>
+                            {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- main col -->
+            <div class="col-lg-6">
+                <div class="bs-component">
+                    {% for lst in todolists %}
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <ul class="list-inline">
+                                    <li><h3 class="panel-title">{{ lst.name }}</h3></li>
+{#                                    <li><span class="label label-default">#todo</span></li>#}
+                                    <li><h6 class="text">{{ lst.reminder | default_if_none:'' }}</h6></li>
+                                    <li class="pull-right"><a class="btn btn-default btn-xs" href="{% url 'todolist' lst.id %}">
+                                        <i class="glyphicon glyphicon-folder-open small"> </i> &nbsp; view all</a></li>
+                                </ul>
+                                <h6 class="text">{{ lst.text | default_if_none:'' | url2link }}</h6>
+
+                            </div>
+                            <div class="panel-body">
+                                <div class="bs-component">
+                                    <div class="list-group">
+                                    <ul>
+{#                                        <a href="#" class="list-group-item">#}
+{#                                            <h4 class="list-group-item-heading">List group item heading</h4>#}
+{##}
+{#                                            <p class="list-group-item-text">Donec id elit non mi porta gravida at eget#}
+{#                                                metus. Maecenas sed diam eget risus varius blandit.</p>#}
+{#                                        </a>#}
+                                        {% for todo in lst.todo_set.all %}
+                                            <li class="list-group-item">
+{#                                                <h4 class="list-group-item-heading">{{ todo.profile.get_name }}</h4>#}
+                                                <p class="list-group-item-text">{{ todo.title | url2link | safe }}</p>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- right col -->
+            <div class="col-lg-2">
+                <div class="bs-component small">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {#    <script type="text/javascript" src="{% static 'pyqueuer/js/GitHub-Repo-Widget.min.js' %}"></script>#}
+{% endblock %}

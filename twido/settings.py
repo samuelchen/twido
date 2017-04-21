@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap_themes',
+    # 'bootstrapform',
     'twido',
     # 'user',
 ]
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'twido.middleware.RequestProfileMiddleWare',
 ]
 
 ROOT_URLCONF = 'twido.urls'
@@ -175,7 +177,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'WARNING',
+            'level': 'DEBUG',
         },
         'twido': {
             'handlers': ['console'],

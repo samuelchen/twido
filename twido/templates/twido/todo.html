@@ -1,0 +1,57 @@
+{% extends "base.html" %}{% load staticfiles customer_tags bootstrap %}
+
+{% block title %}Todo{% endblock %}
+
+{#{% block head %}#}
+{#<style type="text/css">#}
+{#    {{ css | safe }}#}
+{#</style>#}
+{#{% endblock %}#}
+
+{% block content %}
+
+    <div class="container-fluid container-responsive">
+
+        {% include 'includes/blank-div-row.html' %}
+
+        <div class="row">
+
+            <!-- main col -->
+            <div class="col-lg-10 col-lg-offset-1">
+
+                <div class="row">
+                    <div class="bs-component">
+                        <h2 class="text-center">{{ object.name | upper }}</h2>
+                            <form class="form-horizontal" method="post" action="{% url 'todolist' object.list.id %}">
+
+                      <div class="well bs-component">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <ul class="list-inline">
+                                    <li><h3 class="panel-title">{{ object.profile.user.username | safe }}</h3></li>
+{#                                    <li><span class="label label-default">#todo</span></li>#}
+                                </ul>
+                                <h5>{{ object.title | url2link | safe  }}</h5>
+                                <h6 class="text">{{ object.created_at }}</h6>
+                            </div>
+                            <div class="panel-body">
+                                {{ object.text | url2link | safe }}
+
+                            </div>
+                        </div>
+                      </div>
+                                </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {#    <script type="text/javascript" src="{% static 'pyqueuer/js/GitHub-Repo-Widget.min.js' %}"></script>#}
+{% endblock %}

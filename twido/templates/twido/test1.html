@@ -1,0 +1,118 @@
+{% extends "base.html" %}{% load staticfiles %}
+
+{% block title %}test{% endblock %}
+
+{% block head %}
+    <link href="{% static 'bootstrap3-editable/css/bootstrap-editable.css' %}" rel="stylesheet">
+    <script src="{% static 'bootstrap3-editable/js/bootstrap-editable.js' %}"></script>
+    <link href="{% static 'twido/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'twido/js/bootstrap-datetimepicker.min.js' %}"></script>
+{#    <link href="{% static 'twido/css/select2.min.css' %}" rel="stylesheet" type="text/css">#}
+{#    <script src="{% static 'twido/js/select2.full.min.js' %}"></script>#}
+    <link href="{% static 'twido/css/select2-3.4.4.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'twido/js/select2-3.4.4.js' %}"></script>
+    <link href="{% static 'twido/css/select2-bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+
+{% block content %}
+    <H2>Twido Test 1</H2>
+
+    {% include 'includes/blank-div-row.html' %}
+
+
+
+<div style="margin: 150px">
+    <a href="#" id="username" data-value="2">found by ID</a>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript" language="JavaScript">
+    $('#username').editable({
+  type: 'select2',
+  url: '/post',
+  pk: 1,
+  onblur: 'submit',
+  emptytext: 'None',
+     select2: {
+                placeholder: 'Select a Requester',
+                allowClear: true,
+                width: '230px',
+                minimumInputLength: 3,
+                id: function (e) {
+                    return e.EmployeeId;
+                },
+                ajax: {
+                    url: '/EmployeeSearch',
+                    dataType: 'json',
+                    data: function (term, page) {
+                        return { query: term };
+                    },
+                    results: function (data, page) {
+                        return { results: data };
+                    }
+                },
+                formatResult: function (employee) {
+                    return employee.EmployeeName;
+                },
+                formatSelection: function (employee) {
+                    return employee.EmployeeName;
+                },
+                initSelection: function (element, callback) {
+                    return $.get('/EmployeeLookupById', { query: element.val() }, function (data) {
+                        callback(data);
+                    }, 'json'); //added dataType
+                }
+            }
+    /* suucess not needed
+     ,
+           success: function(response) {
+                $('#RequestUser').text(response.newVal);
+            }
+            */
+});
+
+
+$.mockjax({
+    url: '/EmployeeLookupById',
+    responseTime: 100,
+    responseText: {
+            EmployeeId: 1,
+            EmployeeName: 'found by ID'
+        }
+});
+
+$.mockjax({
+    url: '/EmployeeSearch',
+    responseTime: 400,
+    response: function(settings) {
+        var res = [];
+        for(var i=1; i<5;i++) {
+            res.push({
+                EmployeeId: i,
+                EmployeeName: settings.data.query+'_'+i
+            });
+        }
+        this.responseText = res;
+    }
+});
+
+//ajax emulation. Type "err" to see error message
+$.mockjax({
+    url: '/post',
+    responseTime: 400,
+    response: function(settings) {
+        if(settings.data.value == 'err') {
+           this.status = 500;
+           this.responseText = 'Validation error!';
+        } else {
+           this.responseText = '';
+        }
+    }
+});
+
+    </script>
+{% endblock %}

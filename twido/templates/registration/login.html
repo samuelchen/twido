@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+    {% include 'includes/blank-div-row.html' %}
+
+    <div class="bs-docs-section container container-responsive ">
+        {% if request.user.is_authenticated %}
+            <div class="row">
+                <div class="col-lg-3 col-lg-offset-3">
+                    <div class="well bs-component">
+                        <p>You are already signed in.</p>
+                        <p>If you want to login as another user, please <a href="{% url 'logout' %}">logout</a> and re-login.</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+        <div class="row">
+            <div class="col-lg-6 col-lg-offset-3">
+                <div class="well bs-component">
+
+                    {% if form.errors %}
+                        <div class="bs-component">
+                            <div class="alert alert-dismissible alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                <strong>Oops!</strong>
+                                {% for err in form.errors.values %}{{ err }}{% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <form class="form-horizontal" method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <fieldset>
+                            <legend>Login</legend>
+                            <div class="form-group">
+                                <label for="id_username" class="col-lg-2 control-label">Username</label>
+
+                                <div class="col-lg-10">
+                                    <input class="form-control" id="id_username" placeholder="User screen name"
+                                           autofocus="" maxlength="254" name="username" required="" type="text">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_password" class="col-lg-2 control-label">Password</label>
+
+                                <div class="col-lg-10">
+                                    <input class="form-control" id="id_password" name="password" required=""
+                                           placeholder="Password" type="password">
+
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox"> Remeber me
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-lg-10 col-lg-offset-2">
+                                    <button type="reset" class="btn btn-default">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <input type="hidden" name="next" value="{{ next }}"/>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </form>
+                    <div>
+                        {# Assumes you setup the password_reset view in your URLconf #}
+                        <p><a href="{% url 'register' %}">Register</a> | <a href="{% url 'password_reset' %}">Lost
+                            password?</a></p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {# TODO: password encription #}
+{% endblock %}

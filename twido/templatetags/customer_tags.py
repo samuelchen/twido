@@ -88,3 +88,18 @@ def url2link(value):
     :return:
     """
     return re_isurl.sub(lambda m: '<a href="%s">%s</a>' % (m.group(0), m.group(0)), value)
+
+
+# re_ishash = re.compile(r"(?ish)(\w[#todo|#wish]\w)")
+# @register.filter
+# @stringfilter
+# def hash2link(value):
+#     """
+#     Replace URLs in value to LINKs.
+#     e.g.
+#     value = "Buy a pen tomorrow #todo."
+#     retuns: "Buy a pen tomorrow <a href="#">#todo</a>."
+#     :param value:
+#     :return:
+#     """
+#     return re_ishash.sub(lambda m: '<a href="/hash/%s">%s</a>' % (m.group(0), m.group(0)), value)
