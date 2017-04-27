@@ -9,6 +9,7 @@ from django.template import Library
 from django.template.defaultfilters import stringfilter
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
+# from django.conf import settings
 import re
 
 register = Library()
@@ -73,6 +74,14 @@ def key_from_var(obj, *args):
 def trim(value):
     return value.strip()
 
+# @register.simple_tag
+# def setting(name):
+#     """
+#     get setting value
+#     :param name:
+#     :return:
+#     """
+#     return getattr(settings, name, "")
 
 # re_isurl = re.compile(r"(?isu)(http[s]\://[a-zA-Z0-9\.\?/&\=\:]+)")
 re_isurl = re.compile(r"(?isu)(http[s]\://[a-zA-Z0-9\.\?/&\=\:\-_]+)")

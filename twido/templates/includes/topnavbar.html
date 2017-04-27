@@ -33,6 +33,7 @@
                                 <li><a href="#">One more separated link</a></li>
                             </ul>
                         </li>
+                        {% include 'includes/topnavbar-tests.html' %}
                     </ul>
                     {# search form in top nav bar #}
                     <form class="navbar-form navbar-left" role="search">
@@ -57,10 +58,11 @@
                                 <li><a href="#">Todo List</a></li>
                                 <li><a href="#">Calendar</a></li>
                                 <li class="divider"></li>
+                                <li><a href="{% url 'profile' %}">Profile</a></li>
                                 <li><a href="#">Setting</a></li>
-{#                                {% if request.user.is_staff %}#}
+                                {% if request.user.is_staff %}
                                 <li><a href="/admin" target="_blank">Admin <i class="glyphicon glyphicon-new-window small"></i></a></li>
-{#                                {% endif %}#}
+                                {% endif %}
                                 <li><a href="#">Help</a></li>
                                 <li class="divider"></li>
                                 <li><a href="{% url 'logout' %}?next=/"><i class="glyphicon glyphicon-log-out small"></i> Logout</a></li>

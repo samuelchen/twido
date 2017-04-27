@@ -8,6 +8,8 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import AppRegistryNotReady
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+# from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
+from django.templatetags.static import static
 
 try:
     UserModel = get_user_model()
@@ -48,14 +50,19 @@ class UserProfile(models.Model):
     """
     User Profile.
 
+    The Django User model's "email" field is useless.
+
+    email -> login account.
     username -> user.username. Account ID.
     name -> display/nick name. user.first_name/last_name will be ignore
     """
     id = models.BigAutoField(primary_key=True)
-    user = models.OneToOneField(to=UserModel, related_name='profile', null=True, blank=True)    # null means faked profile
-    # email = models.CharField(max_length=100, unique=True)           # user.email
-    username = models.CharField(max_length=100, unique=True)        # user.username
+    user = models.OneToOneField(to=UserModel, related_name='profile', db_index=True, null=True, blank=True)    # null means faked profile
+    email = models.CharField(max_length=100, unique=True, db_index=True, null=True, blank=True)    # user.email
+    username = models.CharField(max_length=100, unique=True, db_index=True)        # user.username
+
     name = models.CharField(max_length=100, null=True, blank=True)  # nick name, user.first_name/user.last_name
+    gender = models.BooleanField(default=False)
     timezone = models.CharField(max_length=50, null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     lang = models.CharField(max_length=20, default='en', verbose_name='Language')
@@ -64,9 +71,7 @@ class UserProfile(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
 
     def get_email(self):
-        if self.is_faked:
-            return None
-        return self.user.email
+        return self.email
 
     def get_name(self):
         """
@@ -86,7 +91,7 @@ class UserProfile(models.Model):
         return self.user.date_joined
 
     def get_img_url(self):
-        return self.img_url or ''
+        return self.img_url or (static('twido/img/avatar-man.png') if self.gender else static('twido/img/avatar-woman.png'))
 
     @property
     def is_faked(self):
@@ -108,10 +113,12 @@ class ProfileBasedModel(models.Model):
 
 class SocialAccount(ProfileBasedModel):
     """
-    Linked social accounts such as Twitter, Facebook and Weibo.
+    Social accounts such as Twitter, Facebook and Weibo.
     """
     provider = models.CharField(max_length=2, choices=SocialPlatform.SocialAccountChoices, default=SocialPlatform.TWITTER)
     account = models.CharField(max_length=100)      # maybe screen_name, email or etc.
+    name = models.CharField(max_length=100, null=True, blank=True)  # nick name, user.first_name/user.last_name
+
     followers_count = models.IntegerField()
     followings_count = models.IntegerField()
     friends_count = models.IntegerField()

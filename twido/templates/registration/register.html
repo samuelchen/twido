@@ -2,25 +2,15 @@
 
 {% block title %}Register{% endblock %}
 
+{% block head %}
+    {% if success %}
+    <meta http-equiv="refresh" content="3;url={% url 'profile' %}">
+    {% endif %}
+{% endblock %}
+
 {% block content %}
 
-{#{% if form.errors %}#}
-{#    <div class="errors">#}
-{#{{ form.errors }}#}
-{#    </div>#}
-{#{% endif %}#}
-
-{#{% if next %}#}
-{#    {% if user.is_authenticated %}#}
-{#    <p>Your account doesn't have access to this page. To proceed,#}
-{#    please login with an account that has access.</p>#}
-{#    {% else %}#}
-{#    <p>Please login to see this page.</p>#}
-{#    {% endif %}#}
-{#{% endif %}#}
-
     {% include 'includes/blank-div-row.html' %}
-
 
     <div class="bs-docs-section container container-responsive ">
 
@@ -42,45 +32,66 @@
                         {% csrf_token %}
                         <fieldset>
                             <legend>Sign Up</legend>
-                            <div class="form-group">
-                                <label for="id_username" class="col-lg-2 control-label">Username</label>
 
-                                <div class="col-lg-10">
-                                    <input class="form-control" autofocus="" id="id_username" placeholder="User screen name"
-                                           maxlength="150" name="username" required="" type="text">
+                        {% if success %}
+                            <div class="bs-component">
+                                <div class="alert alert-dismissible alert-success">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    {% for msg in messages %}<p>{{ msg | safe }}</p>{% endfor %}
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="id_password1" class="col-lg-2 control-label">Password</label>
+                        {% else %}
 
-                                <div class="col-lg-10">
+                            <div class="form-group {% if 'email' in form.errors %}has-error{% endif %}">
+                                <label for="id_email" class="col-lg-3 control-label">Email *</label>
+
+                                <div class="col-lg-9">
+                                    <input class="form-control" autofocus="" id="id_email" placeholder="User Email"
+                                           maxlength="150" name="email" required="" type="text">
+                                    <span class="help-block small">Email will be also default user name.</span>
+                                </div>
+
+                            </div>
+{#                            <div class="form-group {% if 'username' in form.errors %}has-error{% endif %}">#}
+{#                                <label for="id_username" class="col-lg-3 control-label">Username</label>#}
+{##}
+{#                                <div class="col-lg-9">#}
+{#                                    <input class="form-control" autofocus="" id="id_username" placeholder="User screen name"#}
+{#                                           maxlength="150" name="username" required="" type="text">#}
+{#                                </div>#}
+{#                            </div>#}
+                            <input type="hidden" id="id_username" name="username" value="">
+                            <div class="form-group {% if 'password1' in form.errors %}has-error{% endif %}">
+                                <label for="id_password1" class="col-lg-3 control-label">Password *</label>
+
+                                <div class="col-lg-9">
                                     <input class="form-control" id="id_password1" name="password1" required=""
                                            placeholder="Password" type="password">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="id_password2" class="col-lg-2 control-label">Password Confirmation</label>
+                            <div class="form-group {% if 'password2' in form.errors %}has-error{% endif %}">
+                                <label for="id_password2" class="col-lg-3 control-label">Password Confirmation *</label>
 
-                                <div class="col-lg-10">
+                                <div class="col-lg-9">
                                     <input class="form-control" id="id_password2" name="password2" required=""
                                            placeholder="Re-enter Password" type="password">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-lg-10 col-lg-offset-2">
-                                    <button type="reset" class="btn btn-default">Cancel</button>
+                                <div class="col-lg-9 col-lg-offset-3">
                                     <button type="submit" class="btn btn-primary">Register</button>
-                                    <input type="hidden" name="next" value="{{ next }}"/>
+                                    <button type="reset" class="btn btn-default">Cancel</button>
+                                    <input type="hidden" name="next" value="{{ request.path }}"/>
                                 </div>
                             </div>
-
+                            <span class="help-block small"> * marked fields are required.</span>
+                        {% endif %}
                         </fieldset>
                     </form>
                     <div>
                         {# Assumes you setup the password_reset view in your URLconf #}
                         <p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'password_reset' %}">Lost
                             password?</a></p>
-
                     </div>
                 </div>
             </div>
@@ -89,22 +100,12 @@
     </div>
 
 
-{#<form method="post" action="{% url 'register' %}">#}
-{#{% csrf_token %}#}
-{#<table>#}
-{#{% for field in form %}#}
-{#<tr>#}
-{#    <td>{{ field.label_tag }}</td>#}
-{#    <td>{{ field }}</td>#}
-{#</tr>#}
-{#{% endfor %}#}
-{#</table>#}
-{##}
-{#<input type="submit" value="register" />#}
-{#<input type="hidden" name="next" value="{{ next }}" />#}
-{#</form>#}
-{##}
-{#Assumes you setup the password_reset view in your URLconf#}
-{#<p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'password_reset' %}">Lost password?</a></p>#}
+{% endblock %}
 
+{% block script %}
+    <script type="text/javascript" language="JavaScript">
+        $("form").submit(function (e) {
+            $("#id_username").val($("#id_email").val());
+        })
+    </script>
 {% endblock %}

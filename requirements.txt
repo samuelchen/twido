@@ -4,8 +4,12 @@ simplejson
 requests
 dateparser
 django-bootstrap-themes
+django-simple-email-confirmation
+
+# debug & test
+django-debug-toolbar
+pygments
+
 #jinja2
 #egenix-mx-base
 #sutime
-pygments
-#django-bootstrap-form

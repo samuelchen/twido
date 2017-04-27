@@ -2,12 +2,13 @@
 # coding: utf-8
 
 from django.core.management.base import BaseCommand
-from services.spider import StorageType, TwitterSpider
+from twido.models import TodoList, WishList
+from services.storage import StorageType
+from services.parser import TwitterParser
 from ...utils import load_config
 
 
 class Command(BaseCommand):
-
     def get_storage_help(self):
         sb = []
         sb1 = []
@@ -20,7 +21,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
 
-
         parser.add_argument(
             '--storage-types', '-t',
             action='store',
@@ -28,23 +28,6 @@ class Command(BaseCommand):
             type=int,
             default=1,
             help=self.get_storage_help(),
-        )
-
-        parser.add_argument(
-            '--max', '-m',
-            action='store',
-            dest='max',
-            type=int,
-            default=0,
-            help='Max count to fetch.',
-        )
-
-        parser.add_argument(
-            '--test', '-e',
-            action='store_true',
-            dest='test',
-            default=False,
-            help='If test specified, will only fetch tester users.',
         )
 
         parser.add_argument(
@@ -56,17 +39,10 @@ class Command(BaseCommand):
             help='Specify a config file. Default is config.ini',
         )
 
+        pass
+
     def handle(self, *args, **options):
         config_file = options['config_file']
         storage = int(options['storage_types'])
-        max = int(options['max'])
-        test = bool(options['test'])
-
         cfgs = load_config(config_file=config_file)
-        spider = TwitterSpider(consumer_key=cfgs.twitter.consumer_key,
-                               consumer_secret=cfgs.twitter.consumer_secret,
-                               access_token=cfgs.twitter.access_token,
-                               access_token_secret=cfgs.twitter.access_token_secret,
-                               storage=storage,
-                               proxy=cfgs.common.proxy)
-        spider.fetch(test=test, limited=max)
+        WishList.init_data()

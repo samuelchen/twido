@@ -30,3 +30,23 @@ from datetime import datetime
 
 def parse_datetime(string):
     return datetime(*(parsedate(string)[:6]))
+
+
+def send_reg_email(email, id, name=None):
+    folder = './data/email/'
+    path = folder + email + '.html'
+    if not name:
+        name = email
+    content = '''
+    <html>
+    <head>
+        <title>Welcome to register My Wish List 2</title>
+    </head>
+    <body>
+        <H2>Welcome registering, %s</H2>
+        <p>Please click the following address to confirm registration.<p>
+        <a href="http://localhost:8000/reg_confirm">confirm user %s registration.</a>
+    </body>
+    ''' % (name, id)
+    with open(path, 'wt') as f:
+        f.write(content)

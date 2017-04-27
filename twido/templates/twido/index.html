@@ -28,7 +28,7 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">
                                     <ul class="list-inline">
-                                        <li><h3 class="panel-title">{{ task.profile.user.username | safe }}</h3></li>
+                                        <li><h3 class="panel-title">{{ task.profile.get_name | safe }}</h3></li>
 {#                                        <li><span class="label label-warning">#wish</span></li>#}
                                     </ul>
 {#                                    <h6 class="text">{{ task.created_at }}</h6>#}
@@ -47,7 +47,7 @@
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <ul class="list-inline">
-                                    <li><h3 class="panel-title">{{ task.profile.user.username | safe }}</h3></li>
+                                    <li><h3 class="panel-title">{{ task.profile.get_name | safe }}</h3></li>
 {#                                    <li><span class="label label-default">#todo</span></li>#}
                                 </ul>
                                 <h5>{{ task.title | url2link | safe  }}</h5>
@@ -83,7 +83,7 @@
                         <div class="panel-body">
 {#                            <img src="{{ p.img_url }}">#}
                             <div class="small">
-                                <span>{{ p.user.date_joined }}</span><br>
+                                <span>{{ p.get_date_joined }}</span><br>
 {#                                <span>Email: {{ p.get_email }}</span><br>#}
 {#                                <span>{{ p.lang }}</span><br>#}
                                 <span>{{ p.location }}</span><br>

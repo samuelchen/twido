@@ -184,7 +184,8 @@ class TwitterParser(Parser):
 
         if StorageType.contains_DB(self.storage):
 
-            for status in RawStatus.objects.filter(id__gt=int(last_id), parsed=False).order_by('id').iterator():
+            for status in RawStatus.objects.filter(id__gt=int(last_id), source=self.social_platform,
+                                                   parsed=False).order_by('id').iterator():
                 self.parse_status(status.raw)
                 id_str = str(status.id)
                 if last_id < id_str:
