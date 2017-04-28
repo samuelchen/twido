@@ -59,7 +59,7 @@
                                 <li><a href="#">Calendar</a></li>
                                 <li class="divider"></li>
                                 <li><a href="{% url 'profile' %}">Profile</a></li>
-                                <li><a href="#">Setting</a></li>
+                                <li><a href="{% url 'setting' %}">Setting</a></li>
                                 {% if request.user.is_staff %}
                                 <li><a href="/admin" target="_blank">Admin <i class="glyphicon glyphicon-new-window small"></i></a></li>
                                 {% endif %}

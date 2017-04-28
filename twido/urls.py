@@ -32,6 +32,7 @@ urlpatterns = [
 
     url(r'^$', view.IndexView.as_view(template_name=t('index.html')), name='index'),
     url(r'^home/$', view.HomeView.as_view(template_name=t('home.html')), name='home'),
+    url(r'^setting/$', view.SettingView.as_view(template_name=t('setting.html')), name='setting'),
 
     url(r'^todolist/create/$', view.TodoListView.as_view(template_name=t('todolist-create.html')), name='todolist-create'),
     url(r'^todolist/(?P<pk>[0-9]+)/$', view.TodoListView.as_view(template_name=t('todolist.html')), name='todolist'),

@@ -113,7 +113,7 @@ class ProfileView(TemplateView):
         context = super(ProfileView, self).get_context_data(**kwargs)
         context['profile'] = self.request.user.profile
         if 'errors' not in context:
-            context['errors'] = []
+            context['errors'] = {}
         if 'messages' not in context:
             context['messages'] = []
         return context
@@ -123,14 +123,13 @@ class ProfileView(TemplateView):
         user = self.request.user
         profile = user.profile
 
-        # TODO: clean/escape data
+        # TODO: clean/escape data (better use Django form for field validation)
         req = request.POST
         profile.username = req.get('username', profile.username)
         profile.name = req.get('name', profile.name)
         gender = req.get('gender', profile.gender)
         profile.gender = bool(gender)
         profile.timezone = req.get('timezone', profile.timezone)
-        print(req.get('timezone'), profile.timezone)
         profile.location = req.get('location', profile.location)
         profile.lang = req.get('lang', profile.lang)
         profile.img_url = req.get('img_url', profile.img_url)
@@ -142,6 +141,7 @@ class ProfileView(TemplateView):
         return self.get(request, *args, **kwargs)
 
 
+#TODO: temp json view
 class ProfileUsernamesJsonView(View):
 
     def get(self, request, *args, **kwargs):
@@ -153,6 +153,41 @@ class ProfileUsernamesJsonView(View):
                 "text": uname
             })
         return JsonResponse(usernames, safe=False)
+
+
+class SettingView(TemplateView):
+
+    def get_context_data(self, **kwargs):
+        context = super(SettingView, self).get_context_data(**kwargs)
+        context['profile'] = self.request.user.profile
+        if 'errors' not in context:
+            context['errors'] = {}
+        if 'messages' not in context:
+            context['messages'] = []
+        return context
+
+    # @method_decorator(login_required)
+    # def post(self, request, *args, **kwargs):
+    #     user = self.request.user
+    #     profile = user.profile
+    #
+    #     # TODO: clean/escape data (better use Django form for field validation)
+    #     req = request.POST
+    #     profile.username = req.get('username', profile.username)
+    #     profile.name = req.get('name', profile.name)
+    #     gender = req.get('gender', profile.gender)
+    #     profile.gender = bool(gender)
+    #     profile.timezone = req.get('timezone', profile.timezone)
+    #     profile.location = req.get('location', profile.location)
+    #     profile.lang = req.get('lang', profile.lang)
+    #     profile.img_url = req.get('img_url', profile.img_url)
+    #
+    #     profile.save()
+    #     # TODO: user.username = profile.username. transaction with user.save()
+    #
+    #     kwargs['messages'] = [_('Profile is saved successfully.')]
+    #     return self.get(request, *args, **kwargs)
+
 
 
 class IndexView(TemplateView):

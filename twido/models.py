@@ -6,7 +6,7 @@ from django.core.validators import validate_comma_separated_integer_list
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.exceptions import AppRegistryNotReady
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_init
 from django.dispatch import receiver
 # from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.templatetags.static import static
@@ -36,15 +36,6 @@ class SocialPlatform(object):
 
 # ------ Common Models -----
 
-class Config(models.Model):
-    """
-    Common configurations key-value list.
-    """
-    id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=100, db_index=True, unique=True)
-    timestamp = models.DateTimeField(auto_now=True)
-    value = models.TextField()
-
 
 class UserProfile(models.Model):
     """
@@ -69,6 +60,24 @@ class UserProfile(models.Model):
     utc_offset = models.IntegerField(verbose_name='UTC offset hours', default=0)
     img_url = models.URLField(verbose_name='Image URL', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now=True)
+
+    __sys_profile = None
+    __sys_profile_uname = '__sys__'
+
+    @classmethod
+    def init_data(cls):
+        p, created = cls.objects.get_or_create(name=cls.__sys_profile_uname)
+        if created:
+            p.save()
+        cls.__sys_profile = p
+
+    @classmethod
+    def get_sys_profile(cls):
+        if cls.__sys_profile is None:
+            cls.__sys_profile = cls.objects.get(name=cls.__sys_profile_uname)
+            if cls.__sys_profile is None:
+                cls.init_data()
+        return cls.__sys_profile
 
     def get_email(self):
         return self.email
@@ -109,6 +118,47 @@ class ProfileBasedModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class Config(ProfileBasedModel):
+    """
+    Common configurations name-value list.
+    Represents system configurations if self.profile is None
+    """
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=100, db_index=True, unique=True)
+    value = models.TextField()
+
+    @classmethod
+    def get_user_conf(cls, profile, name):
+        try:
+            opt = cls.objects.get(profile=profile, name=name)
+            value = opt.value
+        except cls.DoesNotExist:
+            value = None
+        return value
+
+    @classmethod
+    def set_user_conf(cls, profile, name, value):
+        opt, created = cls.objects.get_or_create(profile=profile, name=name)
+        opt.value = value
+        opt.save()
+
+    @classmethod
+    def get_sys_conf(cls, name):
+        try:
+            opt = cls.objects.get(profile=None, name=name)
+            value = opt.value
+        except cls.DoesNotExist:
+            value = None
+        return value
+
+
+    @classmethod
+    def set_sys_conf(cls, name, value):
+        opt, created = cls.objects.get_or_create(profile=None, name=name)
+        opt.value = value
+        opt.save()
 
 
 class SocialAccount(ProfileBasedModel):

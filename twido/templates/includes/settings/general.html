@@ -1,0 +1,15 @@
+{# Account Linking setting #}
+{# vars: errors - field_name:error_message pair #}
+{#       configs - the config dict #}
+                                <fieldset>
+                                    <legend>{% trans "General" %}</legend>
+
+                                    <div class="form-group {% if 'email' in errors %}has-error{% endif %}">
+                                        <label for="id_email" class="col-lg-3 control-label">{% trans 'Email' %}</label>
+
+                                        <div class="col-lg-9">
+                                            <span class="form-control" id="id_general">{{ profile.email }}</span>
+                                            <span class="help-block small">{% trans 'Account ID, unique in system. Immutable.' %}</span>
+                                        </div>
+                                    </div>
+                                </fieldset>
