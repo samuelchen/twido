@@ -5,6 +5,7 @@ from twido.models import SocialPlatform
 from .storage import StorageType, StorageMixin
 from .import weibo
 
+
 import abc
 import tweepy
 import time

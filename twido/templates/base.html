@@ -6,19 +6,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>{% block title %}{# TITLE BLOCK #}{% endblock %} - My WishList 2</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'twido/img/favicon.ico' %}"/>
+    {# bootstrap requires 1.9.1 < jquery < 3.0.0 #}
 {#    <script src="{% static 'twido/js/jquery-3.1.1.min.js' %}"></script>#}
-    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js"></script> {# bootstrap requires 1.9.1 < jquery < 3.0.0  #}
+    <script src="{% static 'twido/js/jquery-2.2.4.min.js' %}"></script>
+
     {% bootstrap_styles theme='simplex' type='min.css' %}
     {#{% bootstrap_styles theme='simplex' type='css' %}#}
     {#{% bootstrap_styles theme='simplex' type='less' %}#}
     {% bootstrap_script use_min=True %}
+    <link href="{% static 'twido/css/simplex-custom.min.css' %}" rel="stylesheet">  <!-- for simplex theme-->
 
     <link href="{% static 'twido/css/open-sans.css' %}" rel="stylesheet">
     <link href="{% static 'twido/css/main.css' %}" rel="stylesheet">
-
-{#    <script type="text/javascript" language="JavaScript">#}
-{#        window.csrftoken="{{csrftoken}}";#}
-{#    </script>#}
 
     <script src="{% static 'twido/js/js.cookie.js' %}"></script>
     <script src="{% static 'twido/js/main.js' %}"></script>
@@ -31,9 +31,9 @@
 
 {% include "includes/topnavbar.html" %}
 
-<div class="row">
-    <div>&nbsp;</div>
-</div>
+{#<div class="row">#}
+{#    <div>&nbsp;</div>#}
+{#</div>#}
 
 {#{% include "includes/message.html" %}#}
 

@@ -1,23 +1,65 @@
 <!-- BEGIN message & error -->
-<div>
-{% if error %}<div id="error" class="ui-state-error">{{ error|safe|linebreaksbr }}</div>{% endif %}
-{% if message %}<div id="message" class="ui-state-default">{{ message|safe|linebreaksbr }}</div>{% endif %}
-</div>
+
+        <div id="id_messages" class="bs-component hidden">
+            <div class="alert alert-dismissible alert-success">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <div id="id_messages_text">
+                    {% if messages %}
+                    {% for msg in messages %}<p>{{ msg | safe }}</p>{% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div id="id_errors" class="bs-component hidden">
+            <div class="alert alert-dismissible alert-danger">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>Oops!</strong>
+                <div id="id_errors_text">
+                    {% if errors %}
+                    <ul>{% for field, err in errors %}<li>{{ field }} - {{ err }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
 <script language="Javascript">
-    function _sys_msg(msg, is_err, clear) {
-        var m = is_err ? $("#error") : $("#message");
-        if (m.length == 0) {
-            m = $(".system-message");
-        };
-        if (clear) {m.text('');};
-        if (is_err) { msg = '<span style="color:red;">' + msg + '</span>'; };
+    function _sys_msg(msg, append) {
+        var m = $("#id_messages_text");
+        var box = $("#id_messages");
+        if (m.length < 1) {
+            box.html('<div class="alert alert-dismissible alert-success">\
+                <button type="button" class="close" data-dismiss="alert">×</button>\
+                <strong>Oops!</strong>\
+                <div id="id_messages_text">\
+                </div>\
+            </div>');
+            m = $("#id_messages_text");
+        }
+        box.removeClass('hidden').show();
+        if (!append) {m.text('');}
+        m.html(m.html() + "<br/>" + msg);
+    };
+    function _sys_err(msg, append) {
+        var m = $("#id_errors_text");
+        var box = $("#id_errors");
+        if (m.length < 1) {
+            box.html('<div class="alert alert-dismissible alert-danger">\
+                <button type="button" class="close" data-dismiss="alert">×</button>\
+                <strong>Oops!</strong>\
+                <div id="id_errors_text">\
+                </div>\
+            </div>');
+            m = $("#id_errors_text");
+        }
+        box.removeClass('hidden').show();
+        if (!append) {m.text('');}
         m.html(m.html() + "<br/>" + msg);
     };
 
-    function append_msg(msg) { _sys_msg(msg, false, false); };
-    function append_err(msg) { _sys_msg(msg, true, false); };
-    function show_msg(msg) { _sys_msg(msg, false, true); };
-    function show_err(msg) { _sys_msg(msg, true, true); };
+{#    function append_msg(msg) { _sys_msg(msg, false, false); };#}
+{#    function append_err(msg) { _sys_msg(msg, true, false); };#}
+{#    function show_msg(msg) { _sys_msg(msg, false, true); };#}
+{#    function show_err(msg) { _sys_msg(msg, true, true); };#}
 </script>
 
 <!-- END message & error -->

@@ -1,15 +1,41 @@
 {# Account Linking setting #}
 {# vars: errors - field_name:error_message pair #}
 {#       configs - the config dict #}
+{% load i18n %}<!-- BEGIN general setting -->
                                 <fieldset>
                                     <legend>{% trans "General" %}</legend>
 
-                                    <div class="form-group {% if 'email' in errors %}has-error{% endif %}">
-                                        <label for="id_email" class="col-lg-3 control-label">{% trans 'Email' %}</label>
+                                    <div class="form-group {% if 'lang' in errors %}has-error{% endif %}">
+                                        <label for="id_lang" class="col-lg-3 control-label">{% trans 'Language' %}</label>
 
                                         <div class="col-lg-9">
-                                            <span class="form-control" id="id_general">{{ profile.email }}</span>
-                                            <span class="help-block small">{% trans 'Account ID, unique in system. Immutable.' %}</span>
+{#                                            <input class="form-control editable" id="id_lang" name="lang" data-name="lang" data-type="select"  value="{{ conf.lang }}">#}
+                                            <span class="form-control editable" id="id_lang" data-type="select" data-name="lang" data-pk="{{ conf.lang.id }}" ></span>
+                                            <span class="help-block small">{% trans 'Prefer display language and local formats.' %}</span>
                                         </div>
                                     </div>
                                 </fieldset>
+                                <script language="JavaScript" type="text/javascript">
+                                    languages = [
+                                            {value: "EN", text: "{% trans 'English' %}"},
+                                            {value: "CN", text: "{% trans 'Chinese Simplified' %}"},
+                                            {value: "TC", text: "{% trans 'Chinese Traditional' %}"}
+                                        ];
+                                    $('#id_lang').editable({
+                                        url: "{% url 'setting' %}",
+                                        value: "{{ conf.lang.value }}",
+                                        source: languages,
+                                        success: function (response, newValue) {
+                                            if (response.status == "error") {
+                                                console.write(response.msg);
+                                                //msg will be shown in editable form
+                                                return response.msg;
+                                            }
+                                        }
+                                    });
+{#                                    }).on("save", function (e, params) {#}
+{#                                        $("#id_lang").val(params.newValue);#}
+{#                                    });#}
+
+                                </script>
+<!-- END general setting -->

@@ -1,11 +1,20 @@
-{% extends "base.html" %}{% load i18n staticfiles %}
+{% extends "base.html" %}{% load i18n %}
 
-{% block title %}{% trans 'Profile' %}{% endblock %}
+{% block title %}{% trans 'Setting' %}{% endblock %}
+
+{% block head %}
+    {% include 'includes/editable-head-ref.html' %}
+    <script language="JavaScript" type="text/javascript">
+        $.fn.editable.defaults.mode = 'inline';
+        $.fn.editable.defaults.showbuttons = false;
+        $.fn.editable.defaults.onblur = 'submit';
+    </script>
+{% endblock %}
 
 {% block content %}
 
 
-    {% include 'includes/blank-div-row.html' %}
+{#    {% include 'includes/blank-div-row.html' %}#}
 
 
     <div class="bs-docs-section container container-responsive ">
@@ -17,8 +26,8 @@
 
                 {# left siderbar menu #}
                 <div class=" table-of-contents list-group">
-                    <a class="list-group-item active" href="#general" data-toggle="tab" aria-expanded="true">General</a>
-                    <a class="list-group-item" href="#account" data-toggle="tab" aria-expanded="true">Link Accounts</a>
+                    <a class="list-group-item active" href="#general" data-toggle="tab" aria-expanded="true">{% trans 'General' %}</a>
+                    <a class="list-group-item" href="#account" data-toggle="tab" aria-expanded="true">{% trans 'Link Accounts' %}</a>
                     {#                    <a class="list-group-item active" href="#profile" data-toggle="tab" aria-expanded="true">Profile</a>#}
                     {#                    <a class="list-group-item disabled" href="#profile">Disabled</a>#}
                     {#                    <li class="list-group-item dropdown">#}
@@ -36,9 +45,9 @@
 
             </div>
 
-            <div class="col-lg-8">
+            <div class="col-lg-8 col-md-8 col-sm-8">
                 <div class="well bs-component">
-                    <form class="form-horizontal" method="post" action="{% url 'profile' %}">
+                    <form class="form-horizontal" method="post" action="{% url 'setting' %}">
                         {% csrf_token %}
                         <div id="myTabContent" class="tab-content">
 
@@ -63,6 +72,7 @@
                                 </div>
                             {% endif %}
 
+                            {% include 'includes/message.html' %}
                             {# ----- Hidden Tabs ----- #}
 
                             {# General Setting #}
@@ -72,7 +82,7 @@
 
                             {# Account Linking Setting #}
                             <div class="tab-pane fade" id="account">
-
+                                {% include 'includes/settings/acount-link.html' %}
                             </div>
 
                             <div class="tab-pane fade" id="dropdown1">
@@ -82,118 +92,16 @@
                                     hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred
                                     pitchfork.</p>
                             </div>
-                            <div class="tab-pane fade" id="dropdown2">
 
-                                <fieldset>
-                                    <legend>{% trans "Profile" %}</legend>
-
-
-                                    <div class="form-group {% if 'email' in errors %}has-error{% endif %}">
-                                        <label for="id_email" class="col-lg-3 control-label">{% trans 'Email' %}</label>
-
-                                        <div class="col-lg-9">
-                                            <span class="form-control" id="id_email">{{ profile.email }}</span>
-                                            <span class="help-block small">{% trans 'Account ID, unique in system. Immutable.' %}</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group {% if 'username' in errors %}has-error{% endif %}">
-                                        <label for="id_username"
-                                               class="col-lg-3 control-label">{% trans 'Username' %}</label>
-
-                                        <div class="col-lg-9">
-                                            <input class="form-control" autofocus="" id="id_username"
-                                                   placeholder="User screen name"
-                                                   maxlength="150" name="username" required="" type="text"
-                                                   value="{{ profile.username }}">
-                                            <span class="help-block small">{% trans 'Account/screen name, unique in system.' %}</span>
-
-                                        </div>
-                                    </div>
-                                    <div class="form-group {% if 'name' in errors %}has-error{% endif %}">
-                                        <label for="id_name" class="col-lg-3 control-label">{% trans 'Name' %}</label>
-
-                                        <div class="col-lg-9">
-                                            <input class="form-control" id="id_name" name="name"
-                                                   placeholder="Real Name" type="text"
-                                                   value="{{ profile.name|default_if_none:'' }}">
-                                            <span class="help-block small">{% trans 'Real name or display name' %}</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group {% if 'gender' in errors %}has-error{% endif %}">
-                                        <label for="id_gender"
-                                               class="col-lg-3 control-label">{% trans 'Gender' %}</label>
-
-                                        <div class="col-lg-9">
-                                            <div class="radio">
-                                                <label><img class="avatar-sm"
-                                                            src="{% static 'twido/img/avatar-man.png' %}"> <input
-                                                        name="gender" id="id_gender1" value="1"
-                                                        {% if profile.gender %}checked=""{% endif %}
-                                                        type="radio">
-                                                    {% trans 'Male' %}
-                                                </label> &nbsp;
-                                                <label><img class="avatar-sm"
-                                                            src="{% static 'twido/img/avatar-woman.png' %}"> <input
-                                                        name="gender" id="id_gender2" value=""
-                                                        {% if not profile.gender %}checked=""{% endif %} type="radio">
-                                                    {% trans 'Female' %}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group {% if 'timezone' in errors %}has-error{% endif %}">
-                                        <label for="id_timezone"
-                                               class="col-lg-3 control-label">{% trans 'Timezone' %}</label>
-
-                                        <div class="col-lg-9">
-                                            <input class="form-control" id="id_timezone" name="timezone"
-                                                   placeholder="Timezone" type="text"
-                                                   value="{{ profile.timezone|default_if_none:'' }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group {% if 'location' in errors %}has-error{% endif %}">
-                                        <label for="id_location"
-                                               class="col-lg-3 control-label">{% trans 'Location' %}</label>
-
-                                        <div class="col-lg-9">
-                                            <input class="form-control" id="id_location" name="location"
-                                                   placeholder="San Jose, US" type="text"
-                                                   value="{{ profile.location|default_if_none:'' }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group {% if 'lang' in errors %}has-error{% endif %}">
-                                        <label for="id_lang"
-                                               class="col-lg-3 control-label">{% trans 'Language' %}</label>
-
-                                        <div class="col-lg-9">
-                                            <input class="form-control" id="id_lang" name="lang"
-                                                   placeholder="Language" type="text"
-                                                   value="{{ profile.lang|default_if_none:'en' }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group {% if 'img_url' in errors %}has-error{% endif %}">
-                                        <label for="id_img_url"
-                                               class="col-lg-3 control-label">{% trans 'Image' %}</label>
-
-                                        <div class="col-lg-9">
-                                            <input class="form-control" id="id_img_url" name="img_url"
-                                                   placeholder="Image" type="text"
-                                                   value="{{ profile.img_url|default_if_none:'' }}">
-                                        </div>
-                                    </div>
-
-                                </fieldset>
-
-                            </div>
                         </div>
 
 
-                        <div class="form-group">
-                            <div class="col-lg-9 col-lg-offset-3">
-                                <button type="submit" class="btn btn-primary">Save</button>
-                                <button type="reset" class="btn btn-default">Cancel</button>
-                            </div>
-                        </div>
+{#                        <div class="form-group">#}
+{#                            <div class="col-lg-9 col-lg-offset-3">#}
+{#                                <button type="submit" class="btn btn-primary">Save</button>#}
+{#                                <button type="reset" class="btn btn-default">Cancel</button>#}
+{#                            </div>#}
+{#                        </div>#}
                     </form>
 
                 </div>
@@ -209,7 +117,22 @@
         $(".list-group-item").click(function(e){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
+
+            var tab = $(this).attr('href');
+            var tmp = window.location.toString().split('#');
+            window.location = tmp[0] + tab;
         });
-{#        $(".list-group-item").filter("[href='#account']").click();#}
+        function swith_tab(tab) {
+            if (!tab) {
+                var tmp = window.location.toString().split('#');
+                if (tmp.length > 1)
+                    tab = tmp[1];
+            }
+            if (!tab) tab = 'general';
+            $(".list-group-item").filter("[href='#" + tab + "']").click();
+        };
+
+        swith_tab();
+
     </script>
 {% endblock %}

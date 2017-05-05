@@ -6,7 +6,7 @@ Module to parse a tweets/status
 """
 
 from twido.models import RawStatus, SocialPlatform
-from twido.models import UserProfile
+from twido.models import SocialAccount, UserProfile
 from twido.models import Todo, Wish, TodoList, WishList
 from .storage import StorageType, StorageMixin
 from pyutils.langutil import MutableEnum
@@ -40,49 +40,66 @@ class Parser(StorageMixin):
 
     def parse_status(self, status_json):
 
+        # TODO: user bulk_create to batch create tasks.
+        # TODO: add commit=False arguments to speicify wether save.
+        # TODO: storage "parsed" commitment moves out
+
         status_obj = MutableEnum(json.loads(status_json))
         status_obj.user = MutableEnum(status_obj.user)
         status_obj._json = status_json
 
         log.info('Parsing %s' % status_obj.id_str)
 
-        profile = self._parse_user(status_obj.user)
-        return self._parse_task(status_obj, profile)
+        acc = self._parse_social_account(status_obj.user)
+        return self._parse_task(status_obj, acc)
 
-    def _parse_user(self, user_obj):
+    def _parse_social_account(self, user_obj):
         """
-        Generate fake user profile from status user information
+        Generate Social account from status user information
         :param user_obj:
-        :return: instance of FakeUserProfile model
+        :return: instance of SocialAccount model
         """
         user = user_obj
-        # u, created = UserModel.objects.get_or_create(username=user.screen_name)
-        # if created:
-        #     u.is_active = False
-        #     u.email = u.email
-        #     u.save()
-        p, created = UserProfile.objects.get_or_create(username=user.screen_name)
-        if created:
-            p.username = user.screen_name
-            p.name = user.name
-            p.timezone = user.time_zone
-            p.location = user.location
-            p.lang = user.lang
-            p.utc_offset = user.utc_offset or 0
-            p.img_url = user.profile_image_url
-            assert p.is_faked
-            p.save()
+        try:
+            acc = SocialAccount.objects.get(account=user.screen_name)
+        except SocialAccount.DoesNotExist:
+            acc = SocialAccount()
+            acc.profile = UserProfile.get_sys_profile()
+            acc.account = user.screen_name
+            acc.name = user.name
+            acc.rawid = user.id_str
+            if isinstance(user.created_at, str):
+                acc.created_at = parse_datetime(user.created_at).replace(tzinfo=utc)
+            else:
+                acc.created_at = user.created_at.replace(tzinfo=utc)
 
-        return p
+            acc.timezone = user.time_zone
+            acc.location = user.location
+            acc.lang = user.lang
+            acc.utc_offset = user.utc_offset or 0
+            acc.img_url = user.profile_image_url
+            acc.img_url_https = user.profile_image_url_https
 
-    def _parse_task(self, status_obj, profile):
+            acc.followers_count = user.followers_count
+            # acc.followings_count = user.followings_count
+            acc.favorites_count = user.favourites_count
+            acc.statuses_count = user.statuses_count
+            acc.friends_count = user.friends_count
+            acc.listed_count = user.listed_count
+
+            acc.save()
+
+        return acc
+
+    def _parse_task(self, status_obj, social_account):
         """
 
         :param status_obj:
-        :param profile:
+        :param social_account:
         :return:
         """
         obj = status_obj
+        acc = social_account
 
         try:
             status = RawStatus.objects.get(rawid=obj.id_str)
@@ -104,7 +121,8 @@ class Parser(StorageMixin):
         try:
             if obj.text.find('#todo') > 0:
                 task = Todo()
-                task.profile = profile
+                task.profile = UserProfile.get_sys_profile()
+                task.social_account = acc
                 task.status = status
                 if isinstance(obj.created_at, str):
                     task.created_at = parse_datetime(obj.created_at).replace(tzinfo=utc)
@@ -114,11 +132,12 @@ class Parser(StorageMixin):
                 task.text = obj.text
                 task.content = text
                 task.deadline = None
-                task.list = TodoList.get_default(profile)
+                task.list = TodoList.get_default(acc.profile)
                 task.save()
             elif obj.text.find('#wish') > 0:
                 task = Wish()
-                task.profile = profile
+                task.profile = UserProfile.get_sys_profile()
+                task.social_account = acc
                 task.status = status
                 if isinstance(obj.created_at, str):
                     task.created_at = parse_datetime(obj.created_at).replace(tzinfo=utc)
@@ -127,10 +146,11 @@ class Parser(StorageMixin):
                 task.title = obj.text
                 task.text = obj.text
                 task.content = text
-                task.list = WishList.get_default(profile)
+                task.list = WishList.get_default(acc.profile)
                 task.save()
             else:
                 log.info('IGNORED due to no hash tags. %s' % status)
+
         except IntegrityError as err:
             log.error('IGNORED due to duplicated. %s. Error:%s' % (status, err))
 
@@ -177,15 +197,17 @@ class TwitterParser(Parser):
     def social_platform(self):
         return SocialPlatform.TWITTER
 
-    def parse(self):
+    def parse(self, include_parsed=False):
 
         last_id = self.get_last_id()
         log.info('Start parsing (last_id=%s) ...' % last_id)
 
         if StorageType.contains_DB(self.storage):
-
+            filter_kwargs = {}
+            if not include_parsed:
+                filter_kwargs['parsed'] = False
             for status in RawStatus.objects.filter(id__gt=int(last_id), source=self.social_platform,
-                                                   parsed=False).order_by('id').iterator():
+                                                   **filter_kwargs).order_by('id').iterator():
                 self.parse_status(status.raw)
                 id_str = str(status.id)
                 if last_id < id_str:
@@ -204,11 +226,12 @@ class TwitterParser(Parser):
                 for file in files:
                     # p = os.path.join(self.data_folder, sub, file)
                     # os.rename(p, p[:-7])
-                    if file > name and not file.endswith('parsed'):
+                    if file > name and (include_parsed or not file.endswith('.parsed')):
                         path = os.path.join(self.data_folder, sub, file)
                         status_json = open(path, 'rt', encoding='utf-8').read()
                         if self.parse_status(status_json):
-                            os.rename(path, path + '.parsed')
+                            if not path.endswith('.parsed'):
+                                os.rename(path, path + '.parsed')
                     id_str = name[:-5]
                     if last_id < id_str:
                         last_id = id_str

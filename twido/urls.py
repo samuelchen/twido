@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-# from django.contrib import admin
+from django.contrib import admin
 from django.conf import settings
 from . import view
 
@@ -23,16 +23,24 @@ from . import view
 def t(template):
     return 'twido/' + template
 
-
 urlpatterns = [
-    url(r'^admin/', include('django.contrib.auth.urls')),
-    url(r'^', include('django.contrib.auth.urls')),
+
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'', include('django.contrib.auth.urls')),
+
+    # (r'^robots\.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt', 'mimetype': 'text/plain'}),
+    # (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/img/favicon.ico'}),
+
     url(r'^register/', view.register, name='register'),
-    url(r'^profile/', view.ProfileView.as_view(template_name='registration/profile.html'), name='profile'),
+    url(r'^profile/$', view.ProfileView.as_view(template_name='registration/profile.html'), name='profile'),
 
     url(r'^$', view.IndexView.as_view(template_name=t('index.html')), name='index'),
     url(r'^home/$', view.HomeView.as_view(template_name=t('home.html')), name='home'),
     url(r'^setting/$', view.SettingView.as_view(template_name=t('setting.html')), name='setting'),
+
+    url(r'^social/$', view.SocialView.as_view(template_name=t('social.html')), name='social'),
+    url(r'^social/(?P<action>link)/$', view.SocialView.as_view(template_name=t('social.html')), name='social'),
+    url(r'^social/(?P<action>update)/$', view.SocialView.as_view(template_name=t('social.html')), name='social'),
 
     url(r'^todolist/create/$', view.TodoListView.as_view(template_name=t('todolist-create.html')), name='todolist-create'),
     url(r'^todolist/(?P<pk>[0-9]+)/$', view.TodoListView.as_view(template_name=t('todolist.html')), name='todolist'),
@@ -42,7 +50,7 @@ urlpatterns = [
 
     url(r'^json/usernames/$', view.ProfileUsernamesJsonView.as_view()),
 
-    # url(r'^', include('user.urls')),
+    url(r'^', include('user.urls')),
 
 ]
 

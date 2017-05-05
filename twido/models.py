@@ -27,12 +27,21 @@ class SocialPlatform(object):
     TWITTER = 'TW'
     FACEBOOK = 'FB'
     WEIBO = 'WB'
-    SocialAccountChoices = (
-        (TWITTER, 'Twitter'),
-        (FACEBOOK, 'Facebook'),
-        (WEIBO, 'Weibo'),
-    )
+    # SocialAccountChoices = (
+    #     (TWITTER, 'Twitter'),
+    #     (FACEBOOK, 'Facebook'),
+    #     (WEIBO, 'Weibo'),
+    # )
+    _texts = {
+        TWITTER: 'Twitter',
+        FACEBOOK: 'Facebook',
+        WEIBO: 'Weibo',
+    }
+    SocialAccountChoices = _texts.items()
 
+    @classmethod
+    def get_text(cls, code):
+        return cls._texts[code]
 
 # ------ Common Models -----
 
@@ -48,7 +57,10 @@ class UserProfile(models.Model):
     name -> display/nick name. user.first_name/last_name will be ignore
     """
     id = models.BigAutoField(primary_key=True)
-    user = models.OneToOneField(to=UserModel, related_name='profile', db_index=True, null=True, blank=True)    # null means faked profile
+
+    # TODO: null or not ? make __sys__ user locked ?
+    # null means faked profile
+    user = models.OneToOneField(to=UserModel, related_name='profile', db_index=True, null=True, blank=True)
     email = models.CharField(max_length=100, unique=True, db_index=True, null=True, blank=True)    # user.email
     username = models.CharField(max_length=100, unique=True, db_index=True)        # user.username
 
@@ -66,7 +78,7 @@ class UserProfile(models.Model):
 
     @classmethod
     def init_data(cls):
-        p, created = cls.objects.get_or_create(name=cls.__sys_profile_uname)
+        p, created = cls.objects.get_or_create(username=cls.__sys_profile_uname)
         if created:
             p.save()
         cls.__sys_profile = p
@@ -74,10 +86,12 @@ class UserProfile(models.Model):
     @classmethod
     def get_sys_profile(cls):
         if cls.__sys_profile is None:
-            cls.__sys_profile = cls.objects.get(name=cls.__sys_profile_uname)
-            if cls.__sys_profile is None:
-                cls.init_data()
+            cls.init_data()
         return cls.__sys_profile
+
+    @classmethod
+    def get_sys_profile_username(cls):
+        return cls.__sys_profile_uname
 
     def get_email(self):
         return self.email
@@ -106,6 +120,9 @@ class UserProfile(models.Model):
     def is_faked(self):
         return self.user is None
 
+    def __str__(self):
+        return '%s (id=%d)' % (self.email, self.id)
+
 
 class ProfileBasedModel(models.Model):
     """
@@ -125,18 +142,22 @@ class Config(ProfileBasedModel):
     Common configurations name-value list.
     Represents system configurations if self.profile is None
     """
-    id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=100, db_index=True, unique=True)
+    name = models.CharField(max_length=100, db_index=True)
     value = models.TextField()
+
+    class Meta:
+        unique_together = ('profile', 'name')
 
     @classmethod
     def get_user_conf(cls, profile, name):
         try:
-            opt = cls.objects.get(profile=profile, name=name)
-            value = opt.value
+            return cls.objects.get(profile=profile, name=name)
         except cls.DoesNotExist:
-            value = None
-        return value
+            return None
+
+    @classmethod
+    def get_or_create_user_conf(cls, profile, name):
+        return cls.objects.get_or_create(profile=profile, name=name)
 
     @classmethod
     def set_user_conf(cls, profile, name, value):
@@ -147,16 +168,17 @@ class Config(ProfileBasedModel):
     @classmethod
     def get_sys_conf(cls, name):
         try:
-            opt = cls.objects.get(profile=None, name=name)
-            value = opt.value
+            return cls.objects.get(profile=UserProfile.get_sys_profile(), name=name)
         except cls.DoesNotExist:
-            value = None
-        return value
+            return None
 
+    @classmethod
+    def get_or_create_sys_conf(cls, name):
+        return cls.objects.get_or_create(profile=UserProfile.get_sys_profile(), name=name)
 
     @classmethod
     def set_sys_conf(cls, name, value):
-        opt, created = cls.objects.get_or_create(profile=None, name=name)
+        opt, created = cls.objects.get_or_create(profile=UserProfile.get_sys_profile(), name=name)
         opt.value = value
         opt.save()
 
@@ -165,24 +187,45 @@ class SocialAccount(ProfileBasedModel):
     """
     Social accounts such as Twitter, Facebook and Weibo.
     """
-    provider = models.CharField(max_length=2, choices=SocialPlatform.SocialAccountChoices, default=SocialPlatform.TWITTER)
-    account = models.CharField(max_length=100)      # maybe screen_name, email or etc.
+    account = models.CharField(max_length=100, db_index=True)      # maybe screen_name, email or etc.
+    platform = models.CharField(max_length=2, choices=SocialPlatform.SocialAccountChoices, default=SocialPlatform.TWITTER)
     name = models.CharField(max_length=100, null=True, blank=True)  # nick name, user.first_name/user.last_name
+    tokens = models.TextField(verbose_name='Tokens JSON')
+    rawid = models.CharField(max_length=100, null=True, blank=True)
 
-    followers_count = models.IntegerField()
-    followings_count = models.IntegerField()
-    friends_count = models.IntegerField()
-    statuses_count = models.IntegerField()
-    favorites_count = models.IntegerField()
-    listed_count = models.IntegerField()
-    profile_img_url = models.TextField()
-    profile_img_url_https = models.TextField()
-    created_at = models.DateTimeField()
-    location = models.TextField()
-    lang = models.CharField(max_length=20)
-    timezone = models.CharField(max_length=50)
+    followers_count = models.IntegerField(default=0)
+    followings_count = models.IntegerField(default=0)
+    friends_count = models.IntegerField(default=0)
+    statuses_count = models.IntegerField(default=0)
+    favorites_count = models.IntegerField(default=0)
+    listed_count = models.IntegerField(default=0)
+    img_url = models.TextField(null=True, blank=True)
+    img_url_https = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    location = models.TextField(null=True, blank=True)
+    lang = models.CharField(max_length=20, null=True)
+    timezone = models.CharField(max_length=50, null=True, blank=True)
     utc_offset = models.IntegerField(default=0)
 
+    class Meta:
+        unique_together = ('platform', 'account')
+
+    def __str__(self):
+        return '%s (id=%d)' % (self.account, self.id)
+
+    def get_name(self):
+        """
+        :return a display name
+        """
+        if self.name:
+            return self.name
+        return self.account
+
+    def get_date_joined(self):
+        return self.created_at
+
+    def get_img_url(self):
+        return self.img_url or static('twido/img/avatar-man.png')
 
 # ----- Spider models -----
 
@@ -279,16 +322,22 @@ class Task(ProfileBasedModel):
     Base task model for todo, wish and schedule appointment
     """
     status = models.OneToOneField(to=RawStatus)
+    social_account = models.ForeignKey(to=SocialAccount, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     title = models.CharField(max_length=200)
     text = models.TextField(verbose_name='Origin Text', null=True, blank=True)
     content = models.TextField(null=True, blank=True)
     labels = models.TextField(db_index=True, null=True, blank=True)
-    # type = models.CharField(max_length=1, choices=TaskType)
 
     class Meta:
         abstract = True
+
+    def get_owner_name(self):
+        if self.profile and self.profile != UserProfile.get_sys_profile():
+            return self.profile.get_name()
+        elif self.social_account:
+            return self.social_account.name or self.social_account.account
 
 
 class Todo(Task):
@@ -368,7 +417,7 @@ class ConfigAdmin(admin.ModelAdmin):
     """
     Admin page for configurations.
     """
-    list_display = ('id', 'name', 'value')
+    list_display = ('id', 'profile', 'name', 'value')
     list_display_links = ('id', 'name')
 
 
@@ -379,6 +428,15 @@ class ConfigAdmin(admin.ModelAdmin):
 #     """
 #     pass
 
+
+@admin.register(SocialAccount)
+class SocialAccountAdmin(admin.ModelAdmin):
+    """
+    Admin page for configurations.
+    """
+    # list_display = ('__all__', )
+    # list_display_links = ('id', 'name')
+    pass
 
 # ========== Signals ==========
 

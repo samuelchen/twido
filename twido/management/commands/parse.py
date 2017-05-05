@@ -37,9 +37,18 @@ class Command(BaseCommand):
             help='Specify a config file. Default is config.ini',
         )
 
+        parser.add_argument(
+            '--include-parsed', '-i',
+            action='store_true',
+            dest='include_parsed',
+            default=False,
+            help='include parsed status',
+        )
+
     def handle(self, *args, **options):
         config_file = options['config_file']
         storage = int(options['storage_types'])
+        include_parsed = options['include_parsed']
         cfgs = load_config(config_file=config_file)
         parser = TwitterParser(endpoint=cfgs.common.parser_endpoint, storage=storage)
-        parser.parse()
+        parser.parse(include_parsed=include_parsed)

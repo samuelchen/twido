@@ -19,6 +19,28 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .avatar { width: 24px; height: 24px;}
 .avatar-lg { width: 32px; height: 32px;}
 
+/*
+    Overlay a element.
+*/
+.overlay {
+    position: relative;
+}
+
+.overlay:after {
+    content: ' loading ... ';
+    z-index: 10;
+    display: block;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding-top: 8px;
+    color: #c0c0c0;
+    background: rgba(0, 0, 0, 0.1);
+    cursor: no-drop;
+}
 
 /* for select2 input width with bootstrap3 */
 /*input[placeholder] { width: 100% !important; }*/

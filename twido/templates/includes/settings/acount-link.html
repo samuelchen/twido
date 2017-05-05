@@ -1,15 +1,147 @@
 {# Account Linking setting #}
 {# vars: errors - field_name:error_message pair #}
 {#       configs - the config dict #}
+{% load i18n %}<!-- BEGIN account linking setting -->
                                 <fieldset>
                                     <legend>{% trans "Account Linking" %}</legend>
 
-                                    <div class="form-group {% if 'email' in errors %}has-error{% endif %}">
+                                    <div class="form-group {% if social_platforms.TWITTER in errors %}has-error{% endif %}">
                                         <label for="id_account_twitter" class="col-lg-3 control-label">{% trans 'Twitter' %}</label>
 
                                         <div class="col-lg-9">
-                                            <span class="form-control" id="id_email">{{ profile.email }}</span>
-                                            <span class="help-block small">{% trans 'Account ID, unique in system. Immutable.' %}</span>
+                                            <span class="form-control" id="id_account_twitter">
+                                                <span>{{ social_accounts.TW.name | default_if_none:'' }}</span>
+                                                <span class="pull-right">
+                                                    <a id="id_tw_update" data-toggle="tooltip" title="Update Twitter Information"><i class="glyphicon glyphicon-refresh"></i></a>
+                                                    <a id="id_tw_link" data-toggle="tooltip" title="Link to Twitter"><i class="glyphicon glyphicon-link"></i></a>
+                                                </span>
+                                            </span>
+
+                                            <span class="help-block small">{% trans 'Account ID, unique and immutable in system.' %}</span>
                                         </div>
                                     </div>
+
+
+{#                                    <div class="form-group {% if social_platforms.TWITTER in errors %}has-error{% endif %}">#}
+{#                                        <label for="id_account_facebook" class="col-lg-3 control-label">{% trans 'Facebook' %}</label>#}
+{##}
+{#                                        <div class="col-lg-9">#}
+{#                                            <span class="form-control" id="id_account_facebook">--- conf.account #}
+{#                                                <span class="pull-right">#}
+{#                                                    <a data-toggle="tooltip" title="link to Facebook"><i class="glyphicon glyphicon-edit"></i></a>#}
+{#                                                    <a data-toggle="tooltip" title="link to Facebook"><i class="glyphicon glyphicon-link"></i></a>#}
+{#                                                </span>#}
+{#                                            </span>#}
+{##}
+{#                                            <span class="help-block small">{% trans 'Account ID, unique and immutable in system.' %}</span>#}
+{#                                        </div>#}
+{#                                    </div>#}
                                 </fieldset>
+
+                                <script language="JavaScript" type="text/javascript">
+                                    $("#id_account_twitter").find("[data-toggle='tooltip']").css("cursor", "pointer").tooltip({
+                                        container : "body"
+                                    });
+
+                                    function social_ajax_call (url, overlay_panel, platform, on_success) {
+
+                                        overlay_panel.addClass('overlay');
+
+                                        $.ajax(url, {
+                                            method: "POST",
+                                            data: {
+                                                platform: platform
+                                            },
+                                            success: function (response) {
+                                                console.log('success');
+                                                on_success(response);
+                                            },
+                                            error: function (response) {
+                                                console.log('error');
+                                                console.log(response.statusCode() + '  ' + response.responseText);
+                                                _sys_err(response.responseText);
+                                            },
+                                            complete: function (data) {
+                                                console.log('complete');
+                                                overlay_panel.removeClass('overlay');
+                                            }
+                                        });
+                                    }
+
+{#                                    $("#id_tw_link")#}
+{#                                    {% if social_accounts.TW %}#}
+{#                                        .css("cursor", "no-drop")#}
+{#                                    {% else %}#}
+{#                                        .css("cursor", "pointer")#}
+{#                                        .click(function (e) {#}
+{#                                            social_ajax_call(#}
+{#                                                "{% url 'social' 'link' %}",#}
+{#                                                $("#id_account_twitter"),#}
+{#                                                "{{ social_platforms.TWITTER }}",#}
+{#                                                function(response) {#}
+{#                                                    window.location = response.auth_url;#}
+{#                                                }#}
+{#                                            );#}
+{#                                        });#}
+{#                                    {% endif %}#}
+
+
+                                    $("#id_tw_link")
+                                    {% if social_accounts.TW %}
+                                        .css("cursor", "no-drop");
+                                    {% else %}
+                                        .css("cursor", "pointer")
+                                        .click(function (e) {
+                                                var panel = $("#id_account_twitter");
+                                                panel.addClass('overlay');
+
+                                                $.ajax("{% url 'social' 'link' %}", {
+                                                    method: "POST",
+                                                    data: {
+                                                        platform: "{{ social_platforms.TWITTER }}"
+                                                    },
+                                                    success: function (response) {
+                                                        console.log('success');
+                                                        window.location = response.auth_url;
+                                                    },
+                                                    error: function (response) {
+                                                        console.log('error');
+                                                        console.log(response.statusCode() + '  ' + response.responseText);
+                                                        _sys_err(response.responseText);
+                                                    },
+                                                    complete: function (data) {
+                                                        console.log('complete');
+                                                        panel.removeClass('overlay');
+                                                    }
+                                                });
+                                            });
+                                    {% endif %}
+
+
+                                    $("#id_tw_update")
+                                        .click(function (e) {
+                                            var panel = $("#id_account_twitter");
+                                            panel.addClass('overlay');
+
+                                            $.ajax("{% url 'social' 'update' %}", {
+                                                method: "POST",
+                                                data: {
+                                                    platform: "{{ social_platforms.TWITTER }}"
+                                                },
+                                                success: function (response) {
+                                                    console.log('success');
+                                                    panel.children().first().text(response.name);
+                                                },
+                                                error: function (response) {
+                                                    console.log('error');
+                                                    console.log(response.statusCode() + '  ' + response.responseText);
+                                                    _sys_err(response.responseText);
+                                                },
+                                                complete: function (data) {
+                                                    console.log('complete');
+                                                    panel.removeClass('overlay');
+                                                }
+                                            });
+                                        });
+                                </script>
+<!-- END account linking setting -->

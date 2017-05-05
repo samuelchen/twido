@@ -66,7 +66,7 @@ class StorageMixin(object):
         """
 
         if StorageType.contains_DB(self.storage):
-            opt, created = Config.objects.get_or_create(name=self.last_id_config_key)
+            opt, created = Config.get_or_create_sys_conf(name=self.last_id_config_key)
             opt.value = last_id
             opt.save()
 
@@ -85,7 +85,7 @@ class StorageMixin(object):
         """
         last_id = '0'
         if StorageType.contains_DB(self.storage):
-            opt, created = Config.objects.get_or_create(name=self.last_id_config_key)
+            opt, created = Config.get_or_create_sys_conf(name=self.last_id_config_key)
             if created:
                 opt.value = last_id
                 opt.save()
@@ -130,7 +130,10 @@ class StorageMixin(object):
                 log.debug('Created folder %s' % path)
 
             path = os.path.join(self.data_folder, subfolder, name) + '.json'
+            path_parsed = path + '.parsed'
 
+            if os.path.exists(path_parsed):
+                path = path_parsed
             with open(path, 'wt', encoding='utf-8') as f:
                 t = status.raw
                 f.write(t)

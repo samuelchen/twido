@@ -28,7 +28,7 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">
                                     <ul class="list-inline">
-                                        <li><h3 class="panel-title">{{ task.profile.get_name | safe }}</h3></li>
+                                        <li><h3 class="panel-title">{{ task.get_owner_name | safe }}</h3></li>
 {#                                        <li><span class="label label-warning">#wish</span></li>#}
                                     </ul>
 {#                                    <h6 class="text">{{ task.created_at }}</h6>#}
@@ -47,7 +47,7 @@
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <ul class="list-inline">
-                                    <li><h3 class="panel-title">{{ task.profile.get_name | safe }}</h3></li>
+                                    <li><h3 class="panel-title">{{ task.get_owner_name | safe }}</h3></li>
 {#                                    <li><span class="label label-default">#todo</span></li>#}
                                 </ul>
                                 <h5>{{ task.title | url2link | safe  }}</h5>
@@ -65,33 +65,39 @@
             </div>
             <div class="col-lg-2">
                 <div class="bs-component small">
-                    {% for p in profiles %}
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
-                            <ul class="list-inline">
-                                <li class="pull-left"><img class="img-circle" src="{{ p.get_img_url }}"></li>
-                                <li class="pull-right ">
+                    {% for profile in profiles %}
+{#                    <div class="panel panel-info">#}
+{#                        <div class="panel-heading">#}
+{#                            <ul class="list-inline">#}
+{#                                <li class="pull-left"><img class="img-circle" src="{{ p.get_img_url }}"></li>#}
+{#                                <li class="pull-right ">#}
 {#                                    <h3 class="panel-title">{{ p.get_name | safe }}</h3>#}
-                                    <span style="color:white">{{ p.get_name }}</span><br>
+{#                                    <span style="color:white">{{ p.get_name }}</span><br>#}
 {#                                    <span class="small" style="color:silver">{{ p.location }}</span><br>#}
 {#                                    <span class="small" style="color:silver">{{ p.user.date_joined }}</span><br>#}
-                                </li>
-                                <li class="clearfix"></li>
-                            </ul>
-
-                        </div>
-                        <div class="panel-body">
+{#                                </li>#}
+{#                                <li class="clearfix"></li>#}
+{#                            </ul>#}
+{##}
+{#                        </div>#}
+{#                        <div class="panel-body">#}
 {#                            <img src="{{ p.img_url }}">#}
-                            <div class="small">
-                                <span>{{ p.get_date_joined }}</span><br>
+{#                            <div class="small">#}
+{#                                <span>{{ p.get_date_joined }}</span><br>#}
 {#                                <span>Email: {{ p.get_email }}</span><br>#}
 {#                                <span>{{ p.lang }}</span><br>#}
-                                <span>{{ p.location }}</span><br>
+{#                                <span>{{ p.location }}</span><br>#}
 {#                                <span>{{ p.timezone }}</span><br>#}
 {#                                <span>UTC offset: {{ p.utc_offset }}</span><br>#}
-                            </div>
-                        </div>
-                    </div>
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+                        {% include 'includes/profile-card-simple.html' %}
+                    {% endfor %}
+
+                    {# Social Accounts take as fake profiles #}
+                    {% for profile in social_accounts %}
+                        {% include 'includes/profile-card-simple.html' %}
                     {% endfor %}
                 </div>
             </div>

@@ -29,3 +29,16 @@
         }
     });
     // --- End csrf token for Django
+
+
+    function css_enable(obj) {
+        obj.removeAttr("disabled")
+            .removeClass('disabled')
+            .css("cursor", "pointer");
+    }
+
+    function css_disable(obj) {
+        obj.removeAttr("disabled")
+            .removeClass('disabled')
+            .css("cursor", "no-drop");
+    }

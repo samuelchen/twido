@@ -144,6 +144,11 @@ STATIC_URL = '/static/'
 
 
 # ----- added settings -----
+
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'
+
+
 INTERNAL_IPS = ['127.0.0.1', 'localhost', '192.168.0.*']
 # TEMPLATE_DEBUG = False
 # if DEBUG:
@@ -203,7 +208,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
         'twido': {
             'handlers': ['console'],
@@ -213,9 +218,16 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'WARNING',
         },
+        'tweepy': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+        },
         'django.db.backends': {
             'handlers': ['console'],
             'level': 'ERROR',
         },
     },
 }
+
+
+CONFIG_FILE = os.getenv('CONFIG_FILE', 'config.ini')
