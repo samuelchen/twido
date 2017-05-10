@@ -171,7 +171,7 @@ INTERNAL_IPS = ['127.0.0.1', 'localhost', '192.168.0.*']
 #     'debug_toolbar.panels.logging.LoggingPanel',
 #     'debug_toolbar.panels.redirects.RedirectsPanel',
 # ]
-#
+
 
 LOGGING = {
     'version': 1,

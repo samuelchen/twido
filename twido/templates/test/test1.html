@@ -33,7 +33,7 @@
     <script type="text/javascript" language="JavaScript">
     $('#username').editable({
   type: 'select2',
-  url: '/post',
+  url: '/todolist/3/',
   pk: 1,
   onblur: 'submit',
   emptytext: 'None',
@@ -46,7 +46,7 @@
                     return e.EmployeeId;
                 },
                 ajax: {
-                    url: '/EmployeeSearch',
+                    url: '/json/usernames/',
                     dataType: 'json',
                     data: function (term, page) {
                         return { query: term };
@@ -56,13 +56,13 @@
                     }
                 },
                 formatResult: function (employee) {
-                    return employee.EmployeeName;
+                    return employee.text;
                 },
                 formatSelection: function (employee) {
-                    return employee.EmployeeName;
+                    return employee.text;
                 },
                 initSelection: function (element, callback) {
-                    return $.get('/EmployeeLookupById', { query: element.val() }, function (data) {
+                    return $.get('/json/usernames/', { query: element.val() }, function (data) {
                         callback(data);
                     }, 'json'); //added dataType
                 }
@@ -73,45 +73,6 @@
                 $('#RequestUser').text(response.newVal);
             }
             */
-});
-
-
-$.mockjax({
-    url: '/EmployeeLookupById',
-    responseTime: 100,
-    responseText: {
-            EmployeeId: 1,
-            EmployeeName: 'found by ID'
-        }
-});
-
-$.mockjax({
-    url: '/EmployeeSearch',
-    responseTime: 400,
-    response: function(settings) {
-        var res = [];
-        for(var i=1; i<5;i++) {
-            res.push({
-                EmployeeId: i,
-                EmployeeName: settings.data.query+'_'+i
-            });
-        }
-        this.responseText = res;
-    }
-});
-
-//ajax emulation. Type "err" to see error message
-$.mockjax({
-    url: '/post',
-    responseTime: 400,
-    response: function(settings) {
-        if(settings.data.value == 'err') {
-           this.status = 500;
-           this.responseText = 'Validation error!';
-        } else {
-           this.responseText = '';
-        }
-    }
 });
 
     </script>

@@ -49,7 +49,7 @@ except ImportError:
 
 from tweepy import TweepError
 from .utils import TwitterClientManager
-from .models import SocialPlatform
+from .models import SocialPlatform, TaskStatus
 import simplejson as json
 
 
@@ -78,9 +78,44 @@ class TodoCreateView(CreateView):
     model = Todo
     fields = ['title', 'profile', 'labels', 'text', 'list']
 
-class TodoUpdateView(UpdateView):
+
+class TodoView(DetailView):
     model = Todo
     fields = ['title', 'profile', 'labels', 'text', 'list']
+
+    @method_decorator(sensitive_post_parameters())
+    def post(self, request, pk, *args, **kwargs):
+        req = request.POST
+        print(req)
+        if pk is not None:
+            pk = int(pk)
+            name = req.get('name', None)
+            value = req.get('value', None)
+
+            if name == 'labels':
+                value = ','.join(req.getlist('value[]', []))
+            if value is not None and value.strip() == '':
+                value = None
+            elif name == 'status':
+                value = int(value)
+            print(name, '-', value)
+            try:
+                task = Todo.objects.get(id=pk)
+                setattr(task, name, value)
+                task.save(update_fields=[name, ])
+            except Exception as err:
+                log.exception(err)
+                return HttpResponseBadRequest(_('Bad Request. (name="%s", value="%s")' % (name, value)))
+
+            data = {
+                'glyphicon': task.get_status_glyphicon(),
+                'text': task.get_status_text(),
+                'value': task.status
+            }
+            return JsonResponse(data)
+        else:
+            return HttpResponseBadRequest('Primary key is None')
+
 
 class TodoDeleteView(DeleteView):
     model = Todo
@@ -93,27 +128,46 @@ class TodoListView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(TodoListView, self).get_context_data(**kwargs)
-        thelist = context['object']
-        p = self.request.GET.get('p')
-        context['thelist'] = thelist
-        # context['todos'] = Todo.objects.filter(profile__user=self.request.user, list=thelist).all()
-        context['page'] = paginate(thelist.todo_set.all(), cur_page=p, entries_per_page=10)
-        context['todolists'] = TodoList.objects.filter(profile__user=self.request.user).all()
+        thelist = context['thelist']
+        p = self.request.GET.get('p')   # current page
+        profile = self.request.user.profile
+        if 'page' not in context:
+            context['page'] = paginate(Todo.objects.filter(profile=profile, list=thelist), cur_page=p, entries_per_page=10)
+        if 'todolists' not in context:
+            context['todolists'] = TodoList.objects.filter(profile__user=self.request.user).all()
 
-        context['form'] = TodoListForm()
+        if 'taskstatus' not in context:
+            context['taskstatus'] = TaskStatus
+
+        # if 'errors' not in context:
+        #     context['errors'] = {}
+        #
+        # if 'messages' not in context:
+        #     context['messages'] = []
+
+        # context['form'] = TodoListForm()
         return context
 
-    @method_decorator(sensitive_post_parameters)
-    def post(self, request, *args, **kwargs):
+    @method_decorator(sensitive_post_parameters())
+    def post(self, request, pk, *args, **kwargs):
         req = request.POST
-        pk = req.get('pk', None)        # id
+        # print(req)
         if pk is not None:
             pk = int(pk)
             name = req.get('name', None)
             value = req.get('value', None)
-            lst = TodoList.objects.get(id=pk)
-            setattr(lst, name, value)
-            lst.save(update_fields=[name, ])
+            if name == 'related_users':
+                value = ','.join(req.getlist('value[]', []))
+            if value is not None and value.strip() == '':
+                value = None
+            # print(name, '-', value)
+            try:
+                lst = TodoList.objects.get(id=pk)
+                setattr(lst, name, value)
+                lst.save(update_fields=[name, ])
+            except Exception as err:
+                log.exception(err)
+                return HttpResponseBadRequest(_('Bad Request. (name="%s", value="%s")' % (name, value)))
         return HttpResponse('')
 
 
@@ -158,11 +212,28 @@ class ProfileUsernamesJsonView(View):
 
     def get(self, request, *args, **kwargs):
         log.debug('%s %s' % (request, request.POST))
+
+        q = request.GET.get('q', '')
+        p = int(request.GET.get('p', 1))
+
+        # page = paginate(query, cur_page=p, entries_per_page=30)
+
+        # TODO: use ElasticSearch to optimize. DO not query database.
+        query = UserProfile.objects.exclude(username=UserProfile.get_sys_profile_username())\
+            .filter(Q(username__contains=q) | Q(name__contains=q))
+        query1 = SocialAccount.objects.filter(Q(account__contains=q))
+
         usernames = []
-        for uname in UserProfile.objects.values_list('username', flat=True):
+        for rec in query.values_list('username', 'name'):
             usernames.append({
-                "id": uname,
-                "text": uname
+                "id": rec[0],
+                "text": rec[1] + ' (' + rec[0] + ')' if rec[1] else rec[0]
+            })
+
+        for rec in query1.values_list('account', 'name', 'platform'):
+            usernames.append({
+                "id": '[' + rec[2] + ']' + rec[0],
+                "text": SocialPlatform.get_text(rec[2]) + ':' + (rec[1] + ' (' + rec[0] + ')' if rec[1] and rec[1] != rec[0] else rec[0])
             })
         return JsonResponse(usernames, safe=False)
 
@@ -265,17 +336,18 @@ class SocialView(TemplateView):
                     # tokens.update(request_token)
                     try:
                         acc = self.update_twitter_account(tokens=tokens, profile=profile, commit=True)
-                    except AssertionError:
+                    except AssertionError as err:
+                        log.exception(err)
                         resp = HttpResponse(_('Conflict. This social account is linked with another user.'), status=409)
                         return resp
 
                     if acc:
+                        self.combine_profile_with_twitter_account(profile=profile, social_account=acc)
                         # acc.save()
-                        log.debug('Social account %s is saved.' % acc)
+                        log.debug('Social account %s is updated.' % acc)
                     else:
                         # TODO: change response and text
                         return HttpResponseNotAllowed(_('Fail to link'))
-                    # self.combine_profile_with_twitter_account(acc)
 
         elif platform == SocialPlatform.FACEBOOK:
             raise NotImplementedError
@@ -426,22 +498,21 @@ class SocialView(TemplateView):
 
             return acc
 
-    def combine_profile_with_twitter_account(self, profile, account):
-        try:
-            fake_profile = UserProfile.objects.get(username=account.account)
-        except UserProfile.DoesNotExist:
-            return
+    def combine_profile_with_twitter_account(self, profile, social_account):
+        acc = social_account
+        sys_profile = UserProfile.get_sys_profile()
+        # sys_todolist = TodoList.get_default(profile=sys_profile)
+        default_todolist = TodoList.get_default(profile=profile)
+        default_wishlist = WishList.get_default(profile=profile)
 
+        if acc.profile != profile:
+            acc.profile = profile
+            acc.save()
         # TODO: investigate the performance.
-        TodoList.objects.filter(profile=fake_profile).update(profile=profile)
-        Todo.objects.filter(profile=fake_profile).update(profile=profile)
-        WishList.objects.filter(profile=fake_profile).update(profile=profile)
-        Wish.objects.filter(profile=fake_profile).update(profile=profile)
-        # Appointment.objects.filter(profile=fake_profile).update(profile=profile)
-        assert len(Config.objects.filter(profile=fake_profile)) == 0
-        assert len(SocialAccount.objects.filter(profile=fake_profile)) == 0
+        # Todo.objects.filter(profile=sys_profile, social_account=acc, list=sys_todolist).update(profile=profile, list=default_list)
+        Todo.objects.filter(profile=sys_profile, social_account=acc).update(profile=profile, list=default_todolist)
+        Wish.objects.filter(profile=sys_profile, social_account=acc).update(profile=profile, list=default_wishlist)
 
-        fake_profile.delete()
 
 class IndexView(TemplateView):
 
@@ -460,11 +531,11 @@ class IndexView(TemplateView):
         dt = datetime.utcnow() - delta
         # context['profiles'] = UserProfile.objects.filter(user__date_joined__gt=dt).order_by('-user__date_joined')[:10]
 
+        sys_profile = UserProfile.get_sys_profile()
         profile_max = 10
-        context['profiles'] = UserProfile.objects.exclude(
-            username=UserProfile.get_sys_profile_username()).order_by('-id')[:profile_max]
+        context['profiles'] = UserProfile.objects.exclude(user=None).order_by('-id')[:profile_max]
         social_account_max = profile_max - len(context['profiles'])
-        context['social_accounts'] = SocialAccount.objects.order_by('-id')[:social_account_max]
+        context['social_accounts'] = SocialAccount.objects.filter(profile=sys_profile).order_by('-id')[:social_account_max]
 
         formatter = HtmlFormatter(encoding='utf-8', style='emacs', linenos=True)
         lexer = XmlLexer()
@@ -500,11 +571,10 @@ class HomeView(TemplateView):
 
         profile = self.request.user.profile
         accs = SocialAccount.objects.filter(profile=profile).values_list('platform')
-        print(accs)
 
         context['todolists'] = TodoList.objects.filter(profile=profile).all()
-        context['wishlists'] = Wish.objects.filter(Q(profile=profile) | Q(social_account__in=accs)).all()
-
+        context['wishlists'] = WishList.objects.filter(profile=profile).all()
+        # context['wishlists'] = Wish.objects.filter(Q(profile=profile) | Q(social_account__in=accs)).all()
         return context
 
     # def extend_wishlist(self, wishlist):

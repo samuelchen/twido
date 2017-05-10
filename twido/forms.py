@@ -16,6 +16,9 @@ UserMode = get_user_model()
 
 
 class UserProfileCreationForm(UserCreationForm):
+    """
+    Django User is used for authorization (login/logout/register). User.username will always set to User.email.
+    """
     email = forms.EmailField(
         label=_("email"),
         widget=forms.EmailInput,

@@ -14,9 +14,9 @@ from twido.utils import parse_datetime
 from django.utils.timezone import utc
 from django.db.utils import IntegrityError
 
-
 import abc
 import os
+import re
 import simplejson as json
 import requests
 try:
@@ -26,6 +26,39 @@ except ImportError:
 
 import logging
 log = logging.getLogger(__name__)
+
+re_hashtag = re.compile(r'(?P<hash>#(todo|wish))(\s|\Z)', re.IGNORECASE + re.MULTILINE)
+
+
+def test_re():
+    m = re_hashtag.search('''#Looking for something #todo while in #LasVegas
+    #partybus #trucklimo #limo #SUV #reserve one and have a
+    #goodtime https://t.co/qlBi4BAcXF''')
+    print(m)
+    print(m.groupdict()['hash'] if m else None)
+    print(m.group(0))
+    print(m.group(1))
+
+    m = re_hashtag.search('''#toDO RT HacksterPro... while in #LasVegas
+    #partybus #trucklimo #limo #SUV #reserve one and have a
+    #goodtime https://t.co/qlBi4BAcXF''')
+    print(m)
+    print(m.groups() if m else None)
+
+    m = re_hashtag.search('''HacksterPro... while in #LasVegas
+    #partybus #trucklimo #limo #SUV #reserve one and have a
+    #goodtime https://t.co/qlBi4BAcXF blabla#WISH''')
+    print(m)
+    print(m.groups() if m else None)
+
+    m = re_hashtag.search('''HacksterPro... while in #LasVegas
+    #partybus #trucklimo #limo #SUV #reserve #WISHME one and have a
+    #goodtime https://t.co/qlBi4BAcXF blabla''')
+    print(m)
+    print(m.groups() if m else None)
+
+# test_re()
+# exit(0)
 
 
 class Parser(StorageMixin):
@@ -119,11 +152,22 @@ class Parser(StorageMixin):
             return False
 
         try:
-            if obj.text.find('#todo') > 0:
-                task = Todo()
-                task.profile = UserProfile.get_sys_profile()
+            m = re_hashtag.search(obj.text)
+            if m:
+                hashtag = m.groupdict()['hash'].lower()
+                if hashtag == '#todo':
+                    task = Todo()
+                    task.list = TodoList.get_default(acc.profile)
+                    task.deadline = None
+                elif hashtag == '#wish':
+                    task = Wish()
+                    task.list = WishList.get_default(acc.profile)
+                else:
+                    raise AssertionError('re_hashtag is not correct %s. \n %s' % (m, obj.text))
+
+                task.profile = acc.profile
                 task.social_account = acc
-                task.status = status
+                task.raw = status
                 if isinstance(obj.created_at, str):
                     task.created_at = parse_datetime(obj.created_at).replace(tzinfo=utc)
                 else:
@@ -131,22 +175,6 @@ class Parser(StorageMixin):
                 task.title = obj.text
                 task.text = obj.text
                 task.content = text
-                task.deadline = None
-                task.list = TodoList.get_default(acc.profile)
-                task.save()
-            elif obj.text.find('#wish') > 0:
-                task = Wish()
-                task.profile = UserProfile.get_sys_profile()
-                task.social_account = acc
-                task.status = status
-                if isinstance(obj.created_at, str):
-                    task.created_at = parse_datetime(obj.created_at).replace(tzinfo=utc)
-                else:
-                    task.created_at = obj.created_at.replace(tzinfo=utc)
-                task.title = obj.text
-                task.text = obj.text
-                task.content = text
-                task.list = WishList.get_default(acc.profile)
                 task.save()
             else:
                 log.info('IGNORED due to no hash tags. %s' % status)

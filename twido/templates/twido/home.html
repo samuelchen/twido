@@ -12,7 +12,7 @@
 
     <div class="container-fluid container-responsive">
 
-        {% include 'includes/blank-div-row.html' %}
+{#        {% include 'includes/blank-div-row.html' %}#}
 
 {#        <div class="page-header">#}
 {#            <div class="row">#}
@@ -76,10 +76,10 @@
 {#                                            <p class="list-group-item-text">Donec id elit non mi porta gravida at eget#}
 {#                                                metus. Maecenas sed diam eget risus varius blandit.</p>#}
 {#                                        </a>#}
-                                        {% for todo in lst.todo_set.all %}
+                                        {% for task in lst.todo_set.all %}
                                             <li class="list-group-item">
-{#                                                <h4 class="list-group-item-heading">{{ todo.profile.get_name }}</h4>#}
-                                                <p class="list-group-item-text">{{ todo.title | url2link | safe }}</p>
+{#                                                <h4 class="list-group-item-heading">{{ task.profile.get_name }}</h4>#}
+                                                <p data-id="{{ task.id }}" class="list-group-item-text">{{ task.title | url2link | safe }}</p>
                                             </li>
                                         {% endfor %}
                                     </ul>

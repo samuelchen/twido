@@ -10,7 +10,7 @@
 
 {% block content %}
 
-    {% include 'includes/blank-div-row.html' %}
+{#    {% include 'includes/blank-div-row.html' %}#}
 
     <div class="bs-docs-section container container-responsive ">
 
@@ -70,7 +70,7 @@
                                 </div>
                             </div>
                             <div class="form-group {% if 'password2' in form.errors %}has-error{% endif %}">
-                                <label for="id_password2" class="col-lg-3 control-label">Password Confirmation *</label>
+                                <label for="id_password2" class="col-lg-3 control-label">Password (again) *</label>
 
                                 <div class="col-lg-9">
                                     <input class="form-control" id="id_password2" name="password2" required=""

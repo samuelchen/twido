@@ -10,11 +10,11 @@
 
     <div class="container-fluid container-responsive">
 
-        {% include 'includes/blank-div-row.html' %}
+{#        {% include 'includes/blank-div-row.html' %}#}
 
         <div class="row">
             <!-- left col -->
-            <div class="col-lg-3">
+            <div class="col-lg-3 col-md-3">
                 <div class="bs-component">
                     <div class="list-group">
                         <a href="#" class="list-group-item">
@@ -25,41 +25,44 @@
                         {% endfor %}
                     </div>
                 </div>
-                <a href="#" id="btn-create" class="btn btn-default"><i class="glyphicon glyphicon-file small"></i>
-                    Create</a>
-                <a href="#" id="btn-edit" class="btn btn-default"><i class="glyphicon glyphicon-edit small"></i>
-                    Edit</a>
-
+                <div class="bs-component">
+                    <a href="#" id="btn-create" class="btn btn-default"><i class="glyphicon glyphicon-file small"></i>
+                        Create</a>
+                    <a href="#" id="btn-edit" class="btn btn-default"><i class="glyphicon glyphicon-edit small"></i>
+                        Edit</a>
+                </div>
             </div>
 
             <!-- main col -->
-            <div class="col-lg-8">
+            <div class="col-lg-8 col-md-8">
 
                 <div class="row">
 
                     <div class="bs-component">
                         <h2 id="listname" class="text-center">{{ thelist.name | upper }}</h2>
 
-                        <div class="panel bs-component">
+                        <div class="panel">
 
-                            {% if form.errors %}
-                                <div class="bs-component">
-                                    <div class="alert alert-dismissible alert-danger">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        <strong>Oops!</strong>
-                                        {% for err in form.errors.values %}{{ err }}{% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
+                            {% include 'includes/message.html' %}
+
+{#                            {% if form.errors %}#}
+{#                                <div class="bs-component">#}
+{#                                    <div class="alert alert-dismissible alert-danger">#}
+{#                                        <button type="button" class="close" data-dismiss="alert">×</button>#}
+{#                                        <strong>Oops!</strong>#}
+{#                                        {% for err in form.errors.values %}{{ err }}{% endfor %}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            {% endif %}#}
 
                             <form class="form-horizontal" method="post" action="{% url 'todolist' thelist.id %}">
                                 {% csrf_token %}
                                 <fieldset>
-                                    {#                                <legend class="edit">{{ thelist.name }}</legend>#}
+{#                                    <legend class="edit">{{ thelist.name }}</legend>#}
 
                                     <!-- name -->
                                     <div class="form-group">
-                                        <label for="name" class="col-lg-2 control-label">Name</label>
+                                        <label for="name" class="col-lg-2 control-label">List Name</label>
 
                                         <div class="col-lg-10">
                                             <span id="name" data-type="text" data-pk="{{ thelist.id }}"
@@ -76,55 +79,50 @@
                                         <div class="col-lg-10">
                                             <span id="reminder" data-type="datetime" data-pk="{{ thelist.id }}"
                                                   data-url="{{ request.path }}">{{ thelist.reminder | default_if_none:'' }}</span>
+{#                                            <span class="help-block">The time to remind me.</span>#}
                                         </div>
                                     </div>
 
                                     <!-- related users -->
                                     <div class="form-group">
-                                        <label for="related_users" class="col-lg-2 control-label">Related</label>
+                                        <label for="related_users" class="col-lg-2 control-label">Related Persons</label>
 
                                         <div class="col-lg-10">
                                             <span id="related_users" data-type="select2" data-pk="{{ thelist.id }}"
                                                   data-url="{{ request.path }}"
                                                   data-value="{{ thelist.related_users | default_if_none:'' }}">
                                                 {{ thelist.related_users | default_if_none:'' }}</span>
-                                            {#                                        <input class="form-control edit" id="id_related_edit" name="related"#}
-                                            {#                                               placeholder="related users (comma separated)" type="text">#}
-                                            {#                                        <select multiple="" id="id_related_edit" name="related" class="form-control">#}
-                                            {#                                            {% for uname in thelist.get_related_usernames %}#}
-                                            {#                                            <option>{{ uname }}</option>#}
-                                            {#                                            {% endfor %}#}
-                                            {#                                        </select>#}
-                                            {#                                            <ul class="list-inline" id="id_related_edit">#}
-                                            {#                                                {% for profile in thelist.get_related_profiles %}#}
-                                            {#                                                <li><img src="{{ profile.get_img_url }}" class="avatar img-cycle" /></li>#}
-                                            {#                                                {% endfor %}#}
-                                            {#                                            </ul>#}
+{#                                            <ul class="list-inline" id="id_related_edit">#}
+{#                                                {% for profile in thelist.get_related_profiles %}#}
+{#                                                <li><img src="{{ profile.get_img_url }}" class="avatar img-cycle" /></li>#}
+{#                                                {% endfor %}#}
+{#                                            </ul>#}
+{#                                            <span class="help-block">Related persons.</span>#}
+
                                         </div>
                                     </div>
 
                                     <!-- long text -->
                                     <div class="form-group">
-                                        <label for="text" class="col-lg-2 control-label">Text</label>
+                                        <label for="text" class="col-lg-2 control-label">Description</label>
 
                                         <div class="col-lg-10">
                                             <span id="text" data-type="textarea" data-pk="{{ thelist.id }}"
                                                   data-url="{{ request.path }}">{{ thelist.text | default_if_none:'' }}</span>
-                                            {#                                        <textarea class="form-control edit" id="id_text_edit" name="text">{{ thelist.text }}</textarea>#}
-                                            {#                                        <span class="help-block">A longer block of help text that breaks onto a new line and may extend beyond one line.</span>#}
+{#                                            <span class="help-block">Long description.</span>#}
                                         </div>
 
                                     </div>
 
                                     <!-- form buttons -->
-                                    <div class="form-group edit">
-                                        <div class="col-lg-10 col-lg-offset-2">
-                                            <button id="btn-cancel" type="reset" class="btn btn-default">Cancel</button>
-                                            <button id="btn-submit" type="submit" class="btn btn-primary">Submit
-                                            </button>
-                                            <input id="id_list_id" type="hidden" name="id" value="{{ thelist.id }}"/>
-                                        </div>
-                                    </div>
+{#                                    <div class="form-group edit">#}
+{#                                        <div class="col-lg-10 col-lg-offset-2">#}
+{#                                            <button id="btn-cancel" type="reset" class="btn btn-default">Cancel</button>#}
+{#                                            <button id="btn-submit" type="submit" class="btn btn-primary">Submit#}
+{#                                            </button>#}
+{#                                            <input id="id_list_id" type="hidden" name="id" value="{{ thelist.id }}"/>#}
+{#                                        </div>#}
+{#                                    </div>#}
 
                                 </fieldset>
                             </form>
@@ -133,36 +131,31 @@
                     </div>
 
 
-                    <div class="row">
-                        <div class="bs-component">
-                            <div class="list-group">
-                                <ul>
-                                    {% for todo in page %}
-                                        <li class="list-group-item">
-                                            {#                                                <h4 class="list-group-item-heading">{{ todo.profile.get_name }}</h4>#}
-                                            <p class="list-group-item-text">{{ todo.title | url2link | safe }}</p>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                    <div class="bs-component">
+                        <div class="list-group">
+                            <ul>
+                                {% for todo in page %}
+                                    <li data-id="{{ todo.id }}" class="list-group-item">
+                                        <ul class="list-inline">
+                                            <li><span name="status" title="{{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
+                                                  data-url="{% url 'todo' todo.id %}"><i class="glyphicon small {{ todo.get_status_glyphicon }}"></i></span></li>
+                                            <li>{{ todo.title | url2link | safe }}</li>
+                                            <li><span name="labels" title="{{ todo.get_status_text }}" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
+                                                  data-url="{% url 'todo' todo.id %}">{{ todo.labels| default_if_none:'' }}</span></li>
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
+                    </div>
 
-                        <div class="bs-component text-center">
-                            {% include 'includes/paginatition.html' %}
-                        </div>
+                    <div class="bs-component text-center">
+                        {% include 'includes/paginatition.html' %}
                     </div>
 
 
                 </div>
             </div>
-
-            <!-- right col -->
-            {#            <div class="col-lg-2">#}
-            {#                <div class="bs-component small">#}
-            {##}
-            {#                </div>#}
-            {#            </div>#}
-
 
         </div>
 
@@ -173,42 +166,12 @@
 {% block script %}
 
     <script type="text/javascript" language="JavaScript">
-        {#        disp();#}
-        {##}
-        {#        function edit(){#}
-        {#            $(".disp").hide();#}
-        {#            $(".edit").show();#}
-        {#        };#}
-        {#        function disp(){#}
-        {#            $(".disp").show();#}
-        {#            $(".edit").hide();#}
-        {#        };#}
-        {##}
-        {#        $("#btn-edit").click(function(e){#}
-        {#            $("#id_reminder_edit").val('{{ thelist.reminder }}');#}
-        {#            $("#id_related_edit").val('{{ thelist.related }}');#}
-        {#            $("#id_text_edit").val('{{ thelist.text }}');#}
-        {#            $("#id_list_id").val('{{ thelist.id }}');#}
-        {#            edit();#}
-        {#        });#}
-        {##}
-        {#        $("#btn-cancel").click(function(e){#}
-        {#            disp();#}
-        {#        });#}
-        {##}
-        {#        $("#btn-create").click(function(e){#}
-        {#            $("#id_reminder_edit").val('');#}
-        {#            $("#id_related_edit").val('');#}
-        {#            $("#id_text_edit").val('');#}
-        {#            $("#id_list_id").val('');#}
-        {#            edit();#}
-        {#        });#}
 
         // ----------------------
-{#        $.fn.editable.defaults.mode = 'inline';#}
-{#        $.fn.editable.defaults.showbuttons = false;#}
-{#        $.fn.editable.defaults.onblur = 'submit';#}
-        {#    $.fn.editable.defaults.ajaxOptions = {type: "PUT"};#}
+        $.fn.editable.defaults.mode = 'inline';
+        $.fn.editable.defaults.showbuttons = false;
+        $.fn.editable.defaults.onblur = 'submit';
+
         $(document).ready(function () {
 
             $('#name').editable({
@@ -220,72 +183,58 @@
             });
 
             $('#related_users').editable({
-                {#            mode: 'popup',#}
-                {#            placement: 'right',#}
-                showbuttons: true,
-                source: '/json/usernames/',
                 select2: {
-                    url: '/json/usernames/',
                     width: '200px',
                     tags: 'true',
-                    placeholder: 'Select related users',
+                    allowClear: true,
+                    placeholder: 'related users',
                     minimumInputLength: 2,
-                    multiple: 'true'
-                }
+                    delay: 250
+                },
+{#                mode: 'popup',#}
+{#                placement: 'right',#}
+{#                showbuttons: true,#}
+{#                source: '/json/usernames/',#}
 {#                select2: {#}
+{#                    width: '200px',#}
 {#                    tags: 'true',#}
-{#                    width: '230px',#}
+{#                    allowClear: true,#}
+{#                    placeholder: 'related users',#}
+{#                    minimumInputLength: 2,#}
+{#                    delay: 250,#}
+{#                    multiple: 'true',#}
 {#                    ajax: {#}
-{#                        type: 'GET',#}
-{#                        url: 'http://localhost:8000/json/usernames/',#}
-{#                        dataType: 'json',#}
-{#                        delay: 250,#}
-{#                        data: function (term, page) {#}
-{#                            console.log('data:'+term);#}
-{#                            return { query: term };#}
-{#                        },#}
+{#                        url: '/json/usernames/',#}
 {#                        results: function (data, page) {#}
-{#                            console.log('results:'+data);#}
+{#                            console.log('results: ' + data[0]);#}
 {#                            return {#}
 {#                                results: data#}
 {#                            };#}
 {#                        },#}
-{#                        formatResult: function (employee) {#}
-{#                            console.log('formtResult:' + employee);#}
-{#                            return employee.EmployeeName;#}
-{#                        },#}
-{#                        formatSelection: function (employee) {#}
-{#                            console.log('formatSelection:' + employee);#}
-{#                            return employee.EmployeeName;#}
-{#                        },#}
-{#                        initSelection: function (element, callback) {#}
-{#                            console.log('initSelection:' + employee);#}
-{#                            return $.get('/EmployeeLookupById', {query: element.val()}, function (data) {#}
-{#                                callback(data);#}
-{#                            }, 'json'); //added dataType#}
+{#                        data: function (term, page, context) {#}
+{#                            console.log('data:' + term);#}
+{#                            var queryParameters = {#}
+{#                                q: term,#}
+{#                                p: page#}
+{#                            };#}
+{##}
+{#                            return queryParameters;#}
 {#                        }#}
-{#                    },#}
-{#                    placeholder: 'Select related users',#}
-{#                    minimumInputLength: 2,#}
-{#                    multiple: 'true'#}
-{#                }#}
-                {#            success: function (response, newValue) {#}
-                {#                if (response.status == 'error') return response.msg; //msg will be shown in editable form#}
-                {#            }#}
-            }).on('save', function (e, params) {
-            });
 
-            {#        $('#related_users').select2({#}
-            {#            tags: "true",#}
-            {#            data: ['aaa', 'bbb', 'ccc'],#}
-            {#            multiple: "true"#}
-            {#        });#}
+{#                    }#}
+{#                },#}
+                success: function (response, newValue) {
+                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
+                }
+            }).on('save', function (e, params) {
+                $("#related_users").text(params.newValue);
+            });
 
             $('#reminder').editable({
                 mode: 'popup',
                 placement: 'right',
-                format: 'yyyy-mm-dd hh:ii',
-                viewformat: 'dd/mm/yyyy hh:ii',
+{#                format: 'yyyy-mm-dd hh:ii',#}
+{#                viewformat: 'dd/mm/yyyy hh:ii',#}
                 datetimepicker: {
                     weekStart: 1
                 },
@@ -295,6 +244,48 @@
             });
 
             $('#text').editable({
+                success: function (response, newValue) {
+                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
+                }
+            });
+
+            $('[name="status"]').tooltip().editable({
+                escape: false,
+                source : [
+                    {% for value, text in taskstatus.Choices %}
+                        {value: {{ value }}, text: "{{ text }}" },
+                    {% endfor %}
+                ],
+                display: function(value) {
+                    {# keep for icon display rendering #}
+                },
+                success: function (response, newValue) {
+                    if (response.status == 'error')
+                        return response.msg; //msg will be shown in editable form
+                }
+            }).on('save', function (e, params) {
+                console.log(params);
+                console.log(e);
+                $(this).html('<i class="glyphicon ' + params.response.glyphicon + '"></i>');
+                $(this).attr("title", params.response.text);
+
+            });
+
+
+            $('[name="labels"]').editable({
+                escape: false,
+                select2: {
+                    width: '200px',
+                    tags: 'true',
+                    allowClear: true,
+                    placeholder: 'labels',
+                    minimumInputLength: 2,
+                    delay: 250
+                },
+{#                display: function (value) {#}
+{#                    console.log('display: ' + value);#}
+{#                    return '<span class="label label-default">' + value + '</span>';#}
+{#                },#}
                 success: function (response, newValue) {
                     if (response.status == 'error') return response.msg; //msg will be shown in editable form
                 }

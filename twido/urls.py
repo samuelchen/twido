@@ -46,11 +46,11 @@ urlpatterns = [
     url(r'^todolist/(?P<pk>[0-9]+)/$', view.TodoListView.as_view(template_name=t('todolist.html')), name='todolist'),
 
     url(r'^todo/create/$', view.TodoCreateView.as_view(template_name=t('todo-create.html')), name='todo-create'),
-    url(r'^todo/(?P<pk>[0-9]+)/$', view.TodoUpdateView.as_view(template_name=t('todo.html')), name='todo'),
+    url(r'^todo/(?P<pk>[0-9]+)/$', view.TodoView.as_view(template_name=t('todo.html')), name='todo'),
 
     url(r'^json/usernames/$', view.ProfileUsernamesJsonView.as_view()),
 
-    url(r'^', include('user.urls')),
+    # url(r'^', include('user.urls')),
 
 ]
 

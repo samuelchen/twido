@@ -4,7 +4,7 @@
 
 {% block content %}
 
-    {% include 'includes/blank-div-row.html' %}
+{#    {% include 'includes/blank-div-row.html' %}#}
 
     <div class="bs-docs-section container container-responsive ">
         {% if request.user.is_authenticated %}
@@ -36,10 +36,10 @@
                         <fieldset>
                             <legend>Login</legend>
                             <div class="form-group">
-                                <label for="id_username" class="col-lg-2 control-label">Email (username)</label>
+                                <label for="id_username" class="col-lg-2 control-label">Email</label>
 
                                 <div class="col-lg-10">
-                                    <input class="form-control" id="id_username" placeholder="User screen name"
+                                    <input class="form-control" id="id_username" placeholder="User email"
                                            autofocus="" maxlength="254" name="username" required="" type="text">
                                 </div>
                             </div>
@@ -60,8 +60,8 @@
 
                             <div class="form-group">
                                 <div class="col-lg-10 col-lg-offset-2">
-                                    <button type="reset" class="btn btn-default">Cancel</button>
                                     <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="reset" class="btn btn-default">Cancel</button>
                                     <input type="hidden" name="next" value="{{ next }}"/>
                                 </div>
                             </div>
@@ -70,7 +70,7 @@
                     </form>
                     <div>
                         {# Assumes you setup the password_reset view in your URLconf #}
-                        <p><a href="{% url 'register' %}">Register</a> | <a href="{% url 'password_reset' %}">Lost
+                        <p><a href="{% url 'register' %}">Sign up</a> | <a href="{% url 'password_reset' %}">Lost
                             password?</a></p>
 
                     </div>
