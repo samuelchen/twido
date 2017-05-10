@@ -8,7 +8,7 @@
 
 {% block content %}
 
-    <div class="container-fluid container-responsive">
+    <div class="bs-docs-section container-fluid container-responsive">
 
 {#        {% include 'includes/blank-div-row.html' %}#}
 
@@ -21,7 +21,8 @@
                             <h4 class="list-group-item-heading">Todo Lists</h4>
                         </a>
                         {% for lst in todolists %}
-                            <a href="{% url 'todolist' lst.id %}" class="list-group-item">{{ lst.name }}</a>
+                            <a href="{% url 'todolist' lst.id %}" class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">{{ lst.name }}
+                                <span class="badge">{{ lst.todo_set.count }}</span></a>
                         {% endfor %}
                     </div>
                 </div>
@@ -39,7 +40,7 @@
                 <div class="row">
 
                     <div class="bs-component">
-                        <h2 id="listname" class="text-center">{{ thelist.name | upper }}</h2>
+{#                        <h2 id="listname" class="text-center">{{ thelist.name | upper }}</h2>#}
 
                         <div class="panel">
 
@@ -137,10 +138,13 @@
                                 {% for todo in page %}
                                     <li data-id="{{ todo.id }}" class="list-group-item">
                                         <ul class="list-inline">
-                                            <li><span name="status" title="{{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
-                                                  data-url="{% url 'todo' todo.id %}"><i class="glyphicon small {{ todo.get_status_glyphicon }}"></i></span></li>
-                                            <li>{{ todo.title | url2link | safe }}</li>
-                                            <li><span name="labels" title="{{ todo.get_status_text }}" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
+                                            <li><span title="{{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
+                                                  data-url="{% url 'todo' todo.id %}"><i class="{{ todo.get_status_glyphicon }}"></i></span></li>
+                                            <li><span title="Deadline" class="small" data-name="deadline" data-type="datetime" data-pk="{{ todo.id }}"
+                                                  data-url="{% url 'todo' todo.id %}">{{ todo.deadline |default_if_none:'...' }}</span></li>
+                                            <li><span data-name="title" data-type="text" data-pk="{{ todo.id }}"
+                                                  data-url="{% url 'todo' todo.id %}">{{ todo.title | url2link }}</span></li>
+                                            <li><span title="Labels" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.labels| default_if_none:'' }}</span></li>
                                         </ul>
                                     </li>
@@ -179,7 +183,7 @@
                     if (response.status == 'error') return response.msg; //msg will be shown in editable form
                 }
             }).on('save', function (e, params) {
-                $("#listname").text(params.newValue);
+{#                $("#listname").text(params.newValue);#}
             });
 
             $('#related_users').editable({
@@ -233,6 +237,7 @@
             $('#reminder').editable({
                 mode: 'popup',
                 placement: 'right',
+                allowClear: 'true',
 {#                format: 'yyyy-mm-dd hh:ii',#}
 {#                viewformat: 'dd/mm/yyyy hh:ii',#}
                 datetimepicker: {
@@ -244,53 +249,95 @@
             });
 
             $('#text').editable({
+                rows: 4,
+                tpl: "<textarea style='width: 400px'></textarea>",
                 success: function (response, newValue) {
                     if (response.status == 'error') return response.msg; //msg will be shown in editable form
                 }
             });
 
-            $('[name="status"]').tooltip().editable({
+            $('span[data-name="status"]').tooltip().editable({
                 escape: false,
                 source : [
                     {% for value, text in taskstatus.Choices %}
                         {value: {{ value }}, text: "{{ text }}" },
                     {% endfor %}
                 ],
-                display: function(value) {
-                    {# keep for icon display rendering #}
+                display: function(value, resp) {
+                    {# Do nothing. Keep for icon display rendering #}
                 },
                 success: function (response, newValue) {
                     if (response.status == 'error')
                         return response.msg; //msg will be shown in editable form
                 }
             }).on('save', function (e, params) {
-                console.log(params);
-                console.log(e);
-                $(this).html('<i class="glyphicon ' + params.response.glyphicon + '"></i>');
-                $(this).attr("title", params.response.text);
-
+                $(this).html('<i class="' + params.response.status_icon_class + '"></i>')
+                        .attr("data-original-title", params.response.status_text)
+                        .tooltip("show");
             });
 
 
-            $('[name="labels"]').editable({
-                escape: false,
+            $('span[data-name="labels"]').tooltip().editable({
+                showbuttons: 'true',
                 select2: {
                     width: '200px',
                     tags: 'true',
-                    allowClear: true,
-                    placeholder: 'labels',
+                    allowClear: 'true',
+                    placeholder: 'enter labels',
+                    multiple: 'true',
                     minimumInputLength: 2,
-                    delay: 250
+                    delay: 250,
+                    initSelection: function(option, callback) {
+                        var origin = option.closest("li").find("span[data-name='labels']").children();//.text().trim().split(/\s|,/);
+                        var data = [];
+                        $(origin).each(function(){
+                            var t = $(this).text();
+                            data.push({
+                                id: t,
+                                text: t
+                            });
+                        });
+                        callback(data);
+                    }
                 },
-{#                display: function (value) {#}
-{#                    console.log('display: ' + value);#}
-{#                    return '<span class="label label-default">' + value + '</span>';#}
-{#                },#}
+                display: function (value, resp) {
+                    var target = $(this).closest("li").find("span[data-name='labels']");
+                    if (value && value.length) {
+                        var values = value.toString().split(',');
+                        var html = '';
+                        $(values).each(function () {
+                            html += '<span class="label label-default">' + this + '</span> ';
+                        });
+                        target.html(html);
+                    } else {
+                        target.html('<span class="label label-default">...</span>');
+                    }
+                },
                 success: function (response, newValue) {
                     if (response.status == 'error') return response.msg; //msg will be shown in editable form
                 }
-            }).on('save', function (e, params) {
             });
+
+
+            $('span[data-name="title"]').editable({
+{#                mode: 'popup',#}
+{#                placement: 'top',#}
+                tpl: "<input type='text' style='width: 400px'>",
+{#                showbuttons: true,#}
+                success: function (response, newValue) {
+                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
+                }
+            });
+
+            $('span[data-name="deadline"]').tooltip().editable({
+                mode: 'popup',
+                placement: 'right',
+                allowClear: 'true',
+                success: function (response, newValue) {
+                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
+                }
+            });
+
         });
     </script>
 {% endblock %}

@@ -14,6 +14,16 @@
                                             <span class="help-block small">{% trans 'Prefer display language and local formats.' %}</span>
                                         </div>
                                     </div>
+
+                                    <div class="form-group {% if 'theme' in errors %}has-error{% endif %}">
+                                        <label for="id_theme" class="col-lg-3 control-label">{% trans 'Theme' %}</label>
+
+                                        <div class="col-lg-9">
+                                            <span class="form-control editable" id="id_theme" data-type="select" data-name="theme" data-pk="{{ conf.theme.id }}" ></span>
+{#                                            <span class="help-block small">{% trans 'Perfered theme.' %}</span>#}
+                                        </div>
+                                    </div>
+
                                 </fieldset>
                                 <script language="JavaScript" type="text/javascript">
                                     languages = [
@@ -27,8 +37,6 @@
                                         source: languages,
                                         success: function (response, newValue) {
                                             if (response.status == "error") {
-                                                console.write(response.msg);
-                                                //msg will be shown in editable form
                                                 return response.msg;
                                             }
                                         }
@@ -37,5 +45,24 @@
 {#                                        $("#id_lang").val(params.newValue);#}
 {#                                    });#}
 
+
+                                    themes = [
+{#                                        {value: "simplex", text: "simplex"},#}
+{#                                        {value: "readable", text: "readable"},#}
+{#                                        {value: "flatly", text: "flatly"}#}
+                                        {% for theme in themes %}
+                                        {value: "{{ theme.0 }}", text: "{{ theme.1 }}"},
+                                        {% endfor %}
+                                    ];
+                                    $('#id_theme').editable({
+                                        url: "{% url 'setting' %}",
+                                        value: "{{ conf.theme.value }}",
+                                        source: themes,
+                                        success: function (response, newValue) {
+                                            if (response.status == "error") {
+                                                return response.msg;
+                                            }
+                                        }
+                                    });
                                 </script>
 <!-- END general setting -->

@@ -49,8 +49,8 @@
 
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-expanded="false">
-                                <img class="img-circle avatar-sm pull-left" src="{{ request.user.profile.get_img_url }}">
-                                 {{ request.user.profile.get_name | capfirst }} <i class="caret"></i>
+                                <img class="img-circle avatar " src="{{ request.user.profile.get_img_url }}">
+                                <span> {{ request.user.profile.get_name | capfirst }} <i class="caret"></i> </span>
                             </a>
 
                             <ul class="dropdown-menu" role="menu">

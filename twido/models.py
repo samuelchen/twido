@@ -335,6 +335,7 @@ class TaskStatus(object):
     STARTED = 1
     PAUSED = 2
     DONE = 9
+    OVERTIME = 10
     CANCEL = -1
     _text = {
         NEW: 'New',
@@ -342,35 +343,29 @@ class TaskStatus(object):
         PAUSED: 'Paused',
         DONE: 'Done',
         CANCEL: 'Cancelled',
+        OVERTIME: 'Overtime',
     }
     _glyphicons = {
-        NEW: 'glyphicon-unchecked',
-        STARTED: 'glyphicon-play',
-        PAUSED: 'glyphicon-pause',
-        DONE: 'glyphicon-check',
-        CANCEL: 'glyphicon-remove',
+        NEW: 'glyphicon glyphicon-unchecked text-primary',
+        STARTED: 'glyphicon glyphicon-play text-info',
+        PAUSED: 'glyphicon glyphicon-pause text-info',
+        DONE: 'glyphicon glyphicon-check text-success',
+        CANCEL: 'glyphicon glyphicon-remove text-muted',
+        OVERTIME: 'glyphicon glyphicon-exclamation-sign text-danger',
     }
     Choices = _text.items()
     GlyphIcons = _glyphicons.items()
 
     @classmethod
     def get_text(cls, status):
-        assert -1 <= status <= 9
+        assert -1 <= status <= 10
         return cls._text[status]
 
     @classmethod
     def get_glyphicon(cls, status):
-        assert -1 <= status <= 9
-        if status == cls.CANCEL:
-            return 'glyphicon-remove'
-        elif status == cls.DONE:
-            return 'glyphicon-check'
-        elif status == cls.STARTED:
-            return 'glyphicon-play'
-        elif status == cls.PAUSED:
-            return 'glyphicon-pause'
-        else:
-            return 'glyphicon-unchecked'
+        assert -1 <= status <= 10
+        return cls._glyphicons[status]
+
 
 class Task(ProfileBasedModel):
     """

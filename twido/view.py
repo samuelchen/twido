@@ -24,6 +24,7 @@ from django.contrib.auth import login
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.db.models import Q
+from django.views.generic.base import ContextMixin
 
 from .models import RawStatus
 from .models import Config
@@ -56,6 +57,8 @@ import simplejson as json
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
+from bootstrap_themes import list_themes
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -71,15 +74,28 @@ if __debug__ and settings.DEBUG:
         return render(request, t('test.html'))
 
 
-class TodoDetailView(DetailView):
+class BaseViewMixin(ContextMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseViewMixin, self).get_context_data(**kwargs)
+        if 'theme' not in context:
+            try:
+                profile = self.request.user.profile
+            except:
+                profile = UserProfile.get_sys_profile()
+            opt = Config.get_user_conf(profile, 'theme')
+            context['theme'] = opt.value if opt else 'flatly'
+        return context
+
+class TodoDetailView(DetailView, BaseViewMixin):
     model = Todo
 
-class TodoCreateView(CreateView):
+class TodoCreateView(CreateView, BaseViewMixin):
     model = Todo
     fields = ['title', 'profile', 'labels', 'text', 'list']
 
 
-class TodoView(DetailView):
+class TodoView(DetailView, BaseViewMixin):
     model = Todo
     fields = ['title', 'profile', 'labels', 'text', 'list']
 
@@ -108,21 +124,22 @@ class TodoView(DetailView):
                 return HttpResponseBadRequest(_('Bad Request. (name="%s", value="%s")' % (name, value)))
 
             data = {
-                'glyphicon': task.get_status_glyphicon(),
-                'text': task.get_status_text(),
-                'value': task.status
+                'status_icon_class': task.get_status_glyphicon(),
+                'status_text': task.get_status_text(),
+                'name': name,
+                'value': value
             }
             return JsonResponse(data)
         else:
             return HttpResponseBadRequest('Primary key is None')
 
 
-class TodoDeleteView(DeleteView):
+class TodoDeleteView(DeleteView, BaseViewMixin):
     model = Todo
     success_url = reverse_lazy('home')
 
 
-class TodoListView(DetailView):
+class TodoListView(DetailView, BaseViewMixin):
     model = TodoList
     context_object_name = 'thelist'
 
@@ -172,7 +189,7 @@ class TodoListView(DetailView):
 
 
 @method_decorator(login_required, 'dispatch')
-class ProfileView(TemplateView):
+class ProfileView(TemplateView, BaseViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
@@ -208,7 +225,7 @@ class ProfileView(TemplateView):
 
 #TODO: temp json view
 @method_decorator(login_required, 'dispatch')
-class ProfileUsernamesJsonView(View):
+class ProfileUsernamesJsonView(View, BaseViewMixin):
 
     def get(self, request, *args, **kwargs):
         log.debug('%s %s' % (request, request.POST))
@@ -239,7 +256,7 @@ class ProfileUsernamesJsonView(View):
 
 
 # @method_decorator(login_required, 'dispatch')
-class SettingView(TemplateView):
+class SettingView(TemplateView, BaseViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super(SettingView, self).get_context_data(**kwargs)
@@ -259,7 +276,10 @@ class SettingView(TemplateView):
         for acc in SocialAccount.objects.filter(profile=p).iterator():
             social_accounts[acc.platform] = acc
         context['social_accounts'] = social_accounts
-        print(social_accounts)
+        # print(social_accounts)
+
+
+        context['themes'] = list_themes()
 
         if 'errors' not in context:
             context['errors'] = {}
@@ -285,7 +305,7 @@ class SettingView(TemplateView):
         return HttpResponse('')
 
 
-class SocialView(TemplateView):
+class SocialView(TemplateView, BaseViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super(SocialView, self).get_context_data(**kwargs)
@@ -384,7 +404,7 @@ class SocialView(TemplateView):
                     if timezone.now() - acc.timestamp < timedelta(hours=3):
                         resp = HttpResponse(_('Too frequent (3 hours). Last update at %s.' % acc.timestamp), status=406)
                         return resp
-                    self.update_twitter_account(acc, commit=True)
+                    self.update_twitter_account(json.loads(acc.tokens), acc.profile, commit=True)
                     data = {'name': acc.name}
                     return JsonResponse(data)
                 except SocialAccount.DoesNotExist:
@@ -398,6 +418,7 @@ class SocialView(TemplateView):
             raise ValueError('%s is not a supported social platform' % social_platform)
 
         return HttpResponse('')
+
 
     def get_twitter_oauth_url(self, request):
         """
@@ -420,6 +441,7 @@ class SocialView(TemplateView):
             'auth_url': url
         }
         return data
+
 
     def get_twitter_access_token(self, request, request_token):
         """
@@ -452,6 +474,7 @@ class SocialView(TemplateView):
             access_secret = access_data[1]
 
         return access_token, access_secret
+
 
     def update_twitter_account(self, tokens, profile, commit=True):
         access_token = tokens['access_token']
@@ -514,7 +537,7 @@ class SocialView(TemplateView):
         Wish.objects.filter(profile=sys_profile, social_account=acc).update(profile=profile, list=default_wishlist)
 
 
-class IndexView(TemplateView):
+class IndexView(TemplateView, BaseViewMixin):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -565,7 +588,7 @@ class IndexView(TemplateView):
         return context
 
 
-class HomeView(TemplateView):
+class HomeView(TemplateView, BaseViewMixin):
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
 
@@ -615,6 +638,13 @@ def register(request):
         'form': form,
         'success': success
     }
+    if 'theme' not in context:
+        try:
+            profile = request.user.profile
+        except:
+            profile = UserProfile.get_sys_profile()
+        opt = Config.get_user_conf(profile, 'theme')
+        context['theme'] = opt.value if opt else 'flatly'
 
     if success and profile and profile.user and profile.user.is_active:
         login(request, profile.user)
@@ -633,6 +663,14 @@ def test(request, pk=None):
         context['user'] = 'staff'
     else:
         context['user'] = 'forbiden'
+
+    if 'theme' not in context:
+        try:
+            profile = request.user.profile
+        except:
+            profile = UserProfile.get_sys_profile()
+        opt = Config.get_user_conf(profile, 'theme')
+        context['theme'] = opt.value if opt else 'flatly'
     # context = {
     #     # "setting_keys": models.SETTING_NAMES,
     # }
