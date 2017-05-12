@@ -18,8 +18,8 @@
                 {# A dropdown menu on top nav bar #}
                 <div class="collapse navbar-collapse" id="bs-navbar-collapse-top">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">TodoList <span class="sr-only">(current)</span></a></li>
-                        <li><a href="#">WishList</a></li>
+                        <li class="active"><a href="{% url 'todolist' %}">Todos<span class="sr-only">(current)</span></a></li>
+                        <li><a href="{% url 'wishlist' %}">Wishes</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -29,11 +29,13 @@
                                 <li><a href="#">Something else here</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#">Separated link</a></li>
+                                {% if debug %}
                                 <li class="divider"></li>
-                                <li><a href="#">One more separated link</a></li>
+                                <li><a href="{% url 'test' %}">test</a></li>
+                                <li><a href="{% url 'test' 1 %}">test 1</a></li>
+                                {% endif %}
                             </ul>
                         </li>
-                        {% include 'includes/topnavbar-tests.html' %}
                     </ul>
                     {# search form in top nav bar #}
                     <form class="navbar-form navbar-left" role="search">

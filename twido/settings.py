@@ -29,7 +29,7 @@ if DEBUG:
     print('--- DEBUG MODE ---')
 
 
-ALLOWED_HOSTS = ['*'] if not DEBUG else []
+ALLOWED_HOSTS = [] if not DEBUG else ['192.168.0.*', 'localhost', '127.0.0.1', 'mwl2.com']
 
 
 # Application definition

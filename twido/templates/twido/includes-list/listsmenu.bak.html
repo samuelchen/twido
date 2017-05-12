@@ -1,0 +1,22 @@
+{# lists menu base template #}
+{# extends this to implement a menu of lists #}
+{# vars: thelist - current list to display #}
+{#       lists - query of all lists #}
+{#       list_type - 'todo', 'wish' or other. #}
+
+{% load i18n %}<!-- BEGIN lists menu -->
+
+                    <div class="list-group">
+                        <a href="{% block url_list_default %}{% endblock %}" class="list-group-item {% if thelist.is_default %}active{% endif %}">
+{#                            <span class="badge">{{ thelist.todo_set.count }}</span>#}
+                            <h4 class="list-group-item-heading">{% block list_title %}{% endblock %}</h4>
+                        </a>
+                        {% for lst in lists %}
+                            {% if not lst.is_default %}
+                            <a href="{% block url_list_with_pk %}{% endblock %}" class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">{{ lst.name }}
+                                <span class="badge">{% block task_count_of_list %}{% endblock %}</span></a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+<!-- END lists menu -->

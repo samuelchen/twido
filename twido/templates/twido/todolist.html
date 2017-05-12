@@ -1,9 +1,15 @@
-{% extends "base.html" %}{% load customer_tags %}
+{% extends "base.html" %}{% load customer_tags staticfiles %}
 
 {% block title %}Todo List{% endblock %}
 
 {% block head %}
+    <script language="JavaScript" src="{% static 'twido/js/bootstrap-confirmation.min.js' %}"></script>
     {% include 'includes/editable-head-ref.html' %}
+    <script language="JavaScript" type="text/javascript">
+        $.fn.editable.defaults.mode = 'inline';
+        $.fn.editable.defaults.showbuttons = false;
+        $.fn.editable.defaults.onblur = 'submit';
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -14,149 +20,43 @@
 
         <div class="row">
             <!-- left col -->
-            <div class="col-lg-3 col-md-3">
+            <div class="col-lg-3 col-md-3 col-sm-4">
                 <div class="bs-component">
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading">Todo Lists</h4>
-                        </a>
-                        {% for lst in todolists %}
-                            <a href="{% url 'todolist' lst.id %}" class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">{{ lst.name }}
-                                <span class="badge">{{ lst.todo_set.count }}</span></a>
-                        {% endfor %}
-                    </div>
+                    {% include 'twido/includes-list/todolists-menu.html' %}
                 </div>
+
                 <div class="bs-component">
-                    <a href="#" id="btn-create" class="btn btn-default"><i class="glyphicon glyphicon-file small"></i>
-                        Create</a>
-                    <a href="#" id="btn-edit" class="btn btn-default"><i class="glyphicon glyphicon-edit small"></i>
-                        Edit</a>
+                    <form id="id_form_action" action="{{ request.path }}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action">
+                        <div class="btn-group btn-group-justified btn-group-sm">
+                            {% if not thelist.is_default %}
+                            <a name="add" title="Create a new list" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> Create List</a>
+                            <a name="del" title="Delete current list" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> Delete List</a>
+                            {% endif %}
+{#                            <a name="add-todo" title="Add a task to current list" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> Create Todo</a>#}
+                        </div>
+                    </form>
                 </div>
             </div>
 
             <!-- main col -->
-            <div class="col-lg-8 col-md-8">
-
+            <div class="col-lg-8 col-md-8 col-sm-7">
                 <div class="row">
 
                     <div class="bs-component">
+
 {#                        <h2 id="listname" class="text-center">{{ thelist.name | upper }}</h2>#}
-
                         <div class="panel">
-
                             {% include 'includes/message.html' %}
+                            {% include 'twido/includes-list/todolist-form.html' %}
+                        </div>
 
-{#                            {% if form.errors %}#}
-{#                                <div class="bs-component">#}
-{#                                    <div class="alert alert-dismissible alert-danger">#}
-{#                                        <button type="button" class="close" data-dismiss="alert">×</button>#}
-{#                                        <strong>Oops!</strong>#}
-{#                                        {% for err in form.errors.values %}{{ err }}{% endfor %}#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            {% endif %}#}
-
-                            <form class="form-horizontal" method="post" action="{% url 'todolist' thelist.id %}">
-                                {% csrf_token %}
-                                <fieldset>
-{#                                    <legend class="edit">{{ thelist.name }}</legend>#}
-
-                                    <!-- name -->
-                                    <div class="form-group">
-                                        <label for="name" class="col-lg-2 control-label">List Name</label>
-
-                                        <div class="col-lg-10">
-                                            <span id="name" data-type="text" data-pk="{{ thelist.id }}"
-                                                  data-url="{{ request.path }}">
-                                                {{ thelist.name }}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- reminder -->
-                                    <div class="form-group">
-                                        <label for="reminder" class="col-lg-2 control-label">Reminder</label>
-
-                                        <div class="col-lg-10">
-                                            <span id="reminder" data-type="datetime" data-pk="{{ thelist.id }}"
-                                                  data-url="{{ request.path }}">{{ thelist.reminder | default_if_none:'' }}</span>
-{#                                            <span class="help-block">The time to remind me.</span>#}
-                                        </div>
-                                    </div>
-
-                                    <!-- related users -->
-                                    <div class="form-group">
-                                        <label for="related_users" class="col-lg-2 control-label">Related Persons</label>
-
-                                        <div class="col-lg-10">
-                                            <span id="related_users" data-type="select2" data-pk="{{ thelist.id }}"
-                                                  data-url="{{ request.path }}"
-                                                  data-value="{{ thelist.related_users | default_if_none:'' }}">
-                                                {{ thelist.related_users | default_if_none:'' }}</span>
-{#                                            <ul class="list-inline" id="id_related_edit">#}
-{#                                                {% for profile in thelist.get_related_profiles %}#}
-{#                                                <li><img src="{{ profile.get_img_url }}" class="avatar img-cycle" /></li>#}
-{#                                                {% endfor %}#}
-{#                                            </ul>#}
-{#                                            <span class="help-block">Related persons.</span>#}
-
-                                        </div>
-                                    </div>
-
-                                    <!-- long text -->
-                                    <div class="form-group">
-                                        <label for="text" class="col-lg-2 control-label">Description</label>
-
-                                        <div class="col-lg-10">
-                                            <span id="text" data-type="textarea" data-pk="{{ thelist.id }}"
-                                                  data-url="{{ request.path }}">{{ thelist.text | default_if_none:'' }}</span>
-{#                                            <span class="help-block">Long description.</span>#}
-                                        </div>
-
-                                    </div>
-
-                                    <!-- form buttons -->
-{#                                    <div class="form-group edit">#}
-{#                                        <div class="col-lg-10 col-lg-offset-2">#}
-{#                                            <button id="btn-cancel" type="reset" class="btn btn-default">Cancel</button>#}
-{#                                            <button id="btn-submit" type="submit" class="btn btn-primary">Submit#}
-{#                                            </button>#}
-{#                                            <input id="id_list_id" type="hidden" name="id" value="{{ thelist.id }}"/>#}
-{#                                        </div>#}
-{#                                    </div>#}
-
-                                </fieldset>
-                            </form>
-
+                        {% include 'twido/includes-list/todos.html' %}
+                        <div class="btn-group btn-group-justified btn-group-sm">
+                            <a name="add-todo" title="Add a task to current list" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> Create Todo</a>
                         </div>
                     </div>
-
-
-                    <div class="bs-component">
-                        <div class="list-group">
-                            <ul>
-                                {% for todo in page %}
-                                    <li data-id="{{ todo.id }}" class="list-group-item">
-                                        <ul class="list-inline">
-                                            <li><span title="{{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
-                                                  data-url="{% url 'todo' todo.id %}"><i class="{{ todo.get_status_glyphicon }}"></i></span></li>
-                                            <li><span title="Deadline" class="small" data-name="deadline" data-type="datetime" data-pk="{{ todo.id }}"
-                                                  data-url="{% url 'todo' todo.id %}">{{ todo.deadline |default_if_none:'...' }}</span></li>
-                                            <li><span data-name="title" data-type="text" data-pk="{{ todo.id }}"
-                                                  data-url="{% url 'todo' todo.id %}">{{ todo.title | url2link }}</span></li>
-                                            <li><span title="Labels" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
-                                                  data-url="{% url 'todo' todo.id %}">{{ todo.labels| default_if_none:'' }}</span></li>
-                                        </ul>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="bs-component text-center">
-                        {% include 'includes/paginatition.html' %}
-                    </div>
-
 
                 </div>
             </div>
@@ -169,175 +69,28 @@
 
 {% block script %}
 
+
     <script type="text/javascript" language="JavaScript">
-
-        // ----------------------
-        $.fn.editable.defaults.mode = 'inline';
-        $.fn.editable.defaults.showbuttons = false;
-        $.fn.editable.defaults.onblur = 'submit';
-
-        $(document).ready(function () {
-
-            $('#name').editable({
-                success: function (response, newValue) {
-                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
-                }
-            }).on('save', function (e, params) {
-{#                $("#listname").text(params.newValue);#}
-            });
-
-            $('#related_users').editable({
-                select2: {
-                    width: '200px',
-                    tags: 'true',
-                    allowClear: true,
-                    placeholder: 'related users',
-                    minimumInputLength: 2,
-                    delay: 250
-                },
-{#                mode: 'popup',#}
-{#                placement: 'right',#}
-{#                showbuttons: true,#}
-{#                source: '/json/usernames/',#}
-{#                select2: {#}
-{#                    width: '200px',#}
-{#                    tags: 'true',#}
-{#                    allowClear: true,#}
-{#                    placeholder: 'related users',#}
-{#                    minimumInputLength: 2,#}
-{#                    delay: 250,#}
-{#                    multiple: 'true',#}
-{#                    ajax: {#}
-{#                        url: '/json/usernames/',#}
-{#                        results: function (data, page) {#}
-{#                            console.log('results: ' + data[0]);#}
-{#                            return {#}
-{#                                results: data#}
-{#                            };#}
-{#                        },#}
-{#                        data: function (term, page, context) {#}
-{#                            console.log('data:' + term);#}
-{#                            var queryParameters = {#}
-{#                                q: term,#}
-{#                                p: page#}
-{#                            };#}
-{##}
-{#                            return queryParameters;#}
-{#                        }#}
-
-{#                    }#}
-{#                },#}
-                success: function (response, newValue) {
-                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
-                }
-            }).on('save', function (e, params) {
-                $("#related_users").text(params.newValue);
-            });
-
-            $('#reminder').editable({
-                mode: 'popup',
-                placement: 'right',
-                allowClear: 'true',
-{#                format: 'yyyy-mm-dd hh:ii',#}
-{#                viewformat: 'dd/mm/yyyy hh:ii',#}
-                datetimepicker: {
-                    weekStart: 1
-                },
-                success: function (response, newValue) {
-                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
-                }
-            });
-
-            $('#text').editable({
-                rows: 4,
-                tpl: "<textarea style='width: 400px'></textarea>",
-                success: function (response, newValue) {
-                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
-                }
-            });
-
-            $('span[data-name="status"]').tooltip().editable({
-                escape: false,
-                source : [
-                    {% for value, text in taskstatus.Choices %}
-                        {value: {{ value }}, text: "{{ text }}" },
-                    {% endfor %}
-                ],
-                display: function(value, resp) {
-                    {# Do nothing. Keep for icon display rendering #}
-                },
-                success: function (response, newValue) {
-                    if (response.status == 'error')
-                        return response.msg; //msg will be shown in editable form
-                }
-            }).on('save', function (e, params) {
-                $(this).html('<i class="' + params.response.status_icon_class + '"></i>')
-                        .attr("data-original-title", params.response.status_text)
-                        .tooltip("show");
-            });
+        $(".editable").addClass('no_underline').css("cursor", "pointer");
 
 
-            $('span[data-name="labels"]').tooltip().editable({
-                showbuttons: 'true',
-                select2: {
-                    width: '200px',
-                    tags: 'true',
-                    allowClear: 'true',
-                    placeholder: 'enter labels',
-                    multiple: 'true',
-                    minimumInputLength: 2,
-                    delay: 250,
-                    initSelection: function(option, callback) {
-                        var origin = option.closest("li").find("span[data-name='labels']").children();//.text().trim().split(/\s|,/);
-                        var data = [];
-                        $(origin).each(function(){
-                            var t = $(this).text();
-                            data.push({
-                                id: t,
-                                text: t
-                            });
-                        });
-                        callback(data);
-                    }
-                },
-                display: function (value, resp) {
-                    var target = $(this).closest("li").find("span[data-name='labels']");
-                    if (value && value.length) {
-                        var values = value.toString().split(',');
-                        var html = '';
-                        $(values).each(function () {
-                            html += '<span class="label label-default">' + this + '</span> ';
-                        });
-                        target.html(html);
-                    } else {
-                        target.html('<span class="label label-default">...</span>');
-                    }
-                },
-                success: function (response, newValue) {
-                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
-                }
-            });
+        var form_action = $("#id_form_action");
 
+        $("a.btn").tooltip({container: 'body'}).click(function(e){
+            var action = $(this).attr('name');
+            form_action.find("input[name='action']").val(action);
+            if ($.inArray(action, ['add', 'add-todo']) >= 0) form_action.submit();
+            // if action is "del", need to confirm (code below)
+        });
 
-            $('span[data-name="title"]').editable({
-{#                mode: 'popup',#}
-{#                placement: 'top',#}
-                tpl: "<input type='text' style='width: 400px'>",
-{#                showbuttons: true,#}
-                success: function (response, newValue) {
-                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
-                }
-            });
-
-            $('span[data-name="deadline"]').tooltip().editable({
-                mode: 'popup',
-                placement: 'right',
-                allowClear: 'true',
-                success: function (response, newValue) {
-                    if (response.status == 'error') return response.msg; //msg will be shown in editable form
-                }
-            });
-
+        form_action.find('a[name="del"]').confirmation({
+            onConfirm: function () {
+                form_action.submit();
+            },
+            html: 'true',
+            title: '<span class="text-danger">DANGER : Delete list "{{ thelist.name }}(id:{{ thelist.id }})" ?</span>'
+                        +'<p/><p class="small">All tasks in this list will be moved to default list',
+            placement: 'bottom'
         });
     </script>
 {% endblock %}

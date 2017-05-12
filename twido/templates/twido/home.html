@@ -28,25 +28,28 @@
             <!-- left col -->
             <div class="col-lg-3">
                 <div class="bs-component">
-                    <!-- wish list -->
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading">Wish Lists</h4>
-                        </a>
-                            {% for lst in wishlists %}
-                            <a href="#" class="list-group-item">{{ lst.name }}</a>
-                            {% endfor %}
-                    </div>
 
-                    <!-- todo list -->
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading">Todo Lists</h4>
-                        </a>
-                            {% for lst in todolists %}
-                            <a href="{% url 'todolist' lst.id %}" class="list-group-item">{{ lst.name }}</a>
-                            {% endfor %}
-                    </div>
+                    {% include 'twido/includes-list/todolists-menu.html' %}
+                    {% include 'twido/includes-list/wishlists-menu.html' %}
+                    <!-- wish list -->
+{#                    <div class="list-group">#}
+{#                        <a href="#" class="list-group-item">#}
+{#                            <h4 class="list-group-item-heading">Wish Lists</h4>#}
+{#                        </a>#}
+{#                            {% for lst in wishlists %}  #}
+{#                            <a href="#" class="list-group-item">{{ lst.name }}</a>#}
+{#                            {% endfor %}#}
+{#                    </div>#}
+{##}
+{#                    <!-- todo list -->#}
+{#                    <div class="list-group">#}
+{#                        <a href="#" class="list-group-item">#}
+{#                            <h4 class="list-group-item-heading">Todo Lists</h4>#}
+{#                        </a>#}
+{#                            {% for lst in todolists %}#}
+{#                            <a href="{% url 'todolist' lst.id %}" class="list-group-item">{{ lst.name }}</a>#}
+{#                            {% endfor %}#}
+{#                    </div>#}
                 </div>
             </div>
 

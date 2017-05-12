@@ -1,0 +1,162 @@
+{# TodoList detail AJAX form #}
+{# vars: thelist - current list to display #}
+
+{% load i18n %}<!-- BEGIN list detail setting -->
+                        {% if thelist.is_default %}
+                            <div class="text-center">
+                            <H3>{{ thelist.name|upper }}</H3> <span>(unorganized tasks)</span>
+                            </div>
+                        {% else %}
+                            <form class="form-horizontal " method="post" action="{% url 'todolist' thelist.id %}">
+                                {% csrf_token %}
+                                <fieldset>
+{#                                    <legend class="edit">{{ thelist.name }}</legend>#}
+                                    <!-- name -->
+                                    <div class="form-group">
+                                        <label for="name" class="col-lg-2 control-label">List Name</label>
+
+                                        <div class="col-lg-10">
+                                            <span id="name" data-type="text" data-pk="{{ thelist.id }}"
+                                                  data-url="{{ request.path }}">
+                                                {{ thelist.name }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- reminder -->
+                                    <div class="form-group">
+                                        <label for="reminder" class="col-lg-2 control-label">Reminder</label>
+
+                                        <div class="col-lg-10">
+                                            <span id="reminder" data-type="datetime" data-pk="{{ thelist.id }}"
+                                                  data-url="{{ request.path }}">{{ thelist.reminder | default_if_none:'' }}</span>
+{#                                            <span class="help-block">The time to remind me.</span>#}
+                                        </div>
+                                    </div>
+
+                                    <!-- related users -->
+                                    <div class="form-group">
+                                        <label for="related_users" class="col-lg-2 control-label">Related Persons</label>
+
+                                        <div class="col-lg-10">
+                                            <span id="related_users" data-type="select2" data-pk="{{ thelist.id }}"
+                                                  data-url="{{ request.path }}"
+                                                  data-value="{{ thelist.related_users | default_if_none:'' }}">
+                                                {{ thelist.related_users | default_if_none:'' }}</span>
+{#                                            <ul class="list-inline" id="id_related_edit">#}
+{#                                                {% for profile in thelist.get_related_profiles %}#}
+{#                                                <li><img src="{{ profile.get_img_url }}" class="avatar img-cycle" /></li>#}
+{#                                                {% endfor %}#}
+{#                                            </ul>#}
+{#                                            <span class="help-block">Related persons.</span>#}
+
+                                        </div>
+                                    </div>
+
+                                    <!-- long text -->
+                                    <div class="form-group">
+                                        <label for="text" class="col-lg-2 control-label">Description</label>
+
+                                        <div class="col-lg-10">
+                                            <span id="text" data-type="textarea" data-pk="{{ thelist.id }}"
+                                                  data-url="{{ request.path }}">{{ thelist.text | default_if_none:'' }}</span>
+{#                                            <span class="help-block">Long description.</span>#}
+                                        </div>
+
+                                    </div>
+
+                                    <!-- form buttons -->
+{#                                    <div class="form-group edit">#}
+{#                                        <div class="col-lg-10 col-lg-offset-2">#}
+{#                                            <button id="btn-cancel" type="reset" class="btn btn-default">Cancel</button>#}
+{#                                            <button id="btn-submit" type="submit" class="btn btn-primary">Submit#}
+{#                                            </button>#}
+{#                                            <input id="id_list_id" type="hidden" name="id" value="{{ thelist.id }}"/>#}
+{#                                        </div>#}
+{#                                    </div>#}
+                                </fieldset>
+                            </form>
+
+                            <script language="JavaScript" type="text/javascript">
+
+                                $('#name').editable({
+                                    success: function (response, newValue) {
+                                        if (response.status == 'error') return response.msg; //msg will be shown in editable form
+                                    }
+                                }).on('save', function (e, params) {
+                                    {#                $("#listname").text(params.newValue);#}
+                                });
+
+                                $('#related_users').editable({
+                                    select2: {
+                                        width: '200px',
+                                        tags: 'true',
+                                        allowClear: true,
+                                        placeholder: 'related users',
+                                        minimumInputLength: 2,
+                                        delay: 250
+                                    },
+                                    {#                mode: 'popup',#}
+                                    {#                placement: 'right',#}
+                                    {#                showbuttons: true,#}
+                                    {#                source: '/json/usernames/',#}
+                                    {#                select2: {#}
+                                    {#                    width: '200px',#}
+                                    {#                    tags: 'true',#}
+                                    {#                    allowClear: true,#}
+                                    {#                    placeholder: 'related users',#}
+                                    {#                    minimumInputLength: 2,#}
+                                    {#                    delay: 250,#}
+                                    {#                    multiple: 'true',#}
+                                    {#                    ajax: {#}
+                                    {#                        url: '/json/usernames/',#}
+                                    {#                        results: function (data, page) {#}
+                                    {#                            console.log('results: ' + data[0]);#}
+                                    {#                            return {#}
+                                    {#                                results: data#}
+                                    {#                            };#}
+                                    {#                        },#}
+                                    {#                        data: function (term, page, context) {#}
+                                    {#                            console.log('data:' + term);#}
+                                    {#                            var queryParameters = {#}
+                                    {#                                q: term,#}
+                                    {#                                p: page#}
+                                    {#                            };#}
+                                    {##}
+                                    {#                            return queryParameters;#}
+                                    {#                        }#}
+
+                                    {#                    }#}
+                                    {#                },#}
+                                    success: function (response, newValue) {
+                                        if (response.status == 'error') return response.msg; //msg will be shown in editable form
+                                    }
+                                }).on('save', function (e, params) {
+                                    $("#related_users").text(params.newValue);
+                                });
+
+                                $('#reminder').editable({
+                                    mode: 'popup',
+                                    placement: 'right',
+                                    allowClear: 'true',
+                                    {#                format: 'yyyy-mm-dd hh:ii',#}
+                                    {#                viewformat: 'dd/mm/yyyy hh:ii',#}
+                                    datetimepicker: {
+                                        weekStart: 1
+                                    },
+                                    success: function (response, newValue) {
+                                        if (response.status == 'error') return response.msg; //msg will be shown in editable form
+                                    }
+                                });
+
+                                $('#text').editable({
+                                    rows: 4,
+                                    tpl: "<textarea style='width: 400px'></textarea>",
+                                    success: function (response, newValue) {
+                                        if (response.status == 'error') return response.msg; //msg will be shown in editable form
+                                    }
+                                });
+
+                            </script>
+                        {% endif %}
+<!-- END list detail form -->

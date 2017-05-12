@@ -1,0 +1,20 @@
+{# WishList menu #}
+{# vars: thelist - current list to display #}
+{#       wishlists - query of all wishlists #}
+
+{% load i18n %}<!-- BEGIN wishlists menu -->
+
+                    <div class="list-group">
+                        <a href="{% url 'wishlist' %}" class="list-group-item {% if thelist.is_default %}active{% endif %}">
+{#                            <span class="badge">{{ thelist.wish_set.count }}</span>#}
+                            <h4 class="list-group-item-heading">Wish Lists</h4>
+                        </a>
+                        {% for lst in wishlists %}
+                            {% if not lst.is_default %}
+                            <a href="{% url 'wishlist' lst.id %}" class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">{{ lst.name }}
+                                <span class="badge">{{ lst.wish_set.count }}</span></a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+<!-- END wishlists menu -->

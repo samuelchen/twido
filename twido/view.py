@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.debug import sensitive_post_parameters, sensitive_variables
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseRedirect, HttpResponse, \
     HttpResponseNotAllowed
@@ -53,9 +53,10 @@ from .utils import TwitterClientManager
 from .models import SocialPlatform, TaskStatus
 import simplejson as json
 
-
+from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
 
 from bootstrap_themes import list_themes
 
@@ -86,6 +87,24 @@ class BaseViewMixin(ContextMixin):
             opt = Config.get_user_conf(profile, 'theme')
             context['theme'] = opt.value if opt else 'flatly'
         return context
+
+
+class WishListView(TemplateView, BaseViewMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super(WishListView, self).get_context_data(**kwargs)
+        profile = self.request.user.profile
+
+        if 'pk' in context:
+            pk = context['pk']
+            thelist = get_object_or_404(TodoList, id=pk)
+        else:
+            thelist = TodoList.get_default(profile)
+
+        context['thelist'] = thelist
+        if 'lists' not in context:
+            context['lists'] = WishList.objects.filter(profile=profile).all()
+
 
 class TodoDetailView(DetailView, BaseViewMixin):
     model = Todo
@@ -121,7 +140,7 @@ class TodoView(DetailView, BaseViewMixin):
                 task.save(update_fields=[name, ])
             except Exception as err:
                 log.exception(err)
-                return HttpResponseBadRequest(_('Bad Request. (name="%s", value="%s")' % (name, value)))
+                return HttpResponseBadRequest(_('"%s" can not be "%s"' % (name, value)))
 
             data = {
                 'status_icon_class': task.get_status_glyphicon(),
@@ -139,20 +158,26 @@ class TodoDeleteView(DeleteView, BaseViewMixin):
     success_url = reverse_lazy('home')
 
 
-class TodoListView(DetailView, BaseViewMixin):
-    model = TodoList
-    context_object_name = 'thelist'
+class TodoListView(TemplateView, BaseViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super(TodoListView, self).get_context_data(**kwargs)
-        thelist = context['thelist']
-        p = self.request.GET.get('p')   # current page
         profile = self.request.user.profile
+        p = self.request.GET.get('p')   # current page
+
+        if 'pk' in context:
+            pk = context['pk']
+            thelist = get_object_or_404(TodoList, profile=profile, id=pk)
+        else:
+            thelist = TodoList.get_default(profile)
+
+        context['thelist'] = thelist
+
         if 'page' not in context:
             context['page'] = paginate(Todo.objects.filter(profile=profile, list=thelist), cur_page=p, entries_per_page=10)
         if 'todolists' not in context:
-            context['todolists'] = TodoList.objects.filter(profile__user=self.request.user).all()
-
+            context['todolists'] = TodoList.objects.filter(profile=profile).all()
+            context['lists'] = TodoList.objects.filter(profile=profile).all()
         if 'taskstatus' not in context:
             context['taskstatus'] = TaskStatus
 
@@ -165,14 +190,48 @@ class TodoListView(DetailView, BaseViewMixin):
         # context['form'] = TodoListForm()
         return context
 
-    @method_decorator(sensitive_post_parameters())
-    def post(self, request, pk, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         req = request.POST
         # print(req)
-        if pk is not None:
+
+        profile = request.user.profile
+        action = req.get('action', None)
+
+        if 'pk' in kwargs:
+            pk = kwargs['pk']
+        else:
+            pk = TodoList.get_default(profile).id
+
+        if action is not None:
+            # HTTP response for form.submit
+            if action == 'add':
+                # add a list
+                lst = TodoList.objects.create(profile=profile, name=_('New List ') + str(TodoList.objects.last().id))
+                messages.info(request, _('New todo list is created.'))
+                return redirect('todolist', pk=lst.id)
+            elif action == 'del':
+                lst = get_object_or_404(TodoList, profile=profile, pk=pk)
+                if lst.is_default:
+                    messages.error(request, _('Default list can not be deleted.'))
+                else:
+                    lst.delete()
+                    messages.info(request, _('Todo list "%s" was deleted.' % lst.name))
+                return redirect('todolist')
+            elif action == 'add-todo':
+                todo = Todo.objects.create(profile=profile, title=_('New Todo'), list_id=pk)
+                return redirect('todolist', pk=pk)
+            else:
+                log.warn('Invalid request. (action=%s)' % action)
+                messages.error(request, _('Invalid request. (action=%s)') % action)
+                # return HttpResponseBadRequest()
+
+        elif pk is not None:
+            # AJAX JSON response
             pk = int(pk)
             name = req.get('name', None)
             value = req.get('value', None)
+            if name in ('id', ):
+                return HttpResponseBadRequest(_('"%s" can not be changed)' % name))
             if name == 'related_users':
                 value = ','.join(req.getlist('value[]', []))
             if value is not None and value.strip() == '':
@@ -184,7 +243,7 @@ class TodoListView(DetailView, BaseViewMixin):
                 lst.save(update_fields=[name, ])
             except Exception as err:
                 log.exception(err)
-                return HttpResponseBadRequest(_('Bad Request. (name="%s", value="%s")' % (name, value)))
+                return HttpResponseBadRequest(_('"%s" can not be "%s")' % (name, value)))
         return HttpResponse('')
 
 
@@ -200,6 +259,7 @@ class ProfileView(TemplateView, BaseViewMixin):
             context['messages'] = []
         return context
 
+    @sensitive_post_parameters()
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         user = self.request.user
@@ -378,6 +438,8 @@ class SocialView(TemplateView, BaseViewMixin):
 
         return super(SocialView, self).get(request, *args, **kwargs)
 
+
+    @sensitive_variables()
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         # ONLY ajax call
@@ -540,6 +602,11 @@ class SocialView(TemplateView, BaseViewMixin):
 class IndexView(TemplateView, BaseViewMixin):
 
     def get(self, request, *args, **kwargs):
+        # if settings.DEBUG:
+        #     host = request.get_host()
+        #     if host.startswith('fonts.googleapis.com'):
+        #         return HttpResponseRedirect("/gf/")
+
         if request.user.is_authenticated:
             return HttpResponseRedirect("/home")
         else:
@@ -551,7 +618,7 @@ class IndexView(TemplateView, BaseViewMixin):
         context['todos'] = Todo.objects.all()[:10]
         context['wishes'] = Wish.objects.all()[:10]
         delta = timedelta(days=7)
-        dt = datetime.utcnow() - delta
+        # dt = datetime.utcnow() - delta
         # context['profiles'] = UserProfile.objects.filter(user__date_joined__gt=dt).order_by('-user__date_joined')[:10]
 
         sys_profile = UserProfile.get_sys_profile()
@@ -605,6 +672,15 @@ class HomeView(TemplateView, BaseViewMixin):
     #     UserProfile.objects.filter(user__username__in=wishlist.related_users)
     #     wishlist.related_users
 
+
+# class GoogleFontsView(View, BaseViewMixin):
+#     def get(self, request, *args, **kwargs):
+#         # //fonts.googleapis.com/css?family=Raleway:400,700"
+#         print(request.path)
+#         resp = HttpResponse('xx')
+#         resp['Content-Type'] = 'text/css; charset=utf-8'
+
+
 # @require_http_methods(['GET', ])
 # def index(request):
 #     context = {}
@@ -619,7 +695,7 @@ class HomeView(TemplateView, BaseViewMixin):
 #     # }
 #     return render(request, t('index.html'), context=context)
 
-@sensitive_post_parameters()
+@sensitive_post_parameters('password', 'password2')
 @csrf_protect
 # @never_cache
 def register(request):

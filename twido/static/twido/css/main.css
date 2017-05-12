@@ -42,5 +42,51 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     cursor: no-drop;
 }
 
+/* editable no underline */
+.no_underline.editable-click {
+    border-bottom: 0;
+}
+
+
+/*.task-item.list-group-item:after {*/
+    /*content: 'deadline';*/
+    /*font-weight: 600;*/
+    /*background-color: #F5F5F5;*/
+    /*font-size: 0.7em;*/
+    /*right: -1px;*/
+    /*padding: 3px 7px;*/
+    /*position: absolute;*/
+    /*color: #9DA0A4;*/
+    /*top: -1px;*/
+    /*border: 1px solid #DDD;*/
+    /*border-radius: 4px 0;*/
+/*}*/
+
+.top-right {
+    font-weight: 600;
+    background-color: #F5F5F5;
+    font-size: 0.7em;
+    top: -1px;
+    right: -1px;
+    padding: 3px 7px;
+    position: absolute;
+    color: #9DA0A4;
+    border: 1px solid #DDD;
+    border-radius: 4px 0;
+}
+
+.bottom-right {
+    font-weight: 600;
+    background-color: #F5F5F5;
+    font-size: 0.7em;
+    bottom: -1px;
+    right: -1px;
+    padding: 3px 7px;
+    position: absolute;
+    color: #9DA0A4;
+    border: 1px solid #DDD;
+    border-radius: 4px 0;
+}
+
 /* for select2 input width with bootstrap3 */
 /*input[placeholder] { width: 100% !important; }*/

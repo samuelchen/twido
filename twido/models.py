@@ -121,11 +121,11 @@ class UserProfile(models.Model):
     def get_date_joined(self):
         return self.created_at
 
-    def get_img_url(self, default_by_gender=True):
-        if not self.img_url and default_by_gender:
-            return static('twido/img/avatar-man.png') if self.gender else static('twido/img/avatar-woman.png')
-        else:
+    def get_img_url(self):
+        if self.img_url:
             return self.img_url
+        else:
+            return static('twido/img/avatar-man.png') if self.gender else static('twido/img/avatar-woman.png')
 
     @property
     def is_faked(self):
@@ -297,7 +297,7 @@ class List(ProfileBasedModel):
         unique_together = ('profile', 'name')
         abstract = True
 
-    __default_name = 'default'
+    __default_name = 'DEFAULT'
 
     @classmethod
     def get_default(cls, profile):
@@ -315,6 +315,20 @@ class List(ProfileBasedModel):
     def get_related_usernames(self):
         return self.related_users.split(',')
 
+    @property
+    def is_default(self):
+        return self.name == self.__default_name
+
+    def __str__(self):
+        return "%d:%s" % (self.id, self.name)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.name.upper() == self.__default_name:
+            raise AttributeError('List name can not be "%s" (reversed default name). ' % self.name)
+        return super(List, self).save(force_insert=force_insert, force_update=force_update,
+                                      using=using, update_fields=update_fields)
+
 
 class WishList(List):
     """
@@ -327,7 +341,13 @@ class TodoList(List):
     """
     A wish list contains one or more things you want to do or buy.
     """
-    pass
+    def delete(self, using=None, keep_parents=False):
+        s = str(self)
+        log.debug('deleting todo list %s' % s)
+        Todo.objects.filter(list=self, profile=self.profile).update(list=self.get_default(self.profile))
+        log.debug('all tasks in todo list %s are moved to default list.' % s)
+        super(TodoList, self).delete(using=using, keep_parents=keep_parents)
+        log.info('todo list %s is deleted.' % s)
 
 
 class TaskStatus(object):
@@ -346,10 +366,10 @@ class TaskStatus(object):
         OVERTIME: 'Overtime',
     }
     _glyphicons = {
-        NEW: 'glyphicon glyphicon-unchecked text-primary',
+        NEW: 'glyphicon glyphicon-file text-muted ',
         STARTED: 'glyphicon glyphicon-play text-info',
         PAUSED: 'glyphicon glyphicon-pause text-info',
-        DONE: 'glyphicon glyphicon-check text-success',
+        DONE: 'glyphicon glyphicon-ok text-success',
         CANCEL: 'glyphicon glyphicon-remove text-muted',
         OVERTIME: 'glyphicon glyphicon-exclamation-sign text-danger',
     }
@@ -379,7 +399,7 @@ class Task(ProfileBasedModel):
 
     content = models.TextField(null=True, blank=True)
     labels = models.TextField(null=True, blank=True)
-    raw = models.OneToOneField(to=RawStatus)
+    raw = models.OneToOneField(to=RawStatus, null=True, blank=True)
 
     class Meta:
         abstract = True
