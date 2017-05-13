@@ -301,11 +301,14 @@ class List(ProfileBasedModel):
 
     @classmethod
     def get_default(cls, profile):
-        default_list, created = cls.objects.get_or_create(name=cls.__default_name, profile=profile)
-        if created:
-            # TODO: update some default values and save
-            default_list.text = 'The default list. It will be created automatically.'
-            default_list.save()
+        try:
+            default_list = cls.objects.get(name=cls.__default_name, profile=profile)
+        except cls.DoesNotExist:
+            default_list = cls(name=cls.__default_name, profile=profile)
+
+        # TODO: update some default values and save
+        default_list.text = 'The default list. It will be created automatically.'
+        default_list.save(is_default=True)
 
         return default_list
 
@@ -323,8 +326,8 @@ class List(ProfileBasedModel):
         return "%d:%s" % (self.id, self.name)
 
     def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        if self.name.upper() == self.__default_name:
+             update_fields=None, is_default=False):
+        if not is_default and self.name.upper() == self.__default_name:
             raise AttributeError('List name can not be "%s" (reversed default name). ' % self.name)
         return super(List, self).save(force_insert=force_insert, force_update=force_update,
                                       using=using, update_fields=update_fields)

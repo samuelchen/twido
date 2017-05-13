@@ -259,7 +259,7 @@ class ProfileView(TemplateView, BaseViewMixin):
             context['messages'] = []
         return context
 
-    @sensitive_post_parameters()
+    #@sensitive_post_parameters()
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         user = self.request.user
