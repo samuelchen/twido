@@ -23,13 +23,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'yh$&9t4@dq_6d7n@ey!dsl_t@b14*^rpbn^(=+*+^wi-e(x09e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if __debug__ else False
+DEBUG = True if __debug__ and bool(os.getenv('TWIDO_DEBUG', False)) else False
 # DEBUG = False
 if DEBUG:
     print('--- DEBUG MODE ---')
 
 
-ALLOWED_HOSTS = [] if not DEBUG else ['192.168.0.*', 'localhost', '127.0.0.1', 'mwl2.com']
+ALLOWED_HOSTS = ['mwl2.com', ] if not DEBUG else ['192.168.0.*', 'localhost', '127.0.0.1', 'mwl2.com']
 
 
 # Application definition
