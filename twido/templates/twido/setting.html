@@ -13,9 +13,7 @@
 
 {% block content %}
 
-
 {#    {% include 'includes/blank-div-row.html' %}#}
-
 
     <div class="bs-docs-section container container-responsive ">
 
@@ -51,28 +49,9 @@
                         {% csrf_token %}
                         <div id="myTabContent" class="tab-content">
 
-
                             {# Message & error #}
-                            {% if messages %}
-                                <div class="bs-component">
-                                    <div class="alert alert-dismissible alert-success">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        {% for msg in messages %}<p>{{ msg | safe }}</p>{% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                            {% if errors %}
-                                <div class="bs-component">
-                                    <div class="alert alert-dismissible alert-danger">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        <strong>Oops!</strong>
-                                        <ul>{% for field, err in errors %}
-                                            <li>{{ field }} - {{ err }}</li>{% endfor %}</ul>
-                                    </div>
-                                </div>
-                            {% endif %}
+                            {% include 'includes/django-messags-inc.html' %}
 
-                            {% include 'includes/message.html' %}
                             {# ----- Hidden Tabs ----- #}
 
                             {# General Setting #}

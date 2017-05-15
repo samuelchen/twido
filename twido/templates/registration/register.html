@@ -18,28 +18,16 @@
             <div class="col-lg-6 col-lg-offset-3">
                 <div class="well bs-component">
 
-                    {% if form.errors %}
-                    <div class="bs-component">
-                        <div class="alert alert-dismissible alert-danger">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
-                            <strong>Oops!</strong>
-                            {% for err in form.errors.values %}{{ err }}{% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
 
                     <form class="form-horizontal" method="post" action="{% url 'register' %}">
                         {% csrf_token %}
                         <fieldset>
                             <legend>Sign Up</legend>
 
+                            {% include 'includes/django-messags-inc.html' %}
+
                         {% if success %}
-                            <div class="bs-component">
-                                <div class="alert alert-dismissible alert-success">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    {% for msg in messages %}<p>{{ msg | safe }}</p>{% endfor %}
-                                </div>
-                            </div>
+
                         {% else %}
 
                             <div class="form-group {% if 'email' in form.errors %}has-error{% endif %}">
@@ -47,7 +35,7 @@
 
                                 <div class="col-lg-9">
                                     <input class="form-control" autofocus="" id="id_email" placeholder="User Email"
-                                           maxlength="150" name="email" required="" type="text">
+                                           maxlength="150" name="email" required="" type="text" value="{{ request.POST.email }}">
                                     <span class="help-block small">Email will be also default user name.</span>
                                 </div>
 

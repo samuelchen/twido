@@ -19,7 +19,7 @@
                 <div class="collapse navbar-collapse" id="bs-navbar-collapse-top">
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="{% url 'todolist' %}">Todos<span class="sr-only">(current)</span></a></li>
-                        <li><a href="{% url 'wishlist' %}">Wishes</a></li>
+{#                        <li><a href="{% url 'wishlist' %}">Wishes</a></li>#}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -29,14 +29,14 @@
                                 <li><a href="#">Something else here</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#">Separated link</a></li>
-                                {% if debug %}
-                                <li class="divider"></li>
-                                <li><a href="{% url 'test' %}">test</a></li>
-                                <li><a href="{% url 'test' 1 %}">test 1</a></li>
-                                {% endif %}
                             </ul>
                         </li>
+
+                        {% if debug %}
+                        {% include 'includes/topnavbar-debug.html' %}
+                        {% endif %}
                     </ul>
+
                     {# search form in top nav bar #}
                     <form class="navbar-form navbar-left" role="search">
                         <div class="form-group">
@@ -44,6 +44,7 @@
                         </div>
                         <button type="submit" class="btn btn-default">Submit</button>
                     </form>
+
                     {# right part of top nav bar #}
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
@@ -56,10 +57,10 @@
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Wish List</a></li>
-                                <li><a href="#">Todo List</a></li>
-                                <li><a href="#">Calendar</a></li>
-                                <li class="divider"></li>
+{#                                <li><a href="#">Wish List</a></li>#}
+{#                                <li><a href="#">Todo List</a></li>#}
+{#                                <li><a href="#">Calendar</a></li>#}
+{#                                <li class="divider"></li>#}
                                 <li><a href="{% url 'profile' %}">Profile</a></li>
                                 <li><a href="{% url 'setting' %}">Setting</a></li>
                                 {% if request.user.is_staff %}

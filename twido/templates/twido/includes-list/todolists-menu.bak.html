@@ -1,6 +1,0 @@
-{% extends "twido/includes-list/listsmenu.html" %}
-
-{% block url_list_default %}{% url 'todolist' %}{% endblock %}
-{% block url_list_with_pk %}{% url 'todolist' lst.id %}{% endblock %}
-{% block list_title %}TODO - Lists{% endblock %}
-{% block task_count_of_list %}{{ lst.todo_set.count }}{% endblock %}

@@ -57,6 +57,7 @@ from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from bootstrap_themes import list_themes
 
@@ -85,8 +86,24 @@ class BaseViewMixin(ContextMixin):
             except:
                 profile = UserProfile.get_sys_profile()
             opt = Config.get_user_conf(profile, 'theme')
-            context['theme'] = opt.value if opt else 'flatly'
+            context['theme'] = opt.value if opt else 'simplex'
         return context
+
+    def info(self, message, tags=''):
+        messages.info(request=self.request, message=message, extra_tags=tags)
+
+    def warn(self, message, tags=''):
+        messages.warning(request=self.request, message=message, extra_tags=tags)
+
+    def error(self, message, tags=''):
+        messages.error(request=self.request, message=message, extra_tags=tags)
+
+    def success(self, message, tags=''):
+        messages.success(request=self.request, message=message, extra_tags=tags)
+
+    def debug(self, message, tags=''):
+        messages.set_level(self.request, messages.DEBUG)
+        messages.debug(request=self.request, message=message, extra_tags=tags)
 
 
 class WishListView(TemplateView, BaseViewMixin):
@@ -191,6 +208,8 @@ class TodoListView(TemplateView, BaseViewMixin):
         return context
 
     def post(self, request, *args, **kwargs):
+        # AJAX
+
         req = request.POST
         # print(req)
 
@@ -207,22 +226,22 @@ class TodoListView(TemplateView, BaseViewMixin):
             if action == 'add':
                 # add a list
                 lst = TodoList.objects.create(profile=profile, name=_('New List ') + str(TodoList.objects.last().id))
-                messages.info(request, _('New todo list is created.'))
+                self.info(_('New todo list is created.'))
                 return redirect('todolist', pk=lst.id)
             elif action == 'del':
                 lst = get_object_or_404(TodoList, profile=profile, pk=pk)
                 if lst.is_default:
-                    messages.error(request, _('Default list can not be deleted.'))
+                    self.error(_('Default list can not be deleted.'))
                 else:
                     lst.delete()
-                    messages.info(request, _('Todo list "%s" was deleted.' % lst.name))
+                    self.info(_('Todo list "%s" was deleted.' % lst.name))
                 return redirect('todolist')
             elif action == 'add-todo':
                 todo = Todo.objects.create(profile=profile, title=_('New Todo'), list_id=pk)
                 return redirect('todolist', pk=pk)
             else:
                 log.warn('Invalid request. (action=%s)' % action)
-                messages.error(request, _('Invalid request. (action=%s)') % action)
+                self.error(_('Invalid request. (action=%s)') % action)
                 # return HttpResponseBadRequest()
 
         elif pk is not None:
@@ -253,10 +272,6 @@ class ProfileView(TemplateView, BaseViewMixin):
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
         context['profile'] = self.request.user.profile
-        if 'errors' not in context:
-            context['errors'] = {}
-        if 'messages' not in context:
-            context['messages'] = []
         return context
 
     #@sensitive_post_parameters()
@@ -264,6 +279,10 @@ class ProfileView(TemplateView, BaseViewMixin):
     def post(self, request, *args, **kwargs):
         user = self.request.user
         profile = user.profile
+
+        url_home = reverse('home')
+        if profile.timestamp - profile.created_at < timedelta(minutes=1):
+            kwargs['redirect'] = url_home
 
         # TODO: clean/escape data (better use Django form for field validation)
         req = request.POST
@@ -277,9 +296,12 @@ class ProfileView(TemplateView, BaseViewMixin):
         profile.img_url = req.get('img_url', profile.img_url)
 
         profile.save()
-        # TODO: user.username = profile.username. transaction with user.save()
 
-        kwargs['messages'] = [_('Profile is saved successfully.')]
+        self.success(_('Profile is saved successfully.'))
+        if 'redirect' in kwargs:
+            self.success(_('Will redirect to home page...'
+                           'If not start, please <a href="%s">click me to Home page</a>.') % url_home)
+
         return self.get(request, *args, **kwargs)
 
 
@@ -338,13 +360,8 @@ class SettingView(TemplateView, BaseViewMixin):
         context['social_accounts'] = social_accounts
         # print(social_accounts)
 
-
         context['themes'] = list_themes()
 
-        if 'errors' not in context:
-            context['errors'] = {}
-        if 'messages' not in context:
-            context['messages'] = []
         return context
 
     def post(self, request, *args, **kwargs):
@@ -376,10 +393,6 @@ class SocialView(TemplateView, BaseViewMixin):
         # map(lambda x: social_accounts.setdefault(x.platform, x), SocialAccount.objects.filter(profile=p).iterator())
         # context['social_account'] = social_accounts
 
-        if 'errors' not in context:
-            context['errors'] = {}
-        if 'messages' not in context:
-            context['messages'] = []
         return context
 
     def get(self, request, *args, **kwargs):
@@ -617,7 +630,7 @@ class IndexView(TemplateView, BaseViewMixin):
 
         context['todos'] = Todo.objects.all()[:10]
         context['wishes'] = Wish.objects.all()[:10]
-        delta = timedelta(days=7)
+        # delta = timedelta(days=7)
         # dt = datetime.utcnow() - delta
         # context['profiles'] = UserProfile.objects.filter(user__date_joined__gt=dt).order_by('-user__date_joined')[:10]
 
@@ -707,38 +720,24 @@ def register(request):
         if form.is_valid():
             profile = form.save()
             success = True
+        else:
+            if 'username' in form.errors:
+                del form.errors['username']
     else:
         form = UserProfileCreationForm()
 
     context = {
         'form': form,
-        'success': success
+        'success': success,
     }
-    if 'theme' not in context:
-        try:
-            profile = request.user.profile
-        except:
-            profile = UserProfile.get_sys_profile()
-        opt = Config.get_user_conf(profile, 'theme')
-        context['theme'] = opt.value if opt else 'flatly'
 
     if success and profile and profile.user and profile.user.is_active:
         login(request, profile.user)
-        context['messages'] = [_('Registration succeed.'),
-                               _('Please update your <a href="#">profile</a>.')]
-
-    return render(request, 'registration/register.html', context)
-
-@require_http_methods(['GET', ])
-def test(request, pk=None):
-    log.debug('%s %s %s' % (request, pk, request.POST))
-    context = {}
-    if request.user.is_authenticated:
-        context['user'] = 'authoried'
-    elif request.user.is_staff:
-        context['user'] = 'staff'
-    else:
-        context['user'] = 'forbiden'
+        messages.success(request, _('Registration succeed.'), '', fail_silently=True)
+        messages.success(request, _('Redirect to profile updating page ...'), '', fail_silently=True)
+        messages.success(request,
+                         _('If redirection did not start, please <a href="%s">click me to profile</a>.') % reverse(
+                             'profile'), '', fail_silently=True)
 
     if 'theme' not in context:
         try:
@@ -746,11 +745,46 @@ def test(request, pk=None):
         except:
             profile = UserProfile.get_sys_profile()
         opt = Config.get_user_conf(profile, 'theme')
-        context['theme'] = opt.value if opt else 'flatly'
-    # context = {
-    #     # "setting_keys": models.SETTING_NAMES,
-    # }
-    print(dir(request))
+        context['theme'] = opt.value if opt else 'simplex'
+
+    return render(request, 'registration/register.html', context)
+
+@require_http_methods(['GET', 'POST'])
+@login_required()
+def test(request, pk=None):
+    log.debug('%s %s %s' % (request, pk, request.POST))
+    context = {}
+
+    if request.method == "POST":
+        pass
+    else:
+        pass
+
+    signin = request.GET.get('signin', None)
+    if signin:
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.get(username=signin)
+            login(request, user)
+        except UserModel.DoesNotExist:
+            pass
+
+    if 'theme' not in context:
+        try:
+            profile = request.user.profile
+        except:
+            profile = UserProfile.get_sys_profile()
+        opt = Config.get_user_conf(profile, 'theme')
+        context['theme'] = opt.value if opt else 'simplex'
+
+    if pk == '1':
+        messages.debug(request, 'This is debug message', fail_silently=True)
+        messages.info(request, 'This is info message', fail_silently=True)
+        messages.warning(request, 'This is warning message', fail_silently=True)
+        messages.error(request, 'This is error message', fail_silently=True)
+        messages.success(request, 'This is success message', fail_silently=True)
+        messages.add_message(request, messages.WARNING, 'This is a WARN message added.', 'danger', fail_silently=True)
+
     return render(request, 'test/test%s.html' % (pk if pk else ''), context=context)
 
 

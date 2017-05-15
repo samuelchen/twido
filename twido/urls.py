@@ -42,11 +42,11 @@ urlpatterns = [
     url(r'^social/(?P<action>link)/$', view.SocialView.as_view(template_name=t('social.html')), name='social'),
     url(r'^social/(?P<action>update)/$', view.SocialView.as_view(template_name=t('social.html')), name='social'),
 
-    url(r'^todolist/create/$', view.TodoListView.as_view(template_name=t('todolist-create.html')), name='todolist-create'),
+    # url(r'^todolist/create/$', view.TodoListView.as_view(template_name=t('todolist-create.html')), name='todolist-create'),
     url(r'^todolist/$', view.TodoListView.as_view(template_name=t('todolist.html')), name='todolist'),
     url(r'^todolist/(?P<pk>[0-9]+)/$', view.TodoListView.as_view(template_name=t('todolist.html')), name='todolist'),
 
-    url(r'^todo/create/$', view.TodoCreateView.as_view(template_name=t('todo-create.html')), name='todo-create'),
+    # url(r'^todo/create/$', view.TodoCreateView.as_view(template_name=t('todo-create.html')), name='todo-create'),
     url(r'^todo/(?P<pk>[0-9]+)/$', view.TodoView.as_view(template_name=t('todo.html')), name='todo'),
 
     url(r'^wishlist/$', view.WishListView.as_view(template_name=t('wishlist.html')), name='wishlist'),
