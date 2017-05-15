@@ -239,6 +239,14 @@ class TodoListView(TemplateView, BaseViewMixin):
             elif action == 'add-todo':
                 todo = Todo.objects.create(profile=profile, title=_('New Todo'), list_id=pk)
                 return redirect('todolist', pk=pk)
+            elif action == 'del-todo':
+                task_id = req.get('task_id', None)
+                task = get_object_or_404(Todo, profile=profile, id=task_id)
+                s = 'Todo task "%s" deleted by %s' % (task, profile)
+                task.delete()
+                log.info(s)
+                return HttpResponse('')
+                # return redirect('todolist')
             else:
                 log.warn('Invalid request. (action=%s)' % action)
                 self.error(_('Invalid request. (action=%s)') % action)
@@ -749,9 +757,11 @@ def register(request):
 
     return render(request, 'registration/register.html', context)
 
-@require_http_methods(['GET', 'POST'])
-@login_required()
+@require_http_methods(['GET', ])
 def test(request, pk=None):
+    if not settings.DEBUG:
+        return redirect('/')
+
     log.debug('%s %s %s' % (request, pk, request.POST))
     context = {}
 
@@ -768,6 +778,7 @@ def test(request, pk=None):
             login(request, user)
         except UserModel.DoesNotExist:
             pass
+        return redirect('home')
 
     if 'theme' not in context:
         try:

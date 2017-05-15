@@ -424,6 +424,9 @@ class Task(ProfileBasedModel):
     def get_status_glyphicon(self):
         return TaskStatus.get_glyphicon(self.status)
 
+    def __str__(self):
+        return '%s (id=%d)' % (self.title, self.id)
+
 class Todo(Task):
     """
     Todo entity

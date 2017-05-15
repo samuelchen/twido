@@ -71,9 +71,8 @@
 
 
     <script type="text/javascript" language="JavaScript">
-        $(".editable").addClass('no_underline').css("cursor", "pointer");
 
-
+    $(document).ready(function(){
         var form_action = $("#id_form_action");
 
         $("a.btn").tooltip({container: 'body'}).click(function(e){
@@ -92,5 +91,10 @@
                         +'<p/><p class="small">All tasks in this list will be moved to default list',
             placement: 'bottom'
         });
+
+        $(".editable").addClass('no_underline').css("cursor", "pointer");
+
+    });
+
     </script>
 {% endblock %}

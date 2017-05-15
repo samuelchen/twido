@@ -55,15 +55,15 @@
         if (!div.length) {
             box.append(_MSG_DIV_TEMPLATE.f(div_id, _MSG_CLASS[level], title, msg+"<br>"));
         } else {
-            if (clear) {div.text('');}
+            if (clear) {div.find("div").html('');}
             div.find("div").append(msg+"<br>");
         }
     }
 
-    function _info(msg, clear) { _msg(msg, 'info', clear); }
-    function _warn(msg, clear) { _msg(msg, 'warn', clear); }
-    function _error(msg, clear) { _msg(msg, 'error', clear); }
-    function _success(msg, clear) { _msg(msg, 'success', clear); }
+    function _info(msg, clear) { _msg(msg, 'info', '', clear); }
+    function _warn(msg, clear) { _msg(msg, 'warn', '', clear); }
+    function _error(msg, clear) { _msg(msg, 'error', '', clear); }
+    function _success(msg, clear) { _msg(msg, 'success', '', clear); }
 
     {% for msg in messages %} _msg('{{ msg|safe }}', "{{ msg.level_tag }}");
     {% endfor %}

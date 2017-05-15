@@ -7,7 +7,7 @@
                             <H3>{{ thelist.name|upper }}</H3> <span>(unorganized tasks)</span>
                             </div>
                         {% else %}
-                            <form class="form-horizontal " method="post" action="{% url 'todolist' thelist.id %}">
+                            <form class="form-horizontal" method="post" action="{% url 'todolist' thelist.id %}">
                                 {% csrf_token %}
                                 <fieldset>
 {#                                    <legend class="edit">{{ thelist.name }}</legend>#}

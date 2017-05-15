@@ -9,7 +9,7 @@
                                 {% for todo in page %}
                                     <li data-id="{{ todo.id }}" draggable="true" class="list-group-item task-item">
                                         <ul class="list-inline" draggable="true">
-                                            <li><span title="{{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
+                                            <li><span title="Status: {{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}"><i class="{{ todo.get_status_glyphicon }}"></i></span></li>
                                             <li class="top-right"><span title="Deadline" class="small" data-name="deadline" data-type="datetime" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.deadline |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}</span></li>
@@ -17,6 +17,10 @@
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.title | url2link }}</span></li>
                                             <li class="bottom-right"><span title="Labels" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.labels| default_if_none:'' }}</span></li>
+                                            <li class="buttons small" style="display: none">
+                                                <a name="detail" title="Detail" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
+                                                <a name="del-todo" data-task-id="{{ todo.id }}"  title="Delete" class="label label-danger small"><i class="glyphicon glyphicon-remove"></i></a>
+                                            </li>
                                         </ul>
                                     </li>
                                 {% endfor %}
@@ -32,6 +36,11 @@
                         </div>
 
                         <script language="JavaScript" type="text/javascript">
+
+                            $(document).ready(function(){
+                                make_todos_editable();
+                            });
+
 
                             function make_todos_editable() {
 
@@ -53,7 +62,7 @@
                                     }
                                 }).on('save', function (e, params) {
                                     $(this).html('<i class="' + params.response.status_icon_class + '"></i>')
-                                            .attr("data-original-title", params.response.status_text)
+                                            .attr("data-original-title", 'Status: '+params.response.status_text)
                                             .tooltip("show");
                                 });
 
@@ -104,8 +113,8 @@
                                 todos_container.find('span[data-name="title"]').editable({
                                     {#                mode: 'popup',#}
                                     {#                placement: 'top',#}
-                                    allClear: 'false',
-                                    tpl: "<input type='text' style='width: 400px'>",
+                                    allClear: 'true',
+{#                                    tpl: "<input type='text' style='width: 400px'>",#}
                                     {#                showbuttons: true,#}
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
@@ -114,7 +123,7 @@
 
                                 todos_container.find('span[data-name="deadline"]').tooltip().editable({
                                     mode: 'popup',
-{#                                    showbuttons: 'true',#}
+                                    {#                                    showbuttons: 'true',#}
                                     placement: 'left',
                                     allowClear: 'true',
                                     {#                viewFormat: 'dd/mm/yyyy hh:ii',#}
@@ -123,8 +132,49 @@
                                     }
                                 });
 
+                                // todos inline buttons
+                                todos_container.find("ul").mouseover(function (e) {
+                                    $(this).find(".buttons").show();
+                                    if (e.target && e.target.nodeName == 'A') {
+                                        $(e.target).tooltip('show');
+                                    };
+                                }).mouseout(function (e) {
+                                    $(this).find(".buttons").hide();
+                                }).find("a[name='del-todo']").confirmation({
+                                    onConfirm: function (e, obj) {
+                                        del_task(obj.data('task-id'));
+                                    },
+                                    html: 'true',
+                                    title: '<span class="text-danger">DANGER : Delete this task ?</span>',
+                                    placement: 'bottom'
+                                });
+
                             };
 
-                            make_todos_editable();
+                            function del_task(task_id) {
+                                var entry = $("#id_todos").find("[data-id='" + task_id + "']");
+                                var task_name = entry.find("span[data-name='title']").text();
+
+                                $.ajax("{{ request.path }}", {
+                                    method: 'POST',
+                                    data: {
+                                        action: "del-todo",
+                                        task_id: task_id
+                                    },
+                                    success: function (resp) {
+                                        _success("{% trans 'Task \"{0}\" deleted.' %}".f(task_name), true);  // message incl
+                                        console.debug('Todo task "' + task_name + '" (id=' + task_id + ') deleted.');
+                                        entry.fadeOut();
+                                    },
+                                    error: function (resp) {
+                                        _error("{% trans 'Fail to delete task \"{0}\". <br>Status: {1} <br>Content: {2}' %}".f(
+                                                task_name, resp.status, resp.statusText),
+                                                true);    // message incl
+                                        entry.fadeOut().fadeIn().fadeOut().fadeIn();
+                                        return resp.status + ' ' + resp.statusText;
+                                    }
+                                });
+                            }
+
                         </script>
 <!-- END list of todos -->
