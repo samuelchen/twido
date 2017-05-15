@@ -53,12 +53,14 @@
                                 <h5>{{ task.title | url2link | safe  }}</h5>
                                 <h6 class="text">{{ task.created_at }}</h6>
                             </div>
+                            {% if task.text %}
                             <div class="panel-body">
                                 {{ task.text | url2link | safe }}
                                 {% for dt in task.dates %}
                                 <p>{{ dt.text }}({{ dt.v }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</p>
                                 {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
