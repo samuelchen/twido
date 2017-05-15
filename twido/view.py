@@ -651,11 +651,15 @@ class IndexView(TemplateView, BaseViewMixin):
         formatter = HtmlFormatter(encoding='utf-8', style='emacs', linenos=True)
         lexer = XmlLexer()
         for task in context['todos']:
-            task.text = highlight(task.content, lexer, formatter)
 
+            task.dates = []
+
+            if not task.content:
+                continue
+
+            task.text = highlight(task.content, lexer, formatter)
             # print(task.title)
             xml = ET.fromstring(task.content)
-            task.dates = []
             for node in xml.findall("./TEXT/TIMEX3"):
                 dt = MutableEnum()
                 dt.text = node.text
