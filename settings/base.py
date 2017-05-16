@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'yh$&9t4@dq_6d7n@ey!dsl_t@b14*^rpbn^(=+*+^wi-e(x09e'
+SECRET_KEY = 'yh$&P0s_6d7n@ey!dsl_t@b1L(@Hlle9^(=+*+^di&Edsg09e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if __debug__ and bool(os.getenv('TWIDO_DEBUG', False)) else False
@@ -28,9 +28,7 @@ DEBUG = True if __debug__ and bool(os.getenv('TWIDO_DEBUG', False)) else False
 if DEBUG:
     print('--- DEBUG MODE ---')
 
-
-ALLOWED_HOSTS = ['mwl2.com', ] if not DEBUG else ['192.168.0.*', 'localhost', '127.0.0.1', 'mwl2.com']
-
+ALLOWED_HOSTS = ['mwl2.com', ] if not DEBUG else []
 
 # Application definition
 
@@ -148,29 +146,6 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = '/'
 
-
-INTERNAL_IPS = ['127.0.0.1', 'localhost', '192.168.0.*']
-# TEMPLATE_DEBUG = False
-# if DEBUG:
-#     INSTALLED_APPS.append('debug_toolbar')
-#     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
-#     # TEMPLATE_DEBUG = True
-#     INTERNAL_IPS = ['127.0.0.1', 'localhost', '192.168.0.*']
-#
-# DEBUG_TOOLBAR_PANELS = [
-#     'debug_toolbar.panels.versions.VersionsPanel',
-#     'debug_toolbar.panels.timer.TimerPanel',
-#     'debug_toolbar.panels.settings.SettingsPanel',
-#     'debug_toolbar.panels.headers.HeadersPanel',
-#     'debug_toolbar.panels.request.RequestPanel',
-#     'debug_toolbar.panels.sql.SQLPanel',
-#     'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-#     'debug_toolbar.panels.templates.TemplatesPanel',
-#     'debug_toolbar.panels.cache.CachePanel',
-#     'debug_toolbar.panels.signals.SignalsPanel',
-#     'debug_toolbar.panels.logging.LoggingPanel',
-#     'debug_toolbar.panels.redirects.RedirectsPanel',
-# ]
 
 
 LOGGING = {

@@ -3,6 +3,9 @@ tweepy>=3.5.0
 simplejson
 requests
 dateparser
+#mysqlclient
+
+
 django-bootstrap-themes
 django-simple-email-confirmation
 

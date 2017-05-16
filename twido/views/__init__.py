@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
-__author__ = 'Samuel Chen <samuel.net@gmail.com>'
-__date__ = '4/11/2017 10:41 PM'
 
-'''
-__init__.py module description
 
-Created on 4/11/2017
-'''
+from .common import paginate, register, test
+from .base import BaseViewMixin
+from .index import IndexView
+from .home import HomeView
+from .profile import ProfileView, ProfileUsernamesJsonView
+from .setting import SettingView
+from .social import SocialView
+from .todo import TodoListView, TodoView
+from .wish import WishListView
