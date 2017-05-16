@@ -15,7 +15,10 @@ DATABASES = {
 
 INSTALLED_APPS.extend([
     # 'gunicorn',
+    'account'
 ])
+
+# AUTH_USER_MODEL = 'account.User'
 
 CONFIG_FILE = os.getenv('CONFIG_FILE', 'config.sam.ini')
 

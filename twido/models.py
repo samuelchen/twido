@@ -64,11 +64,11 @@ class UserProfile(models.Model):
     # TODO: null or not ? make __sys__ user locked ?
     # null means faked profile
     user = models.OneToOneField(to=UserModel, related_name='profile', db_index=True, null=True, blank=True)
-    email = models.CharField(max_length=100, unique=True, db_index=True, null=True, blank=True)    # user.email
-    username = models.CharField(max_length=100, unique=True, db_index=True)        # user.username
+    email = models.CharField(max_length=100, unique=True, db_index=True, editable=False)    # user.email
+    username = models.CharField(max_length=100, unique=True, db_index=True, null=True)
     created_at = models.DateTimeField(editable=False)
 
-    name = models.CharField(max_length=100, null=True, blank=True)  # nick name, user.first_name/user.last_name
+    name = models.CharField(max_length=100, null=True, blank=True)  # real/nick/display name
     gender = models.BooleanField(default=False)
     timezone = models.CharField(max_length=50, null=True, blank=True)
     location = models.TextField(null=True, blank=True)
@@ -89,6 +89,7 @@ class UserProfile(models.Model):
     def init_data(cls):
         p, created = cls.objects.get_or_create(username=cls.__sys_profile_uname)
         if created:
+            p.email = cls.__sys_profile_uname + '@localhost'
             p.save()
             log.info('System profile (%s) is created.' % cls.__sys_profile_uname)
         cls.__sys_profile = p
@@ -528,22 +529,22 @@ class SocialAccountAdmin(admin.ModelAdmin):
 
 # ========== Signals ==========
 
-@receiver(post_save, sender=UserModel)
-def post_save_user(sender, **kwargs):
-    user = kwargs['instance']
-    created = kwargs['created']
-
-    # ensure user.username is user.email.
-    if user.email and user.username != user.email:
-        user.username = user.email
-        user.save()
-
-    if created and user is not None:
-        profile = UserProfile(user=user)
-        profile.email = user.email
-        profile.name = user.email[:user.email.find('@')]
-        profile.username = profile.name + str(int(timezone.now().timestamp()))
-        profile.save()
+# @receiver(post_save, sender=UserModel)
+# def post_save_user(sender, **kwargs):
+#     user = kwargs['instance']
+#     created = kwargs['created']
+#
+#     # ensure user.username is user.email.
+#     if user.email and user.username != user.email:
+#         user.username = user.email
+#         user.save()
+#
+#     if created and user is not None:
+#         profile = UserProfile(user=user)
+#         profile.email = user.email
+#         profile.name = user.email[:user.email.find('@')]
+#         profile.username = profile.name + str(int(timezone.now().timestamp()))
+#         profile.save()
 
 
 # @receiver(post_save, sender=UserProfile)
@@ -552,7 +553,9 @@ def post_save_user(sender, **kwargs):
 #
 #     if created:
 #         profile = kwargs['instance']
-#         if profile is not None:
+#         if profile.user is None:
+#             profile.user = UserModel(email=profile.email, username=profile.email)
+#             profile.user.save()
 #             TodoList.init_data(profile)
 #             WishList.init_data(profile)
 

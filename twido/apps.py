@@ -6,4 +6,4 @@ from django.apps import AppConfig
 
 class TwidoAppConfig(AppConfig):
     name = 'twido'
-    verbose_name = 'My Wonderful Life to'
+    verbose_name = 'My Wonderful Life 2'
