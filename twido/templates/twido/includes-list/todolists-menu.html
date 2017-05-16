@@ -4,14 +4,14 @@
 
 {% load i18n %}<!-- BEGIN todolists menu -->
 
-                    <div class="list-group">
-                        <a href="{% url 'todolist' %}" class="list-group-item {% if thelist.is_default %}active{% endif %}">
+                    <div id="id-lists" class="list-group">
+                        <a href="{% url 'todolist' %}" data-id="{{ thelist.default.id }}" class="list-group-item {% if thelist.is_default %}active{% endif %}">
 {#                            <span class="badge">{{ thelist.todo_set.count }}</span>#}
                             <h4 class="list-group-item-heading">Todo Lists</h4>
                         </a>
                         {% for lst in todolists %}
                             {% if not lst.is_default %}
-                            <a href="{% url 'todolist' lst.id %}" class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">{{ lst.name }}
+                            <a href="{% url 'todolist' lst.id %}" data-id="{{ lst.id }}" class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">{{ lst.name }}
                                 <span class="badge">{{ lst.todo_set.count }}</span></a>
                             {% endif %}
                         {% endfor %}

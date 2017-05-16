@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -141,6 +141,15 @@ class TodoListView(TemplateView, BaseViewMixin):
                 log.info(s)
                 return HttpResponse('')
                 # return redirect('todolist')
+            elif action == 'move-todo':
+                task_id = req.get('task_id', None)
+                list_id = req.get('list_id', None)
+                task = get_object_or_404(Todo, id=task_id, profile=profile)
+                # lst = get_object_or_404(TodoList, profile=profile, id=list_id)
+                task.list_id = list_id
+                task.save()
+                log.info('Todo task "%s" moved to list "%s" by %s' % (task, task.list, profile))
+                return HttpResponse('')
             else:
                 log.warn('Invalid request. (action=%s)' % action)
                 self.error(_('Invalid request. (action=%s)') % action)

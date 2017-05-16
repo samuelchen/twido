@@ -314,6 +314,10 @@ class List(ProfileBasedModel):
 
         return default_list
 
+    @property
+    def default(self):
+        return self.get_default(self.profile)
+
     def get_related_profiles(self):
         return UserProfile.objects.filter(username__in=(self.related_users.split(',') or ''))
 

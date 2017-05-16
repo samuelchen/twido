@@ -1,8 +1,9 @@
-{% extends "base.html" %}{% load customer_tags staticfiles %}
+{% extends "base.html" %}{% load customer_tags staticfiles i18n %}
 
 {% block title %}Todo List{% endblock %}
 
 {% block head %}
+    <script language="JavaScript" src="{% static 'twido/js/Sortable.min.js' %}"></script>
     <script language="JavaScript" src="{% static 'twido/js/bootstrap-confirmation.min.js' %}"></script>
     {% include 'includes/editable-head-ref.html' %}
     <script language="JavaScript" type="text/javascript">
@@ -94,7 +95,69 @@
 
         $(".editable").addClass('no_underline').css("cursor", "pointer");
 
+
+        {# --- drag & drop to move --- #}
+        var _drag_drop_target_list_id = null;
+
+        $('.list-group').each(function (idx, el) {
+            var sortable = Sortable.create(el, {
+                group: "todos",
+                draggable: ".list-group-item",
+                filter: "a.list-group-item",
+                preventOnFilter: true,
+                onMove: function (evt) {
+
+                    if (!$(evt.dragged).hasClass('task-item')) {
+                        return false;
+                    }
+
+                    if ($(evt.related).hasClass('task-item')) {
+                        return false;
+                    }
+
+                    _drag_drop_target_list_id = $(evt.related).data('id');
+
+                    return false;
+                },
+                onEnd: function (evt) {
+                    if (!_drag_drop_target_list_id)
+                        return false;
+                    var task_id = $(evt.item).data('id');
+                    move_task(task_id, _drag_drop_target_list_id);
+                    _drag_drop_target_list_id = null;
+                    return false;
+                }
+            });
+        });
+
     });
 
+    function move_task(task_id, list_id) {
+        var entry = $("#id_todos").find("[data-id='" + task_id + "']");
+        var task_name = entry.find("span[data-name='title']").text();
+
+        $.ajax("{{ request.path }}", {
+            method: 'POST',
+            data: {
+                action: "move-todo",
+                task_id: task_id,
+                list_id: list_id
+            },
+            success: function (resp) {
+                var list_name = $("#id_lists").find("[data-id='" + list_id + "']").text();
+                console.log(list_name);
+                _success("{% trans 'Task \"{0}\" moved to list \"{1}\".' %}".f(task_name, list_id), true);  // message incl
+                console.debug('Todo task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
+                entry.fadeOut();
+            },
+            error: function (resp) {
+                _error("{% trans 'Fail to move task \"{0}\". <br>Status: {1} <br>Content: {2}' %}".f(
+                                task_name, resp.status, resp.statusText),
+                        true);    // message incl
+                entry.fadeOut().fadeIn().fadeOut().fadeIn();
+                return resp.status + ' ' + resp.statusText;
+            }
+        });
+    }
     </script>
 {% endblock %}
