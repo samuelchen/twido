@@ -4,8 +4,8 @@ print('prod settings')
 DEBUG = False
 SECRET_KEY = 'askojdfpoasdhfu98sdyf792ylJ^*%&%$wdfjj2oie29u3y29'
 
-STATIC_ROOT = '/var/www/static'
-MEDIA_ROOT = '/var/www/media'
+STATIC_ROOT = '~/static'
+MEDIA_ROOT = '~/media'
 
 LANGUAGE_CODE = 'en-us'
 
