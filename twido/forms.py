@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth import get_user_model
 from django.db import transaction
 import logging
-
+from django.utils import timezone
 log = logging.getLogger(__name__)
 
 UserMode = get_user_model()
@@ -80,7 +80,7 @@ class UserProfileCreationForm(UserCreationForm):
         :return: UserProfile instance (not User instance, use profile.user to access user instance)
         """
         user = super(UserProfileCreationForm, self).save(commit=False)
-        # user.is_active = False  # need to verify emai.
+        # user.is_active = False  # need to verify email.
         email = self.cleaned_data['email']
         assert user
         if not user.username:
@@ -92,9 +92,11 @@ class UserProfileCreationForm(UserCreationForm):
                 user.save()
                 assert user and user.username
                 profile, created = UserProfile.objects.get_or_create(user=user)
+                profile.email = email
                 if created:
                     log.warn('Profile was not created after User created. (%s)' % user.username)
-                profile.email = email
+                    profile.name = user.email[:user.email.find('@')]
+                    profile.username = profile.name + str(int(timezone.now().timestamp()))
                 profile.save()
         return profile
 

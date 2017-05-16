@@ -532,16 +532,17 @@ def post_save_user(sender, **kwargs):
     user = kwargs['instance']
     created = kwargs['created']
 
-    if created and user is not None:
-        profile = UserProfile(user=user)
-        profile.username = user.username
-        profile.email = user.email
-        profile.save()
-
     # ensure user.username is user.email.
     if user.email and user.username != user.email:
         user.username = user.email
         user.save()
+
+    if created and user is not None:
+        profile = UserProfile(user=user)
+        profile.email = user.email
+        profile.name = user.email[:user.email.find('@')]
+        profile.username = profile.name + str(int(timezone.now().timestamp()))
+        profile.save()
 
 
 # @receiver(post_save, sender=UserProfile)
