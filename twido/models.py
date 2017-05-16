@@ -108,6 +108,7 @@ class UserProfile(models.Model):
 
     def get_name(self):
         """
+        Return a display name. (never return email including user.username)
         :return a display name
         """
         if self.name:
@@ -115,8 +116,8 @@ class UserProfile(models.Model):
         elif self.username:
             return self.username
         elif self.is_faked:
-            return self.get_email() or self.id
-        return self.user.username
+            return self.id
+        return self.user.id
 
     def get_date_joined(self):
         return self.created_at
