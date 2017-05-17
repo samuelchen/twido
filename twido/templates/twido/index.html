@@ -11,38 +11,39 @@
 {% block content %}
 
     <div class="bs-docs-section container-fluid container-responsive">
-        <div class="page-header">
-            <div class="row">
-                <div class="col-lg-2 col-lg-offset-1"><h4>#Wish es</h4></div>
-                <div class="col-lg-6">
-                    <h4>Latest #TODO s</h4>
-                </div>
-                <div class="col-lg-2"><h4>New users</h4></div>
-            </div>
-        </div>
+{#        <div class="page-header">#}
+{#            <div class="row">#}
+{#                <div class="col-lg-2 col-lg-offset-1"><h4>#Wish es</h4></div>#}
+{#                <div class="col-lg-6">#}
+{#                    <h4>Latest #TODO s</h4>#}
+{#                </div>#}
+{#                <div class="col-lg-2"><h4>New users</h4></div>#}
+{#            </div>#}
+{#        </div>#}
         <div class="row">
-            <div class="col-lg-2 col-lg-offset-1">
-                <div class="bs-component">
-                    {% for task in wishes %}
-                        <div class="panel panel-success">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">
-                                    <ul class="list-inline">
-                                        <li><h3 class="panel-title">{{ task.get_owner_name | safe }}</h3></li>
+{#            <div class="col-lg-2 col-lg-offset-1">#}
+{#                <div class="bs-component">#}
+{#                    {% for task in wishes %}#}
+{#                        <div class="panel panel-success">#}
+{#                            <div class="panel-heading">#}
+{#                                <h3 class="panel-title">#}
+{#                                    <ul class="list-inline">#}
+{#                                        <li><h3 class="panel-title">{{ task.get_owner_name | safe }}</h3></li>#}
 {#                                        <li><span class="label label-warning">#wish</span></li>#}
-                                    </ul>
+{#                                    </ul>#}
 {#                                    <h6 class="text">{{ task.created_at }}</h6>#}
-                                </h3>
-                            </div>
-                            <div class="panel-body">
-                                {{ task.title | url2link | safe }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="bs-component">
+{#                                </h3>#}
+{#                            </div>#}
+{#                            <div class="panel-body">#}
+{#                                {{ task.title | url2link | safe }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+
+            <div class="col-lg-7 col-lg-offset-1 col-md-7 col-md-offset-1">
+                <div class="row">
                     {% for task in todos %}
                         <div class="panel panel-info">
                             <div class="panel-heading">
@@ -65,15 +66,20 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-lg-2">
-                <div class="bs-component small">
+
+            <div class="col-lg-3 col-md-3">
+                <div class="row small">
                     {% for profile in profiles %}
+                        <div class="col-lg-12 col-md-12 col-sm-4 col-xs-6">
                         {% include 'includes/profile-card-simple.html' %}
+                        </div>
                     {% endfor %}
 
                     {# Social Accounts take as fake profiles #}
                     {% for profile in social_accounts %}
+                        <div class="col-lg-12 col-md-12  col-sm-3 col-xs-4">
                         {% include 'includes/profile-card-simple.html' %}
+                        </div>
                     {% endfor %}
                 </div>
             </div>

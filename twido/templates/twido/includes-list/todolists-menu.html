@@ -11,7 +11,9 @@
                         </a>
                         {% for lst in todolists %}
                             {% if not lst.is_default %}
-                            <a href="{% url 'todolist' lst.id %}" data-id="{{ lst.id }}" class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">{{ lst.name }}
+                            <a href="{% url 'todolist' lst.id %}" data-id="{{ lst.id }}" class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">
+                                <i class="glyphicon {% if thelist.id == lst.id %}glyphicon-folder-open{% else %}glyphicon-folder-close{% endif %} small"> </i>
+                                  {{ lst.name }}
                                 <span class="badge">{{ lst.todo_set.count }}</span></a>
                             {% endif %}
                         {% endfor %}

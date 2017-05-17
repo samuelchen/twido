@@ -364,7 +364,7 @@ class TaskStatus(object):
     STARTED = 1
     PAUSED = 2
     DONE = 9
-    OVERTIME = 10
+    EXPIRED = 10
     CANCEL = -1
     _text = {
         NEW: 'New',
@@ -372,7 +372,7 @@ class TaskStatus(object):
         PAUSED: 'Paused',
         DONE: 'Done',
         CANCEL: 'Cancelled',
-        OVERTIME: 'Overtime',
+        EXPIRED: 'Expired',
     }
     _glyphicons = {
         NEW: 'glyphicon glyphicon-file text-muted ',
@@ -380,7 +380,7 @@ class TaskStatus(object):
         PAUSED: 'glyphicon glyphicon-pause text-info',
         DONE: 'glyphicon glyphicon-ok text-success',
         CANCEL: 'glyphicon glyphicon-remove text-muted',
-        OVERTIME: 'glyphicon glyphicon-exclamation-sign text-danger',
+        EXPIRED: 'glyphicon glyphicon-exclamation-sign text-danger',
     }
     Choices = _text.items()
     GlyphIcons = _glyphicons.items()

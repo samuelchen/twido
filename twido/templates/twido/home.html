@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load staticfiles customer_tags %}
+{% extends "base.html" %}{% load staticfiles i18n customer_tags %}
 
 {% block title %}Home{% endblock %}
 
@@ -26,7 +26,7 @@
 
         <div class="row">
             <!-- left col -->
-            <div class="col-lg-3">
+            <div class="col-lg-3 col-md-3">
                 <div class="bs-component">
                     {% include 'twido/includes-list/todolists-menu.html' %}
 {#                    {% include 'twido/includes-list/wishlists-menu.html' %}#}
@@ -34,35 +34,33 @@
             </div>
 
             <!-- main col -->
-            <div class="col-lg-6">
+            <div class="col-lg-8 col-md-8">
                 <div class="bs-component">
-                    {% for lst in todolists %}
-                        <div class="panel panel-info">
+                    {% for taskset in task_sets %}
+                        <div class="panel panel-default" name="{{ taskset.title }}">
                             <div class="panel-heading">
                                 <ul class="list-inline">
-                                    <li><h3 class="panel-title">{{ lst.name }}</h3></li>
-{#                                    <li><span class="label label-default">#todo</span></li>#}
-                                    <li><h6 class="text">{{ lst.reminder | default_if_none:'' }}</h6></li>
-                                    <li class="pull-right"><a class="btn btn-default btn-xs" href="{% url 'todolist' lst.id %}">
-                                        <i class="glyphicon glyphicon-folder-open small"> </i> &nbsp; view all</a></li>
+                                    <li><h3 class="panel-title">{{ taskset.title|capfirst }}</h3></li>
+                                    <li class="pull-right small"><a class="label label-default" href="#">
+                                        <i class="glyphicon glyphicon-folder-open "></i></a></li>
                                 </ul>
-                                <h6 class="text">{{ lst.text | default_if_none:'' | url2link }}</h6>
-
                             </div>
-                            <div class="panel-body">
-                                <div class="bs-component">
-                                    <div class="list-group">
-                                    <ul>
-                                        {% for task in lst.todo_set.all %}
-                                            <li class="list-group-item">
-                                                <p data-id="{{ task.id }}" class="list-group-item-text">{{ task.title | url2link | safe }}</p>
+                            <div class="panel-body">{{ taskset.text }}</div>
+                            <ul class="list-group">
+                                {% for task in taskset.tasks %}
+                                    <li class="list-group-item small">
+                                        <ul class="list-inline">
+                                            <li><i title={{ task.get_status_text }} class="{{ task.get_status_glyphicon }}"></i></li>
+                                            <li>{{ task.title | url2link | safe }}</li>
+                                            <li class="top-right">
+                                                <span title="Deadline" class="small">
+                                                    {{ task.deadline |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}
+                                                </span>
                                             </li>
-                                        {% endfor %}
-                                    </ul>
-                                    </div>
-                                </div>
-
-                            </div>
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
                     {% endfor %}
                 </div>
