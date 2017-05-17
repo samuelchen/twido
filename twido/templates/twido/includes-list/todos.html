@@ -134,25 +134,31 @@
 
                                 // todos inline buttons
                                 todos_container.find("ul").mouseover(function (e) {
+{#                                    var button = $(this).find(".buttons");#}
+{#                                    console.log(button.css("display"));#}
+{#                                    if (button.css("display") == 'none')#}
                                     $(this).find(".buttons").show();
                                     if (e.target && e.target.nodeName == 'A') {
                                         $(e.target).tooltip('show');
                                     };
                                 }).mouseout(function (e) {
                                     $(this).find(".buttons").hide();
-                                }).find("a[name='del-todo']").editable({
-
+                                }).find("a[name='del-todo']").confirmation({
+                                    onShow: function(e, obj) {
+                                        $(obj).closest('ul').unbind('mouseout');
+                                    },
+                                    onHide: function(e, obj) {
+                                        $(obj).closest('ul').bind('mouseout', function (e) {
+                                            $(this).find(".buttons").hide();
+                                        });
+                                    },
+                                    onConfirm: function (e, obj) {
+                                        del_task(obj.data('task-id'));
+                                    },
+                                    html: 'true',
+                                    title: '<span class="text-danger">DANGER : Delete this task ?</span>',
+                                    placement: 'bottom'
                                 });
-
-
-{#                                        .confirmation({#}
-{#                                    onConfirm: function (e, obj) {#}
-{#                                        del_task(obj.data('task-id'));#}
-{#                                    },#}
-{#                                    html: 'true',#}
-{#                                    title: '<span class="text-danger">DANGER : Delete this task ?</span>',#}
-{#                                    placement: 'bottom'#}
-{#                                });#}
 
                             };
 

@@ -110,7 +110,7 @@
         $("#id_lists").find(".list-group-item").droppable({
             accept: '.list-group-item',
             classes: {
-                "ui-droppable-hover": "panel-title panel-info"
+                "ui-droppable-hover": "list-group-item-info"
             },
             drop: function (event, ui) {
                 if ($(this).hasClass('active')) return ;
