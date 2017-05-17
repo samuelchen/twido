@@ -32,10 +32,10 @@ class IndexView(TemplateView, BaseViewMixin):
         #     if host.startswith('fonts.googleapis.com'):
         #         return HttpResponseRedirect("/gf/")
 
-        if request.user.is_authenticated:
-            return HttpResponseRedirect("/home")
-        else:
-            return super(IndexView, self).get(request, *args, **kwargs)
+        # if request.user.is_authenticated:
+        #     return HttpResponseRedirect("/home")
+        # else:
+        return super(IndexView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)

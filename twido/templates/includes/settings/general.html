@@ -11,7 +11,7 @@
                                         <div class="col-lg-9">
 {#                                            <input class="form-control editable" id="id_lang" name="lang" data-name="lang" data-type="select"  value="{{ conf.lang }}">#}
                                             <span class="form-control editable" id="id_lang" data-type="select" data-name="lang" data-pk="{{ conf.lang.id }}" ></span>
-                                            <span class="help-block small">{% trans 'Prefer display language and local formats.' %}</span>
+                                            <span class="help-block small">{% trans 'Prefered UI display language and formats.' %}</span>
                                         </div>
                                     </div>
 
@@ -20,16 +20,21 @@
 
                                         <div class="col-lg-9">
                                             <span class="form-control editable" id="id_theme" data-type="select" data-name="theme" data-pk="{{ conf.theme.id }}" ></span>
-{#                                            <span class="help-block small">{% trans 'Perfered theme.' %}</span>#}
+                                            <span class="help-block small">{% trans 'Theme to render the site.' %}</span>
                                         </div>
                                     </div>
 
                                 </fieldset>
                                 <script language="JavaScript" type="text/javascript">
+                                    {% get_current_language as LANGUAGE_CODE %}
+                                    {% get_available_languages as LANGUAGES %}
+                                    {% get_language_info_list for LANGUAGES as languages %}
                                     languages = [
-                                            {value: "EN", text: "{% trans 'English' %}"},
-                                            {value: "CN", text: "{% trans 'Chinese Simplified' %}"},
-                                            {value: "TC", text: "{% trans 'Chinese Traditional' %}"}
+                                            {% for language in languages %}
+                                            {value: "{{ language.code }}", text: "{{ language.name_local }} ({{ language.code }})"},
+{#                                            {value: "CN", text: "{% trans 'Chinese Simplified' %}"},#}
+{#                                            {value: "TC", text: "{% trans 'Chinese Traditional' %}"}#}
+                                            {% endfor %}
                                         ];
                                     $('#id_lang').editable({
                                         url: "{% url 'setting' %}",
@@ -61,6 +66,8 @@
                                         success: function (response, newValue) {
                                             if (response.status == "error") {
                                                 return response.msg;
+                                            } else {
+                                                location.reload();
                                             }
                                         }
                                     });

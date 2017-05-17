@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, View
 from django.utils.translation import ugettext as _
+from django.conf.global_settings import LANGUAGES as ALL_LANGUAGES
 from ..models import UserProfile, SocialPlatform, SocialAccount
 from .base import BaseViewMixin
 
@@ -20,6 +21,7 @@ class ProfileView(TemplateView, BaseViewMixin):
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
         context['profile'] = self.request.user.profile
+        context['ALL_LANGUAGES'] = ALL_LANGUAGES
         return context
 
     #@sensitive_post_parameters()

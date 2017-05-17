@@ -12,13 +12,14 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">HOME</a>
+                    <a class="navbar-brand" href="/">My Wonderful Life 2</a>
                 </div>
 
                 {# A dropdown menu on top nav bar #}
                 <div class="collapse navbar-collapse" id="bs-navbar-collapse-top">
                     <ul class="nav navbar-nav">
                         {% if request.user.is_authenticated %}
+                        <li class="{% if request.path == '/home/' %}active{% endif %}"><a href="{% url 'home' %}">Home{% if request.path == '/home/' %}<span class="sr-only">(current)</span>{% endif %}</a></li>
                         <li class="{% if request.path == '/todolist/' %}active{% endif %}"><a href="{% url 'todolist' %}">Todos{% if request.path == '/todolist/' %}<span class="sr-only">(current)</span>{% endif %}</a></li>
 {#                        <li><a href="{% url 'wishlist' %}">Wishes</a></li>#}
 {#                        <li class="dropdown">#}

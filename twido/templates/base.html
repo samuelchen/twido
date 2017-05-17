@@ -1,7 +1,11 @@
 {% load staticfiles i18n %}{% load bootstrap_themes %}
+{% get_current_language as LANGUAGE_CODE %}{% get_available_languages as LANGUAGES %}
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<!-- {{ LANGUAGES }} -->
+{#{% language '{{ LANGUAGE_CODE }}' %}#}
 <!DOCTYPE html>
 <html>
-<head lang="en">
+<head lang="{{ LANGUAGE_CODE|default:'en' }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>{% block title %}{# TITLE BLOCK #}{% endblock %} - My WishList 2</title>
@@ -41,3 +45,4 @@
 </body>
 
 </html>
+{#{% endlanguage %}#}

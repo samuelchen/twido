@@ -44,7 +44,7 @@
                                 <div class="col-lg-9">
                                     <input class="form-control" autofocus="" id="id_username" placeholder="User screen name"
                                            maxlength="150" name="username" required="" type="text" value="{{ profile.username }}">
-                                    <span class="help-block small">{% trans 'Account/screen name, unique in system.' %}</span>
+                                    <span class="help-block small">{% trans 'A unique account/screen name.' %}</span>
 
                                 </div>
                             </div>
@@ -84,14 +84,27 @@
                                 <div class="col-lg-9">
                                     <input class="form-control" id="id_location" name="location"
                                            placeholder="San Jose, US" type="text" value="{{ profile.location|default_if_none:'' }}">
+                                    <span class="help-block small">{% trans 'Where I am living in.' %}</span>
                                 </div>
                             </div>
                             <div class="form-group {% if 'lang' in errors %}has-error{% endif %}">
                                 <label for="id_lang" class="col-lg-3 control-label">{% trans 'Language' %}</label>
 
                                 <div class="col-lg-9">
-                                    <input class="form-control" id="id_lang" name="lang"
-                                           placeholder="Language" type="text" value="{{ profile.lang|default_if_none:'en' }}">
+{#                                    <input class="form-control" id="id_lang" name="lang"#}
+{#                                           placeholder="Language" type="text" value="{{ profile.lang|default_if_none:'en' }}">#}
+
+                                    <select class="form-control" id="id_lang" name="lang" name="language">
+                                        {% get_current_language as LANGUAGE_CODE %}
+                                        {% get_language_info_list for ALL_LANGUAGES as languages %}
+                                        {% for language in languages %}
+                                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %}
+                                                    selected{% endif %}>
+                                                {{ language.name_local }} ({{ language.code }})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="help-block small">{% trans 'Langurage I speak.' %}</span>
                                 </div>
                             </div>
                             <div class="form-group {% if 'img_url' in errors %}has-error{% endif %}">
@@ -121,6 +134,5 @@
 
 {% block script %}
     <script type="text/javascript" language="JavaScript">
-
     </script>
 {% endblock %}
