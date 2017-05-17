@@ -4,7 +4,7 @@
 
 {% load i18n %}<!-- BEGIN todolists menu -->
 
-                    <div id="id-lists" class="list-group">
+                    <div id="id_lists" class="list-group">
                         <a href="{% url 'todolist' %}" data-id="{{ thelist.default.id }}" class="list-group-item {% if thelist.is_default %}active{% endif %}">
 {#                            <span class="badge">{{ thelist.todo_set.count }}</span>#}
                             <h4 class="list-group-item-heading">Todo Lists</h4>

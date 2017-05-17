@@ -7,8 +7,8 @@
                         <div class="bs-component">
                             <ul class="list-group" id="id_todos">
                                 {% for todo in page %}
-                                    <li data-id="{{ todo.id }}" draggable="true" class="list-group-item task-item">
-                                        <ul class="list-inline" draggable="true">
+                                    <li data-id="{{ todo.id }}" class="list-group-item task-item">
+                                        <ul class="list-inline">
                                             <li><span title="Status: {{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}"><i class="{{ todo.get_status_glyphicon }}"></i></span></li>
                                             <li class="top-right"><span title="Deadline" class="small" data-name="deadline" data-type="datetime" data-pk="{{ todo.id }}"
@@ -17,7 +17,7 @@
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.title | url2link }}</span></li>
                                             <li class="bottom-right"><span title="Labels" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.labels| default_if_none:'' }}</span></li>
-                                            <li class="buttons small" style="display: none">
+                                            <li class="buttons small" style="width:60px; display: none">
                                                 <a name="detail" title="Detail" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
                                                 <a name="del-todo" data-task-id="{{ todo.id }}"  title="Delete" class="label label-danger small"><i class="glyphicon glyphicon-remove"></i></a>
                                             </li>
@@ -140,14 +140,19 @@
                                     };
                                 }).mouseout(function (e) {
                                     $(this).find(".buttons").hide();
-                                }).find("a[name='del-todo']").confirmation({
-                                    onConfirm: function (e, obj) {
-                                        del_task(obj.data('task-id'));
-                                    },
-                                    html: 'true',
-                                    title: '<span class="text-danger">DANGER : Delete this task ?</span>',
-                                    placement: 'bottom'
+                                }).find("a[name='del-todo']").editable({
+
                                 });
+
+
+{#                                        .confirmation({#}
+{#                                    onConfirm: function (e, obj) {#}
+{#                                        del_task(obj.data('task-id'));#}
+{#                                    },#}
+{#                                    html: 'true',#}
+{#                                    title: '<span class="text-danger">DANGER : Delete this task ?</span>',#}
+{#                                    placement: 'bottom'#}
+{#                                });#}
 
                             };
 

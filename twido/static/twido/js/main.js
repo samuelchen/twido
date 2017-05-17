@@ -1,4 +1,3 @@
-
     // --- Begin cross reference token for Django
     function getCookie(name) {
         var cookieValue = null;
@@ -22,7 +21,7 @@
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     };
     $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
+        beforeSend: function (xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
@@ -44,27 +43,23 @@
     }
 
 
-
-    // --- drag & drop
-    function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
-    }
-
-    function drop(ev) {
-        ev.preventDefault();
-        var data = ev.dataTransfer.getData("text");
-        ev.target.appendChild(document.getElementById(data));
-    }
-
-
     // --- string funcs
 
-    String.prototype.format = String.prototype.f = function() {
-    var s = this,
-        i = arguments.length;
+    String.prototype.format = String.prototype.f = function () {
+        var s = this,
+            i = arguments.length;
 
-    while (i--) {
-        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
-    }
-    return s;
-};
+        while (i--) {
+            s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+        }
+        return s;
+    };
+
+    // --- badge count change ---
+    function badge_count(jq_obj, plus) {
+        if (jq_obj.length <= 0)
+            return;
+        var t = parseInt(jq_obj.text());
+        t = t + parseInt(plus);
+        jq_obj.text(t);
+    };

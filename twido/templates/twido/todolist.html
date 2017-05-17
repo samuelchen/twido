@@ -3,7 +3,8 @@
 {% block title %}Todo List{% endblock %}
 
 {% block head %}
-    <script language="JavaScript" src="{% static 'twido/js/Sortable.min.js' %}"></script>
+{#    <link rel="{% static 'jqueryui/dragdrop/jquery-ui.min.css' %}">#}
+    <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>
     <script language="JavaScript" src="{% static 'twido/js/bootstrap-confirmation.min.js' %}"></script>
     {% include 'includes/editable-head-ref.html' %}
     <script language="JavaScript" type="text/javascript">
@@ -97,37 +98,29 @@
 
 
         {# --- drag & drop to move --- #}
-        var _drag_drop_target_list_id = null;
-
-        $('.list-group').each(function (idx, el) {
-            var sortable = Sortable.create(el, {
-                group: "todos",
-                draggable: ".list-group-item",
-                filter: "a.list-group-item",
-                preventOnFilter: true,
-                onMove: function (evt) {
-
-                    if (!$(evt.dragged).hasClass('task-item')) {
-                        return false;
-                    }
-
-                    if ($(evt.related).hasClass('task-item')) {
-                        return false;
-                    }
-
-                    _drag_drop_target_list_id = $(evt.related).data('id');
-
-                    return false;
-                },
-                onEnd: function (evt) {
-                    if (!_drag_drop_target_list_id)
-                        return false;
-                    var task_id = $(evt.item).data('id');
-                    move_task(task_id, _drag_drop_target_list_id);
-                    _drag_drop_target_list_id = null;
-                    return false;
-                }
-            });
+        $("#id_todos").find(".list-group-item").draggable({
+            cursor: "move",
+            cursorAt: {top: 0, left: 0},
+            helper: function (event) {
+{#                return $('<li class="list-group-item small">' + $(this).text() + '</li>');#}
+                $(this).fadeOut().fadeIn();
+                return $('<i class="glyphicon glyphicon-tasks large"></i>');
+            }
+        });
+        $("#id_lists").find(".list-group-item").droppable({
+            accept: '.list-group-item',
+            classes: {
+                "ui-droppable-hover": "panel-title panel-info"
+            },
+            drop: function (event, ui) {
+                if ($(this).hasClass('active')) return ;
+                var list_id = $(this).data("id");
+                var task_id = ui.draggable.data("id");
+                move_task(task_id, list_id);
+                badge_count($(this).parent().find(".active").find(".badge"), -1);
+                badge_count($(this).find(".badge"), 1);
+                $(this).fadeOut().fadeIn();
+            }
         });
 
     });
@@ -145,7 +138,7 @@
             },
             success: function (resp) {
                 var list_name = $("#id_lists").find("[data-id='" + list_id + "']").text();
-                console.log(list_name);
+{#                console.log(list_name);#}
                 _success("{% trans 'Task \"{0}\" moved to list \"{1}\".' %}".f(task_name, list_id), true);  // message incl
                 console.debug('Todo task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
                 entry.fadeOut();
