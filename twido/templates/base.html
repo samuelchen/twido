@@ -8,7 +8,7 @@
 <head lang="{{ LANGUAGE_CODE|default:'en' }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>{% block title %}{# TITLE BLOCK #}{% endblock %} - My WishList 2</title>
+    <title>{% block title %}{# TITLE BLOCK #}{% endblock %} {{ website.name }}</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'twido/img/favicon.ico' %}"/>
     {# bootstrap requires 1.9.1 < jquery < 3.0.0 #}
 {#    <script src="{% static 'twido/js/jquery-3.1.1.min.js' %}"></script>#}

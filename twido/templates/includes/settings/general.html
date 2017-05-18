@@ -11,7 +11,7 @@
                                         <div class="col-lg-9">
 {#                                            <input class="form-control editable" id="id_lang" name="lang" data-name="lang" data-type="select"  value="{{ conf.lang }}">#}
                                             <span class="form-control editable" id="id_lang" data-type="select" data-name="lang" data-pk="{{ conf.lang.id }}" ></span>
-                                            <span class="help-block small">{% trans 'Prefered UI display language and formats.' %}</span>
+                                            <span class="help-block small">{% trans 'Preferred UI display language and formats.' %}</span>
                                         </div>
                                     </div>
 
@@ -26,7 +26,7 @@
 
                                 </fieldset>
                                 <script language="JavaScript" type="text/javascript">
-                                    {% get_current_language as LANGUAGE_CODE %}
+{#                                    {% get_current_language as LANGUAGE_CODE %}#}
                                     {% get_available_languages as LANGUAGES %}
                                     {% get_language_info_list for LANGUAGES as languages %}
                                     languages = [

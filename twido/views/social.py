@@ -12,13 +12,21 @@ from django.views.generic import TemplateView
 from django.utils.translation import ugettext as _
 import simplejson as json
 from tweepy import TweepError
-from ..models import Todo, Wish, WishList, TodoList, UserProfile, SocialPlatform, SocialAccount
 from .base import BaseViewMixin
+from ..models import Todo, Wish, WishList, TodoList, UserProfile, SocialPlatform, SocialAccount
+from ..utils import TwitterClientManager
 
 import logging
-from twido.utils import TwitterClientManager
 
 log = logging.getLogger(__name__)
+
+
+class I18N_MSGS(object):
+    denied = _('Denied!'),
+    social_fail_to_link = _('Fail to link social account.'),
+    social_conflict_link = _('Conflict. This social account is linked with another user.')
+    too_frequent = _('Too frequent (3 hours). Last time was at %s.')
+    social_link_first = _('You need to link your social account first.')
 
 
 class SocialView(TemplateView, BaseViewMixin):
@@ -52,6 +60,7 @@ class SocialView(TemplateView, BaseViewMixin):
 
             if "denied" in req:
                 log.warn("Denied! - Token = %s" % req.get('denied'))
+                self.warn(I18N_MSGS.denied)
                 return redirect(request.path)
 
             if action == 'link':
@@ -70,7 +79,7 @@ class SocialView(TemplateView, BaseViewMixin):
                         acc = self.update_twitter_account(tokens=tokens, profile=profile, commit=True)
                     except AssertionError as err:
                         log.exception(err)
-                        resp = HttpResponse(_('Conflict. This social account is linked with another user.'), status=409)
+                        resp = HttpResponse(I18N_MSGS.social_conflict_link, status=409)
                         return resp
 
                     if acc:
@@ -79,7 +88,7 @@ class SocialView(TemplateView, BaseViewMixin):
                         log.debug('Social account %s is updated.' % acc)
                     else:
                         # TODO: change response and text
-                        return HttpResponseNotAllowed(_('Fail to link'))
+                        return HttpResponseNotAllowed(I18N_MSGS.social_fail_to_link)
 
         elif platform == SocialPlatform.FACEBOOK:
             raise NotImplementedError
@@ -116,13 +125,13 @@ class SocialView(TemplateView, BaseViewMixin):
                 try:
                     acc = SocialAccount.objects.get(profile=p, platform=social_platform)
                     if timezone.now() - acc.timestamp < timedelta(hours=3):
-                        resp = HttpResponse(_('Too frequent (3 hours). Last update at %s.' % acc.timestamp), status=406)
+                        resp = HttpResponse(I18N_MSGS.too_frequent % acc.timestamp, status=406)
                         return resp
                     self.update_twitter_account(json.loads(acc.tokens), acc.profile, commit=True)
                     data = {'name': acc.name}
                     return JsonResponse(data)
                 except SocialAccount.DoesNotExist:
-                    return HttpResponseNotFound(_('You need to link your Twitter account first.'))
+                    return HttpResponseNotFound(I18N_MSGS.social_link_first)
 
         elif social_platform == SocialPlatform.FACEBOOK:
             raise NotImplementedError

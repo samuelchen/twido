@@ -26,12 +26,13 @@ def t(template):
 urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'', include('django.contrib.auth.urls')),
+
 
     # (r'^robots\.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt', 'mimetype': 'text/plain'}),
     # (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/img/favicon.ico'}),
-
-    url(r'^register/', views.register, name='register'),
+    url(r'^login/$', views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    url(r'', include('django.contrib.auth.urls')),
+    url(r'^register/$', views.RegisterView.as_view(template_name='registration/register.html'), name='register'),
     url(r'^profile/$', views.ProfileView.as_view(template_name='registration/profile.html'), name='profile'),
 
     url(r'^$', views.IndexView.as_view(template_name=t('index.html')), name='index'),
@@ -67,3 +68,5 @@ if settings.DEBUG:
         url(r'^test/(?P<pk>[0-9]+)/$', views.test, name='test'),
         url(r'^debug/', include(debug_toolbar.urls)),
     ])
+
+print(urlpatterns[1])

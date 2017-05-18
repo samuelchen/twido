@@ -4,7 +4,7 @@
 {% load i18n %}<!-- BEGIN list detail setting -->
                         {% if thelist.is_default %}
                             <div class="text-center">
-                            <H3>{{ thelist.name|upper }}</H3> <span>(unorganized tasks)</span>
+                            <H3>{% trans 'Default List' %}</H3> <span>{% trans '(unlisted tasks)' %}</span>
                             </div>
                         {% else %}
                             <form class="form-horizontal" method="post" action="{% url 'todolist' thelist.id %}">
@@ -13,7 +13,7 @@
 {#                                    <legend class="edit">{{ thelist.name }}</legend>#}
                                     <!-- name -->
                                     <div class="form-group">
-                                        <label for="name" class="col-lg-2 control-label">List Name</label>
+                                        <label for="name" class="col-lg-2 control-label">{% trans 'List Name' %}</label>
 
                                         <div class="col-lg-10">
                                             <span id="name" data-type="text" data-pk="{{ thelist.id }}"
@@ -25,7 +25,7 @@
 
                                     <!-- reminder -->
                                     <div class="form-group">
-                                        <label for="reminder" class="col-lg-2 control-label">Reminder</label>
+                                        <label for="reminder" class="col-lg-2 control-label">{% trans 'Reminder' %}</label>
 
                                         <div class="col-lg-10">
                                             <span id="reminder" data-type="datetime" data-pk="{{ thelist.id }}"
@@ -36,7 +36,7 @@
 
                                     <!-- related users -->
                                     <div class="form-group">
-                                        <label for="related_users" class="col-lg-2 control-label">Related Persons</label>
+                                        <label for="related_users" class="col-lg-2 control-label">{% trans 'Related Persons' %}</label>
 
                                         <div class="col-lg-10">
                                             <span id="related_users" data-type="select2" data-pk="{{ thelist.id }}"
@@ -55,7 +55,7 @@
 
                                     <!-- long text -->
                                     <div class="form-group">
-                                        <label for="text" class="col-lg-2 control-label">Description</label>
+                                        <label for="text" class="col-lg-2 control-label">{% trans 'Description' %}</label>
 
                                         <div class="col-lg-10">
                                             <span id="text" data-type="textarea" data-pk="{{ thelist.id }}"

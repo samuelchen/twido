@@ -2,7 +2,7 @@
 # coding: utf-8
 
 
-from .common import paginate, register, test
+from .common import paginate, test
 from .base import BaseViewMixin
 from .index import IndexView
 from .home import HomeView
@@ -11,3 +11,4 @@ from .setting import SettingView
 from .social import SocialView
 from .todo import TodoListView, TodoView
 from .wish import WishListView
+from .account import RegisterView, LoginView

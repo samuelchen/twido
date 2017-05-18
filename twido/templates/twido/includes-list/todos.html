@@ -9,17 +9,17 @@
                                 {% for todo in page %}
                                     <li data-id="{{ todo.id }}" class="list-group-item task-item">
                                         <ul class="list-inline">
-                                            <li><span title="Status: {{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
+                                            <li><span title="{% trans 'Status' %}: {{ todo.get_status_text }}" data-name="status" data-type="select" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}"><i class="{{ todo.get_status_glyphicon }}"></i></span></li>
-                                            <li class="top-right"><span title="Deadline" class="small" data-name="deadline" data-type="datetime" data-pk="{{ todo.id }}"
+                                            <li class="top-right"><span title="{% trans 'Deadline' %}" class="small" data-name="deadline" data-type="datetime" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.deadline |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}</span></li>
                                             <li><span data-name="title" data-type="text" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.title | url2link }}</span></li>
-                                            <li class="bottom-right"><span title="Labels" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
+                                            <li class="bottom-right"><span title="{% trans 'Labels' %}" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.labels| default_if_none:'' }}</span></li>
                                             <li class="buttons small" style="width:60px; display: none">
-                                                <a name="detail" title="Detail" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
-                                                <a name="del-todo" data-task-id="{{ todo.id }}"  title="Delete" class="label label-danger small"><i class="glyphicon glyphicon-remove"></i></a>
+                                                <a name="detail" title="{% trans 'Detail' %}" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
+                                                <a name="del-todo" data-task-id="{{ todo.id }}"  title="{% trans 'Delete' %}" class="label label-danger small"><i class="glyphicon glyphicon-remove"></i></a>
                                             </li>
                                         </ul>
                                     </li>
@@ -27,7 +27,7 @@
                             </ul>
                             {% if not page %}
                                 <div class="well">
-                                {% trans 'There is no task in this list. Please click "Create Todo" button to add.' %}
+                                {% trans 'List is empty. Please click "Create Task" button to add.' %}
                                 </div>
                             {% endif %}
                         </div>
@@ -62,7 +62,7 @@
                                     }
                                 }).on('save', function (e, params) {
                                     $(this).html('<i class="' + params.response.status_icon_class + '"></i>')
-                                            .attr("data-original-title", 'Status: '+params.response.status_text)
+                                            .attr("data-original-title", '{% trans 'Status' %}: '+params.response.status_text)
                                             .tooltip("show");
                                 });
 
@@ -156,7 +156,7 @@
                                         del_task(obj.data('task-id'));
                                     },
                                     html: 'true',
-                                    title: '<span class="text-danger">DANGER : Delete this task ?</span>',
+                                    title: '<span class="text-danger">{% trans 'DANGER : Delete this task' %} ?</span>',
                                     placement: 'bottom'
                                 });
 
@@ -173,12 +173,12 @@
                                         task_id: task_id
                                     },
                                     success: function (resp) {
-                                        _success("{% trans 'Task \"{0}\" deleted.' %}".f(task_name), true);  // message incl
+                                        _success('{% trans 'Task "{0}" deleted.' %}'.f(task_name), true);  // message incl
                                         console.debug('Todo task "' + task_name + '" (id=' + task_id + ') deleted.');
                                         entry.fadeOut();
                                     },
                                     error: function (resp) {
-                                        _error("{% trans 'Fail to delete task \"{0}\". <br>Status: {1} <br>Content: {2}' %}".f(
+                                        _error('{% trans 'Fail to delete task "{0}". <br>Status: {1} <br>Content: {2}' %}'.f(
                                                 task_name, resp.status, resp.statusText),
                                                 true);    // message incl
                                         entry.fadeOut().fadeIn().fadeOut().fadeIn();

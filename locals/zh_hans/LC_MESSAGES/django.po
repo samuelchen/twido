@@ -1,0 +1,569 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-05-19 01:45+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\account\admin.py:88 .\account\admin.py:99
+msgid "Permissions"
+msgstr "权限"
+
+#: .\account\admin.py:89 .\account\admin.py:100
+msgid "Important dates"
+msgstr "重要日期"
+
+#: .\settings\dev.py:24
+msgid "MWL"
+msgstr "忙完了"
+
+#: .\settings\prod.py:9
+msgid "My Wonderful Life 2"
+msgstr "我的精彩生活2"
+
+#: .\twido\forms.py:19
+#: .\twido\templates\includes\settings\_dropdown.sample.html:10
+#: .\twido\templates\registration\login.html:34
+#: .\twido\templates\registration\profile.html:34
+#: .\twido\templates\registration\register.html:34
+msgid "Email"
+msgstr "邮件"
+
+#: .\twido\forms.py:20
+msgid "Enter the user email."
+msgstr "输入用户邮件"
+
+#: .\twido\forms.py:21
+msgid "A user with that email already exists."
+msgstr "使用该邮件的用户已存在"
+
+#: .\twido\forms.py:22
+msgid "Email is required."
+msgstr "邮件 是必填字段"
+
+#: .\twido\models.py:38 .\twido\templates\includes\settings\acount-link.html:9
+msgid "Twitter"
+msgstr "推特 (Twitter)"
+
+#: .\twido\models.py:39
+msgid "Facebook"
+msgstr "脸谱 (Facebook)"
+
+#: .\twido\models.py:40
+msgid "Weibo"
+msgstr "微博"
+
+#: .\twido\models.py:94
+msgid "SYS"
+msgstr "系统"
+
+#: .\twido\models.py:313
+msgid "The default list. It will be created automatically (even if you delete it)."
+msgstr "默认清单。本清单将会自动创建（即使您将其删除）。"
+
+#: .\twido\models.py:372
+msgid "New"
+msgstr "新建"
+
+#: .\twido\models.py:373
+msgid "Started"
+msgstr "已开始"
+
+#: .\twido\models.py:374
+msgid "Paused"
+msgstr "暂停"
+
+#: .\twido\models.py:375
+msgid "Done"
+msgstr "完成"
+
+#: .\twido\models.py:376
+msgid "Cancelled"
+msgstr "已取消"
+
+#: .\twido\models.py:377
+msgid "Expired"
+msgstr "已超期"
+
+#: .\twido\setings.py:149
+msgid "TWIDO"
+msgstr "TWIDO"
+
+#: .\twido\setings.py:159
+msgid "Chinese Simplified"
+msgstr "简体中文"
+
+#: .\twido\setings.py:160
+msgid "Chinese Traditional"
+msgstr "繁体中文"
+
+#: .\twido\setings.py:161
+msgid "English"
+msgstr "英文"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:6
+#: .\twido\templates\includes\topnavbar.html:68
+#: .\twido\templates\registration\profile.html:3
+#: .\twido\templates\registration\profile.html:29
+msgid "Profile"
+msgstr "个人资料"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:14
+#: .\twido\templates\registration\profile.html:38
+msgid "Account ID, unique in system. Immutable."
+msgstr "账号标识，系统唯一，不可修改"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:19
+#: .\twido\templates\registration\profile.html:42
+msgid "Username"
+msgstr "用户名"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:26
+msgid "Account/screen name, unique in system."
+msgstr "用户名或者账号名，系统唯一"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:31
+#: .\twido\templates\registration\profile.html:52
+msgid "Name"
+msgstr "名字"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:37
+#: .\twido\templates\registration\profile.html:57
+msgid "Real name or display name"
+msgstr "真实姓名或者昵称"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:42
+#: .\twido\templates\registration\profile.html:61
+msgid "Gender"
+msgstr "性别"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:51
+#: .\twido\templates\registration\profile.html:65
+msgid "Male"
+msgstr "男性"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:57
+#: .\twido\templates\registration\profile.html:68
+msgid "Female"
+msgstr "女性"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:64
+#: .\twido\templates\registration\profile.html:74
+msgid "Timezone"
+msgstr "时区"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:74
+#: .\twido\templates\registration\profile.html:82
+msgid "Location"
+msgstr "地址"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:84
+#: .\twido\templates\includes\settings\general.html:9
+#: .\twido\templates\registration\profile.html:91
+msgid "Language"
+msgstr "语言"
+
+#: .\twido\templates\includes\settings\_dropdown.sample.html:94
+#: .\twido\templates\registration\profile.html:111
+msgid "Image"
+msgstr "图像"
+
+#: .\twido\templates\includes\settings\acount-link.html:6
+msgid "Account Linking"
+msgstr "社交帐号关联"
+
+#: .\twido\templates\includes\settings\acount-link.html:20
+msgid "Account ID, unique and immutable in system."
+msgstr "帐号标识，系统唯一且不可更改"
+
+#: .\twido\templates\includes\settings\general.html:6
+#: .\twido\templates\twido\setting.html:27
+msgid "General"
+msgstr "一般"
+
+#: .\twido\templates\includes\settings\general.html:14
+msgid "Preferred UI display language and formats."
+msgstr "偏好的界面显示语言及格式"
+
+#: .\twido\templates\includes\settings\general.html:19
+msgid "Theme"
+msgstr "主题"
+
+#: .\twido\templates\includes\settings\general.html:23
+msgid "Theme to render the site."
+msgstr "网站显示的主题"
+
+#: .\twido\templates\includes\topnavbar.html:11
+msgid "Toggle navigation"
+msgstr "导航切换"
+
+#: .\twido\templates\includes\topnavbar.html:23
+#: .\twido\templates\twido\home.html:3
+msgid "Home"
+msgstr "首页"
+
+#: .\twido\templates\includes\topnavbar.html:24
+#: .\twido\templates\twido\todolist.html:3
+msgid "Todos"
+msgstr "待办事项"
+
+#: .\twido\templates\includes\topnavbar.html:47
+msgid "Search"
+msgstr "搜索"
+
+#: .\twido\templates\includes\topnavbar.html:49
+#: .\twido\templates\registration\login.html:58
+#: .\twido\templates\registration\register.html:70
+msgid "Submit"
+msgstr "提交"
+
+#: .\twido\templates\includes\topnavbar.html:69
+#: .\twido\templates\twido\setting.html:3 .\twido\templates\twido\social.html:3
+msgid "Setting"
+msgstr "设置"
+
+#: .\twido\templates\includes\topnavbar.html:71
+msgid "Admin"
+msgstr "管理后台"
+
+#: .\twido\templates\includes\topnavbar.html:73
+msgid "Help"
+msgstr "帮助"
+
+#: .\twido\templates\includes\topnavbar.html:75
+msgid "Logout"
+msgstr "退出登录"
+
+#: .\twido\templates\includes\topnavbar.html:79
+msgid "Singn in/up"
+msgstr "登录/注册"
+
+#: .\twido\templates\includes\topnavbar.html:81
+#: .\twido\templates\registration\login.html:32
+msgid "Login"
+msgstr "登录"
+
+#: .\twido\templates\includes\topnavbar.html:82
+#: .\twido\templates\registration\login.html:68
+#: .\twido\templates\registration\register.html:25
+msgid "Sign up"
+msgstr "注册"
+
+#: .\twido\templates\includes\topnavbar.html:84
+#: .\twido\templates\registration\login.html:69
+#: .\twido\templates\registration\register.html:81
+msgid "Forget password"
+msgstr "忘记密码"
+
+#: .\twido\templates\registration\login.html:15
+#, python-format
+msgid ""
+"\n"
+"                        <p>You are already signed in.</p>\n"
+"                        <p>If you want to login as another user, please <a href=\"%(url_logout)s\">logout</a> and re-login.</p>\n"
+"                        "
+msgstr ""
+"\n"
+"                        <p>您已经登录.</p>\n"
+"                        <p>如果您想使用其他用户登录，请 <a href=\"%(url_logout)s\">退出登录</a> 然后 重新登录.</p>\n"
+"                        "
+
+#: .\twido\templates\registration\login.html:37
+msgid "user email"
+msgstr "用户邮件"
+
+#: .\twido\templates\registration\login.html:42
+#: .\twido\templates\registration\login.html:46
+#: .\twido\templates\registration\register.html:53
+#: .\twido\templates\registration\register.html:57
+msgid "Password"
+msgstr "密码"
+
+#: .\twido\templates\registration\login.html:50
+msgid "Remeber me"
+msgstr "记住登录"
+
+#: .\twido\templates\registration\login.html:59
+#: .\twido\templates\registration\profile.html:121
+#: .\twido\templates\registration\register.html:71
+msgid "Reset"
+msgstr "重置"
+
+#: .\twido\templates\registration\profile.html:47
+msgid "A unique account/screen name."
+msgstr "唯一的帐号标识"
+
+#: .\twido\templates\registration\profile.html:87
+msgid "Where I am living in."
+msgstr "我生活或工作在哪里"
+
+#: .\twido\templates\registration\profile.html:107
+msgid "Language I speak."
+msgstr "我说的语言"
+
+#: .\twido\templates\registration\profile.html:120
+msgid "Save"
+msgstr "保存"
+
+#: .\twido\templates\registration\register.html:39
+msgid "Email will be also default user name."
+msgstr "邮件地址将会是默认的用户名"
+
+#: .\twido\templates\registration\register.html:61
+msgid "Password (again)"
+msgstr "重输密码"
+
+#: .\twido\templates\registration\register.html:65
+msgid "Re-enter Password"
+msgstr "再次输入密码"
+
+#: .\twido\templates\registration\register.html:75
+msgid "marked fields are required."
+msgstr "标记的是必填字段"
+
+#: .\twido\templates\registration\register.html:81
+msgid "Sign in"
+msgstr "登录"
+
+#: .\twido\templates\twido\includes-list\todolist-form.html:7
+msgid "Default List"
+msgstr "默认清单"
+
+#: .\twido\templates\twido\includes-list\todolist-form.html:7
+msgid "(unlisted tasks)"
+msgstr "（无清单任务）"
+
+#: .\twido\templates\twido\includes-list\todolist-form.html:16
+msgid "List Name"
+msgstr "清单名"
+
+#: .\twido\templates\twido\includes-list\todolist-form.html:28
+msgid "Reminder"
+msgstr "提醒"
+
+#: .\twido\templates\twido\includes-list\todolist-form.html:39
+msgid "Related Persons"
+msgstr "相关人"
+
+#: .\twido\templates\twido\includes-list\todolist-form.html:58
+msgid "Description"
+msgstr "描述"
+
+#: .\twido\templates\twido\includes-list\todolists-menu.html:10
+msgid "Todo List"
+msgstr "待办清单"
+
+#: .\twido\templates\twido\includes-list\todos.html:12
+#: .\twido\templates\twido\includes-list\todos.html:65
+msgid "Status"
+msgstr "状态"
+
+#: .\twido\templates\twido\includes-list\todos.html:14
+msgid "Deadline"
+msgstr "期限"
+
+#: .\twido\templates\twido\includes-list\todos.html:18
+msgid "Labels"
+msgstr "标签"
+
+#: .\twido\templates\twido\includes-list\todos.html:21
+msgid "Detail"
+msgstr "详细"
+
+#: .\twido\templates\twido\includes-list\todos.html:22
+msgid "Delete"
+msgstr "删除"
+
+#: .\twido\templates\twido\includes-list\todos.html:30
+msgid "List is empty. Please click \"Create Task\" button to add."
+msgstr "该清单为空。请点击\"建立任务\"按钮添加待办事项。"
+
+#: .\twido\templates\twido\includes-list\todos.html:159
+msgid "DANGER : Delete this task"
+msgstr "危险操作： 删除该任务"
+
+#: .\twido\templates\twido\includes-list\todos.html:176
+#, python-brace-format
+msgid "Task \"{0}\" deleted."
+msgstr "任务 \"{0}\" 已删除."
+
+#: .\twido\templates\twido\includes-list\todos.html:181
+#, python-brace-format
+msgid "Fail to delete task \"{0}\". <br>Status: {1} <br>Content: {2}"
+msgstr "删除任务 \"{0}\" 失败. <br>状态: {1} <br>内容: {2}"
+
+#: .\twido\templates\twido\setting.html:28
+msgid "Link Accounts"
+msgstr "关联帐号"
+
+#: .\twido\templates\twido\todolist.html:35
+msgid "Create a new list"
+msgstr "创建一个新的清单"
+
+#: .\twido\templates\twido\todolist.html:35
+msgid "Create List"
+msgstr "新建清单"
+
+#: .\twido\templates\twido\todolist.html:37
+msgid "Delete current list"
+msgstr "删除当前清单 "
+
+#: .\twido\templates\twido\todolist.html:37
+msgid "Delete List"
+msgstr "删除清单 "
+
+#: .\twido\templates\twido\todolist.html:58
+msgid "Add a task to current list"
+msgstr "添加一个任务到当前清单"
+
+#: .\twido\templates\twido\todolist.html:58
+msgid "Create Task"
+msgstr "新任务"
+
+#: .\twido\templates\twido\todolist.html:91
+msgid "DANGER : Delete list"
+msgstr "危险操作：删除清单 "
+
+#: .\twido\templates\twido\todolist.html:92
+msgid "All tasks in this list will be moved to default list"
+msgstr "当前清单所有任务将会被移动到默认清单"
+
+#: .\twido\templates\twido\todolist.html:141
+#, python-brace-format
+msgid "Task \"{0}\" moved to list \"{1}\"."
+msgstr "任务 \"{0}\" 已移动到清单 \"{1}\"."
+
+#: .\twido\templates\twido\todolist.html:146
+#, python-brace-format
+msgid "Fail to move task \"{0}\". <br>Status: {1} <br>Content: {2}"
+msgstr "移动任务 \"{0}\" 失败. <br>状态: {1} <br>内容: {2}"
+
+#: .\twido\templates\twido\wishlist.html:3
+msgid "Wish List"
+msgstr "愿望清单"
+
+#: .\twido\views\account.py:22 .\twido\views\common.py:132
+msgid "Registration succeed."
+msgstr "注册成功。"
+
+#: .\twido\views\account.py:23 .\twido\views\common.py:135
+#, python-format
+msgid "Redirect to profile updating page ... <br>If redirection did not start, please <a href=\"%s\">click me to profile</a>."
+msgstr "正在重定向到个人资料更新页面 ... <br>如果没有自动刷新，请<a href=\"%s\">点击这里到个人资料页面</a>。"
+
+#: .\twido\views\common.py:139 .\twido\views\home.py:18
+msgid "Come on, you are about to completed all the tasks!"
+msgstr "加油，你就要完成今天所有待办事项了！"
+
+#: .\twido\views\home.py:17
+msgid "today"
+msgstr "今天"
+
+#: .\twido\views\home.py:19
+msgid "soon"
+msgstr "近期"
+
+#: .\twido\views\home.py:20
+#, python-format
+msgid "Tasks in %d days (including those without deadline)"
+msgstr "%d天内的任务 （包含没有设定期限的任务）"
+
+#: .\twido\views\home.py:21
+msgid "expired"
+msgstr "已超期"
+
+#: .\twido\views\home.py:23
+#, python-format
+msgid "Restart these or you may want to mark all these tasks \"%(expire)s\" or \"%(cancel)s\"."
+msgstr "重新开始这些任务，或者将它们标记为 \"%(expire)s\" 或者 \"%(cancel)s\"。"
+
+#: .\twido\views\profile.py:20
+msgid "Profile is saved successfully."
+msgstr "个人信息已成功保存。"
+
+#: .\twido\views\profile.py:21
+#, python-format
+msgid "Will redirect to home page...<br>If not start, please <a href=\"%s\">click me to Home page</a>."
+msgstr "即将转向首页 ... <br>如果没有自动刷新，请<a href=\"%s\">点击这里到首页</a>。"
+
+#: .\twido\views\social.py:25
+msgid "Denied!"
+msgstr "拒绝！"
+
+#: .\twido\views\social.py:26
+msgid "Fail to link social account."
+msgstr "社交帐号关联失败"
+
+#: .\twido\views\social.py:27
+msgid "Conflict. This social account is linked with another user."
+msgstr "冲突，该社交帐号已关联到另外一个用户。"
+
+#: .\twido\views\social.py:28
+#, python-format
+msgid "Too frequent (3 hours). Last time was at %s."
+msgstr "过于频繁 （3小时）。上次更新时间 %s。"
+
+#: .\twido\views\social.py:29
+msgid "You need to link your social account first."
+msgstr "需要先关联您的社交帐号。"
+
+#: .\twido\views\todo.py:22
+#, python-format
+msgid "Invalid request. (action=%s)"
+msgstr "无效请求。 （action=%s)"
+
+#: .\twido\views\todo.py:25
+msgid "New List"
+msgstr "新清单"
+
+#: .\twido\views\todo.py:26
+msgid "Default list can not be deleted."
+msgstr "默认清单不能删除。"
+
+#: .\twido\views\todo.py:27
+msgid "New list is created."
+msgstr "新清单已经创建。"
+
+#: .\twido\views\todo.py:28
+#, python-format
+msgid "Todo list \"%s\" was deleted."
+msgstr "清单 \"%s\" 已经删除."
+
+#: .\twido\views\todo.py:32
+msgid "New Task"
+msgstr "新任务"
+
+#: .\twido\views\todo.py:35
+msgid "Primary key is None"
+msgstr "数据库主键为None"
+
+#: .\twido\views\todo.py:36
+#, python-format
+msgid "\"%(prop)s\" can not be \"%(value)s\""
+msgstr "\"%(prop)s\" 不能为 \"%(value)s\""
+
+#: .\twido\views\todo.py:37
+#, python-format
+msgid "\"%s\" can not be changed."
+msgstr "\"%s\" 不可修改)"
+
+#~ msgid "email"
+#~ msgstr "邮件"
+
+#~ msgid "The two password fields didn't match."
+#~ msgstr "两次输入的密码不匹配"
+
+#~ msgid "Todo Lists"
+#~ msgstr "待办事项"

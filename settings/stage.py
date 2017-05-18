@@ -1,4 +1,5 @@
-from .base import *
+from twido.setings import *
+from django.utils.translation import ugettext_lazy as _
 
 print('stage settings')
 DEBUG = False

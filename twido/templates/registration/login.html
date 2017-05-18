@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load i18n %}
 
 {% block title %}Login{% endblock %}
 
@@ -11,8 +11,11 @@
             <div class="row">
                 <div class="col-lg-3 col-lg-offset-3">
                     <div class="well bs-component">
+                        {% url 'logout' as url_logout %}
+                        {% blocktrans %}
                         <p>You are already signed in.</p>
-                        <p>If you want to login as another user, please <a href="{% url 'logout' %}">logout</a> and re-login.</p>
+                        <p>If you want to login as another user, please <a href="{{ url_logout }}">logout</a> and re-login.</p>
+                        {% endblocktrans %}
                     </div>
                 </div>
             </div>
@@ -26,25 +29,25 @@
                     <form class="form-horizontal" method="post" action="{% url 'login' %}">
                         {% csrf_token %}
                         <fieldset>
-                            <legend>Login</legend>
+                            <legend>{% trans 'Login' %}</legend>
                             <div class="form-group">
-                                <label for="id_username" class="col-lg-2 control-label">Email</label>
+                                <label for="id_username" class="col-lg-2 control-label">{% trans 'Email' %}</label>
 
                                 <div class="col-lg-10">
-                                    <input class="form-control" id="id_username" placeholder="User email" autofocus=""
+                                    <input class="form-control" id="id_username" placeholder="{% trans 'user email' %}" autofocus=""
                                            maxlength="254" name="username" required="" type="text" value="{{ request.POST.username }}">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="id_password" class="col-lg-2 control-label">Password</label>
+                                <label for="id_password" class="col-lg-2 control-label">{% trans 'Password' %}</label>
 
                                 <div class="col-lg-10">
                                     <input class="form-control" id="id_password" name="password" required=""
-                                           placeholder="Password" type="password">
+                                           placeholder="{% trans 'Password' %}" type="password">
 
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox"> Remeber me
+                                            <input type="checkbox"> {% trans 'Remeber me' %}
                                         </label>
                                     </div>
                                 </div>
@@ -52,8 +55,8 @@
 
                             <div class="form-group">
                                 <div class="col-lg-10 col-lg-offset-2">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                    <button type="reset" class="btn btn-default">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+                                    <button type="reset" class="btn btn-default">{% trans 'Reset' %}</button>
                                     <input type="hidden" name="next" value="{{ next }}"/>
                                 </div>
                             </div>
@@ -62,8 +65,8 @@
                     </form>
                     <div>
                         {# Assumes you setup the password_reset view in your URLconf #}
-                        <p><a href="{% url 'register' %}">Sign up</a> | <a href="{% url 'password_reset' %}">Lost
-                            password?</a></p>
+                        <p><a href="{% url 'register' %}">{% trans 'Sign up' %}</a> | <a href="{% url 'password_reset' %}">
+                            {% trans 'Forget password' %}?</a></p>
 
                     </div>
                 </div>

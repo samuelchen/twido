@@ -11,7 +11,8 @@ from django.dispatch import receiver
 # from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.templatetags.static import static
 from django.utils import timezone
-
+from django.utils.translation import ugettext_lazy as _
+from django.db import transaction
 try:
     UserModel = get_user_model()
 except AppRegistryNotReady:
@@ -34,9 +35,9 @@ class SocialPlatform(object):
     #     (WEIBO, 'Weibo'),
     # )
     _texts = {
-        TWITTER: 'Twitter',
-        FACEBOOK: 'Facebook',
-        WEIBO: 'Weibo',
+        TWITTER: _('Twitter'),
+        FACEBOOK: _('Facebook'),
+        WEIBO: _('Weibo'),
     }
     SocialAccountChoices = _texts.items()
 
@@ -90,6 +91,7 @@ class UserProfile(models.Model):
         p, created = cls.objects.get_or_create(username=cls.__sys_profile_uname)
         if created:
             p.email = cls.__sys_profile_uname + '@localhost'
+            p.name = _('SYS')
             p.save()
             log.info('System profile (%s) is created.' % cls.__sys_profile_uname)
         cls.__sys_profile = p
@@ -299,7 +301,7 @@ class List(ProfileBasedModel):
         unique_together = ('profile', 'name')
         abstract = True
 
-    __default_name = 'DEFAULT'
+    __default_name = '__default__'
 
     @classmethod
     def get_default(cls, profile):
@@ -308,8 +310,7 @@ class List(ProfileBasedModel):
         except cls.DoesNotExist:
             default_list = cls(name=cls.__default_name, profile=profile)
 
-        # TODO: update some default values and save
-        default_list.text = 'The default list. It will be created automatically.'
+        default_list.text = _('The default list. It will be created automatically (even if you delete it).')
         default_list.save(is_default=True)
 
         return default_list
@@ -333,7 +334,7 @@ class List(ProfileBasedModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None, is_default=False):
-        if not is_default and self.name.upper() == self.__default_name:
+        if not is_default and self.name.lower() == self.__default_name:
             raise AttributeError('List name can not be "%s" (reversed default name). ' % self.name)
         return super(List, self).save(force_insert=force_insert, force_update=force_update,
                                       using=using, update_fields=update_fields)
@@ -353,10 +354,11 @@ class TodoList(List):
     def delete(self, using=None, keep_parents=False):
         s = str(self)
         log.debug('deleting todo list %s' % s)
-        Todo.objects.filter(list=self, profile=self.profile).update(list=self.get_default(self.profile))
-        log.debug('all tasks in todo list %s are moved to default list.' % s)
-        super(TodoList, self).delete(using=using, keep_parents=keep_parents)
-        log.info('todo list %s is deleted.' % s)
+        with transaction.atomic():
+            Todo.objects.filter(list=self, profile=self.profile).update(list=self.get_default(self.profile))
+            log.debug('all tasks in todo list %s are moved to default list.' % s)
+            super(TodoList, self).delete(using=using, keep_parents=keep_parents)
+            log.info('todo list %s is deleted.' % s)
 
 
 class TaskStatus(object):
@@ -367,12 +369,12 @@ class TaskStatus(object):
     EXPIRED = 10
     CANCEL = -1
     _text = {
-        NEW: 'New',
-        STARTED: 'Started',
-        PAUSED: 'Paused',
-        DONE: 'Done',
-        CANCEL: 'Cancelled',
-        EXPIRED: 'Expired',
+        NEW: _('New'),
+        STARTED: _('Started'),
+        PAUSED: _('Paused'),
+        DONE: _('Done'),
+        CANCEL: _('Cancelled'),
+        EXPIRED: _('Expired'),
     }
     _glyphicons = {
         NEW: 'glyphicon glyphicon-file text-muted ',
@@ -564,9 +566,9 @@ class SocialAccountAdmin(admin.ModelAdmin):
 #             WishList.init_data(profile)
 
 
-from .apps import TwidoAppConfig
-@receiver(post_migrate)
-def post_migrate(sender, **kwargs):
-    if sender.name == TwidoAppConfig.name:
-        UserProfile.init_data()
+# from .apps import TwidoAppConfig
+# @receiver(post_migrate)
+# def post_migrate(sender, **kwargs):
+#     if sender.name == TwidoAppConfig.name:
+#         UserProfile.init_data()
 

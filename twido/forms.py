@@ -4,8 +4,8 @@
 from django.forms import ModelForm
 from django import forms
 from .models import TodoList, Todo, UserProfile
-from django.contrib.auth.forms import UserCreationForm, UsernameField
-from django.utils.translation import ugettext as _
+from django.contrib.auth.forms import UserCreationForm
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db import transaction
 import logging
@@ -15,21 +15,23 @@ log = logging.getLogger(__name__)
 UserMode = get_user_model()
 
 
+class I18N_MSGS(object):
+    email_lable = _("Email")
+    email_help = _("Enter the user email.")
+    email_exists = _('A user with that email already exists.')
+    email_required = _('Email is required.')
+
+
 class UserProfileCreationForm(UserCreationForm):
     """
     Django User is used for authorization (login/logout/register). User.username will always set to User.email.
     """
     email = forms.EmailField(
-        label=_("email"),
+        label=I18N_MSGS.email_lable,
         widget=forms.EmailInput,
         strip=True,
-        help_text=_("Enter the user email."),
+        help_text=I18N_MSGS.email_help,
     )
-
-    error_messages = {
-        'password_mismatch': _("The two password fields didn't match."),    # inherited
-        'email_exists': _('A user with that email already exists.'),
-    }
 
     class Meta:
         model = UserMode
@@ -43,11 +45,16 @@ class UserProfileCreationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError(
+                I18N_MSGS.email_required,
+                code='email_required'
+            )
         try:
             profile = UserProfile.objects.get(email=email)
             if profile and profile.user:
                 raise forms.ValidationError(
-                    self.error_messages['email_exists'],
+                    I18N_MSGS.email_exists,
                     code='email_exists'
                 )
         except UserProfile.DoesNotExist:
@@ -57,20 +64,10 @@ class UserProfileCreationForm(UserCreationForm):
     def clean(self):
         cleaned_data = super(UserProfileCreationForm, self).clean()
         email = cleaned_data.get('email')
-        # if not email:
-        #     raise forms.ValidationError(_('Email is required.'))
         username = cleaned_data.get('username')
         if not username:
             cleaned_data['username'] = email
-        # try:
-        #     profile = UserProfile.objects.get(email=email)
-        #     if profile and profile.user:
-        #         raise forms.ValidationError(
-        #             self.error_messages['email_exists'],
-        #             code='email_exists'
-        #         )
-        # except UserProfile.DoesNotExist:
-        #     pass
+
         return cleaned_data
 
     def save(self, commit=True):
@@ -102,16 +99,16 @@ class UserProfileCreationForm(UserCreationForm):
 
 
 
-class TodoListForm(ModelForm):
-    class Meta:
-        model = TodoList
-        fields = ['name', 'reminder', 'related_users', 'text']
-        widgets = {
-            'reminder': forms.SplitDateTimeWidget(),
-        }
-
-
-class TodoForm(forms.ModelForm):
-    class Meta:
-        model = Todo
-        fields = '__all__'
+# class TodoListForm(ModelForm):
+#     class Meta:
+#         model = TodoList
+#         fields = ['name', 'reminder', 'related_users', 'text']
+#         widgets = {
+#             'reminder': forms.SplitDateTimeWidget(),
+#         }
+#
+#
+# class TodoForm(forms.ModelForm):
+#     class Meta:
+#         model = Todo
+#         fields = '__all__'

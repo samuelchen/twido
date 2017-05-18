@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 from bootstrap_themes import list_themes
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from ..models import SocialPlatform, SocialAccount, Config
 from .base import BaseViewMixin
@@ -10,7 +12,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-# @method_decorator(login_required, 'dispatch')
+@method_decorator(login_required, 'dispatch')
 class SettingView(TemplateView, BaseViewMixin):
 
     def get_context_data(self, **kwargs):

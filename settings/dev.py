@@ -1,4 +1,5 @@
-from .base import *
+from twido.setings import *
+from django.utils.translation import ugettext_lazy as _
 
 print('dev settings')
 DEBUG = True if __debug__ and os.getenv('TWIDO_DEBUG') else False
@@ -19,6 +20,8 @@ INSTALLED_APPS.extend([
 ])
 
 # AUTH_USER_MODEL = 'account.User'
+
+WEBSITE_NAME = _('MWL')
 
 CONFIG_FILE = os.getenv('CONFIG_FILE', 'config.sam.ini')
 

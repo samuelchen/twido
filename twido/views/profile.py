@@ -2,6 +2,7 @@
 # coding: utf-8
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -15,6 +16,12 @@ import logging
 log = logging.getLogger(__name__)
 
 
+class I18N_MSGS(object):
+    profile_saved_success = _('Profile is saved successfully.'),
+    redirect_to_home = _('Will redirect to home page...<br>'
+                         'If not start, please <a href="%s">click me to Home page</a>.')
+
+
 @method_decorator(login_required, 'dispatch')
 class ProfileView(TemplateView, BaseViewMixin):
 
@@ -24,8 +31,6 @@ class ProfileView(TemplateView, BaseViewMixin):
         context['ALL_LANGUAGES'] = ALL_LANGUAGES
         return context
 
-    #@sensitive_post_parameters()
-    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         user = self.request.user
         profile = user.profile
@@ -47,10 +52,9 @@ class ProfileView(TemplateView, BaseViewMixin):
 
         profile.save()
 
-        self.success(_('Profile is saved successfully.'))
+        self.success(I18N_MSGS.profile_saved_success)
         if 'redirect' in kwargs:
-            self.success(_('Will redirect to home page...'
-                           'If not start, please <a href="%s">click me to Home page</a>.') % url_home)
+            self.success(I18N_MSGS.redirect_to_home % url_home)
 
         return self.get(request, *args, **kwargs)
 

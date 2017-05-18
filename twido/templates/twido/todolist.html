@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% load customer_tags staticfiles i18n %}
 
-{% block title %}Todo List{% endblock %}
+{% block title %}{% trans 'Todos' %}{% endblock %}
 
 {% block head %}
 {#    <link rel="{% static 'jqueryui/dragdrop/jquery-ui.min.css' %}">#}
@@ -32,11 +32,10 @@
                         {% csrf_token %}
                         <input type="hidden" name="action">
                         <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add" title="Create a new list" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> Create List</a>
+                            <a name="add" title="{% trans 'Create a new list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Create List' %}</a>
                             {% if not thelist.is_default %}
-                            <a name="del" title="Delete current list" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> Delete List</a>
+                            <a name="del" title="{% trans 'Delete current list' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete List' %}</a>
                             {% endif %}
-{#                            <a name="add-todo" title="Add a task to current list" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> Create Todo</a>#}
                         </div>
                     </form>
                 </div>
@@ -56,7 +55,7 @@
 
                         {% include 'twido/includes-list/todos.html' %}
                         <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add-todo" title="Add a task to current list" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> Create Todo</a>
+                            <a name="add-todo" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
                         </div>
                     </div>
 
@@ -89,9 +88,9 @@
                 form_action.submit();
             },
             html: 'true',
-            title: '<span class="text-danger">DANGER : Delete list "{{ thelist.name }}(id:{{ thelist.id }})" ?</span>'
-                        +'<p/><p class="small">All tasks in this list will be moved to default list',
-            placement: 'bottom'
+            title: '<span class="text-danger">{% trans 'DANGER : Delete list' %} "{{ thelist.name }}(id:{{ thelist.id }})" ?</span>'
+                        +'<p/><p class="small">{% trans 'All tasks in this list will be moved to default list' %}',
+            placement: 'right'
         });
 
         $(".editable").addClass('no_underline').css("cursor", "pointer");
@@ -128,7 +127,7 @@
     function move_task(task_id, list_id) {
         var entry = $("#id_todos").find("[data-id='" + task_id + "']");
         var task_name = entry.find("span[data-name='title']").text();
-
+        var list_name = entry.data('name');
         $.ajax("{{ request.path }}", {
             method: 'POST',
             data: {
@@ -139,12 +138,12 @@
             success: function (resp) {
                 var list_name = $("#id_lists").find("[data-id='" + list_id + "']").text();
 {#                console.log(list_name);#}
-                _success("{% trans 'Task \"{0}\" moved to list \"{1}\".' %}".f(task_name, list_id), true);  // message incl
+                _success('{% trans 'Task "{0}" moved to list "{1}".' %}'.f(task_name, list_name), true);  // message incl
                 console.debug('Todo task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
                 entry.fadeOut();
             },
             error: function (resp) {
-                _error("{% trans 'Fail to move task \"{0}\". <br>Status: {1} <br>Content: {2}' %}".f(
+                _error('{% trans 'Fail to move task "{0}". <br>Status: {1} <br>Content: {2}' %}'.f(
                                 task_name, resp.status, resp.statusText),
                         true);    // message incl
                 entry.fadeOut().fadeIn().fadeOut().fadeIn();

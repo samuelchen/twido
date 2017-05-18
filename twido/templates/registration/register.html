@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load i18n %}
 
 {% block title %}Register{% endblock %}
 
@@ -22,7 +22,7 @@
                     <form class="form-horizontal" method="post" action="{% url 'register' %}">
                         {% csrf_token %}
                         <fieldset>
-                            <legend>Sign Up</legend>
+                            <legend>{% trans 'Sign up' %}</legend>
 
                             {% include 'includes/django-messags-inc.html' %}
 
@@ -31,12 +31,12 @@
                         {% else %}
 
                             <div class="form-group {% if 'email' in form.errors %}has-error{% endif %}">
-                                <label for="id_email" class="col-lg-3 control-label">Email *</label>
+                                <label for="id_email" class="col-lg-3 control-label">{% trans 'Email' %} *</label>
 
                                 <div class="col-lg-9">
-                                    <input class="form-control" autofocus="" id="id_email" placeholder="User Email"
+                                    <input class="form-control" autofocus="" id="id_email" placeholder="email@domain.com"
                                            maxlength="150" name="email" required="" type="text" value="{{ request.POST.email }}">
-                                    <span class="help-block small">Email will be also default user name.</span>
+                                    <span class="help-block small">{% trans 'Email will be also default user name.' %}</span>
                                 </div>
 
                             </div>
@@ -50,36 +50,35 @@
 {#                            </div>#}
                             <input type="hidden" id="id_username" name="username" value="">
                             <div class="form-group {% if 'password1' in form.errors %}has-error{% endif %}">
-                                <label for="id_password1" class="col-lg-3 control-label">Password *</label>
+                                <label for="id_password1" class="col-lg-3 control-label">{% trans 'Password' %} *</label>
 
                                 <div class="col-lg-9">
                                     <input class="form-control" id="id_password1" name="password1" required=""
-                                           placeholder="Password" type="password">
+                                           placeholder="{% trans 'Password' %}" type="password">
                                 </div>
                             </div>
                             <div class="form-group {% if 'password2' in form.errors %}has-error{% endif %}">
-                                <label for="id_password2" class="col-lg-3 control-label">Password (again) *</label>
+                                <label for="id_password2" class="col-lg-3 control-label">{% trans 'Password (again)' %} *</label>
 
                                 <div class="col-lg-9">
                                     <input class="form-control" id="id_password2" name="password2" required=""
-                                           placeholder="Re-enter Password" type="password">
+                                           placeholder="{% trans 'Re-enter Password' %}" type="password">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-9 col-lg-offset-3">
-                                    <button type="submit" class="btn btn-primary">Register</button>
-                                    <button type="reset" class="btn btn-default">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+                                    <button type="reset" class="btn btn-default">{% trans 'Reset' %}</button>
                                     <input type="hidden" name="next" value="{{ request.path }}"/>
                                 </div>
                             </div>
-                            <span class="help-block small"> * marked fields are required.</span>
+                            <span class="help-block small"> * {% trans 'marked fields are required.' %}</span>
                         {% endif %}
                         </fieldset>
                     </form>
                     <div>
                         {# Assumes you setup the password_reset view in your URLconf #}
-                        <p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'password_reset' %}">Lost
-                            password?</a></p>
+                        <p><a href="{% url 'login' %}">{% trans 'Sign in' %}</a> | <a href="{% url 'password_reset' %}">{% trans 'Forget password' %}?</a></p>
                     </div>
                 </div>
             </div>

@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-from django.utils.translation import ugettext_lazy  as _
+from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -62,6 +62,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'twido.urls'
 
 CONTEXT_PROCESSORS = [
+    'django.template.context_processors.i18n',
     'django.template.context_processors.debug',
     'django.template.context_processors.request',
     'django.contrib.auth.context_processors.auth',
@@ -145,8 +146,14 @@ STATIC_URL = '/static/'
 
 # ----- added settings -----
 
+WEBSITE_NAME = _('TWIDO')
+
 LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = '/'
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locals')
+]
 
 LANGUAGES = [
     ('zh-hans', _('Chinese Simplified')),

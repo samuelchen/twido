@@ -5,7 +5,7 @@
   "fields": {
     "profile": 2,
     "timestamp": "2017-05-16T08:22:39.211Z",
-    "name": "DEFAULT",
+    "name": "__default__",
     "reminder": null,
     "related_users": null,
     "text": "The default list. It will be created automatically."
