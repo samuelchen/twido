@@ -23,6 +23,7 @@ DATABASES = {
 }
 
 INSTALLED_APPS.extend([
+    'account',
     'gunicorn',
 ])
 
