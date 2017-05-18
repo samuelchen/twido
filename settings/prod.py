@@ -1,4 +1,4 @@
-from twido.setings import *
+from twido.settings import *
 from django.utils.translation import ugettext_lazy as _
 
 print('prod settings')

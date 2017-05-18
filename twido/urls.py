@@ -30,6 +30,7 @@ urlpatterns = [
 
     # (r'^robots\.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt', 'mimetype': 'text/plain'}),
     # (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/img/favicon.ico'}),
+
     url(r'^login/$', views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     url(r'', include('django.contrib.auth.urls')),
     url(r'^register/$', views.RegisterView.as_view(template_name='registration/register.html'), name='register'),
@@ -69,4 +70,3 @@ if settings.DEBUG:
         url(r'^debug/', include(debug_toolbar.urls)),
     ])
 
-print(urlpatterns[1])
