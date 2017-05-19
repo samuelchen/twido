@@ -1,0 +1,80 @@
+	/*
+  	Flaticon icon font: Flaticon
+  	Creation date: 19/05/2017 06:56
+  	*/
+
+@font-face {
+  font-family: "Flaticon-social";
+  src: url("./Flaticon.eot");
+  src: url("./Flaticon.eot?#iefix") format("embedded-opentype"),
+       url("./Flaticon.woff") format("woff"),
+       url("./Flaticon.ttf") format("truetype"),
+       url("./Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon-social";
+    src: url("./Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {
+    font-family: Flaticon-social;
+    font-size: 20px;
+    font-style: normal;
+    margin-left: 20px;
+}
+
+.flaticon-punk-2:before { content: "\f100"; }
+.flaticon-punk-1:before { content: "\f101"; }
+.flaticon-man-4:before { content: "\f102"; }
+.flaticon-asian:before { content: "\f103"; }
+.flaticon-indian:before { content: "\f104"; }
+.flaticon-boy-10:before { content: "\f105"; }
+.flaticon-boy-9:before { content: "\f106"; }
+.flaticon-soldier:before { content: "\f107"; }
+.flaticon-boy-8:before { content: "\f108"; }
+.flaticon-african:before { content: "\f109"; }
+.flaticon-girl-6:before { content: "\f10a"; }
+.flaticon-boy-7:before { content: "\f10b"; }
+.flaticon-afro:before { content: "\f10c"; }
+.flaticon-hipster:before { content: "\f10d"; }
+.flaticon-girl-5:before { content: "\f10e"; }
+.flaticon-boy-6:before { content: "\f10f"; }
+.flaticon-frankenstein:before { content: "\f110"; }
+.flaticon-boy-5:before { content: "\f111"; }
+.flaticon-man-3:before { content: "\f112"; }
+.flaticon-punk:before { content: "\f113"; }
+.flaticon-devil:before { content: "\f114"; }
+.flaticon-doctor:before { content: "\f115"; }
+.flaticon-man-2:before { content: "\f116"; }
+.flaticon-ninja:before { content: "\f117"; }
+.flaticon-boy-4:before { content: "\f118"; }
+.flaticon-hippie:before { content: "\f119"; }
+.flaticon-pirate:before { content: "\f11a"; }
+.flaticon-native-american:before { content: "\f11b"; }
+.flaticon-girl-4:before { content: "\f11c"; }
+.flaticon-man-1:before { content: "\f11d"; }
+.flaticon-skeleton:before { content: "\f11e"; }
+.flaticon-man:before { content: "\f11f"; }
+.flaticon-girl-3:before { content: "\f120"; }
+.flaticon-thief:before { content: "\f121"; }
+.flaticon-astronaut:before { content: "\f122"; }
+.flaticon-lady:before { content: "\f123"; }
+.flaticon-boy-3:before { content: "\f124"; }
+.flaticon-angel:before { content: "\f125"; }
+.flaticon-girl-2:before { content: "\f126"; }
+.flaticon-king:before { content: "\f127"; }
+.flaticon-boy-2:before { content: "\f128"; }
+.flaticon-girl-1:before { content: "\f129"; }
+.flaticon-boy-1:before { content: "\f12a"; }
+.flaticon-boy:before { content: "\f12b"; }
+.flaticon-nerd:before { content: "\f12c"; }
+.flaticon-girl:before { content: "\f12d"; }
+.flaticon-dog:before { content: "\f12e"; }
+.flaticon-old-man-1:before { content: "\f12f"; }
+.flaticon-old-man:before { content: "\f130"; }

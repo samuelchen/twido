@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, View
 from django.utils.translation import ugettext as _
 from django.conf.global_settings import LANGUAGES as ALL_LANGUAGES
-from ..models import UserProfile, SocialPlatform, SocialAccount
+from ..models import UserProfile, SocialPlatform, SocialAccount, Gender
 from .base import BaseViewMixin
 
 import logging
@@ -29,10 +29,11 @@ class ProfileView(TemplateView, BaseViewMixin):
         context = super(ProfileView, self).get_context_data(**kwargs)
         context['profile'] = self.request.user.profile
         context['ALL_LANGUAGES'] = ALL_LANGUAGES
+        context['Gender'] = Gender
         return context
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = request.user
         profile = user.profile
 
         url_home = reverse('home')
@@ -44,7 +45,7 @@ class ProfileView(TemplateView, BaseViewMixin):
         profile.username = req.get('username', profile.username)
         profile.name = req.get('name', profile.name)
         gender = req.get('gender', profile.gender)
-        profile.gender = bool(gender)
+        profile.gender = gender[0] if gender else Gender.PRIVATE
         profile.timezone = req.get('timezone', profile.timezone)
         profile.location = req.get('location', profile.location)
         profile.lang = req.get('lang', profile.lang)

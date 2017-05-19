@@ -1,0 +1,61 @@
+	/*
+  	Flaticon icon font: Flaticon
+  	Creation date: 19/05/2017 07:07
+  	*/
+
+@font-face {
+  font-family: "Flaticon-avatar";
+  src: url("./Flaticon.eot");
+  src: url("./Flaticon.eot?#iefix") format("embedded-opentype"),
+       url("./Flaticon.woff") format("woff"),
+       url("./Flaticon.ttf") format("truetype"),
+       url("./Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon-avatar";
+    src: url("./Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {
+    font-family: Flaticon-avatar;
+    font-size: 20px;
+    font-style: normal;
+    /*margin-left: 20px;*/
+}
+
+.flaticon-profiles-avatar:before { content: "\f100"; }
+.flaticon-male-avatar-2:before { content: "\f101"; }
+.flaticon-bald-male-avatar:before { content: "\f102"; }
+.flaticon-personal-profile-image:before { content: "\f103"; }
+.flaticon-child-male-avatar:before { content: "\f104"; }
+.flaticon-male-profile-avatar-without-face:before { content: "\f105"; }
+.flaticon-male-avatar-1:before { content: "\f106"; }
+.flaticon-female-sportive-avatar-image:before { content: "\f107"; }
+.flaticon-chinese-male-avatar-image:before { content: "\f108"; }
+.flaticon-smiling-bald-male-avatar-image:before { content: "\f109"; }
+.flaticon-avatar-of-a-person-with-dark-short-hair:before { content: "\f10a"; }
+.flaticon-female-avatar-image:before { content: "\f10b"; }
+.flaticon-young-man-avatar:before { content: "\f10c"; }
+.flaticon-curly-hair-young-man-profile-avatar:before { content: "\f10d"; }
+.flaticon-male-avatar:before { content: "\f10e"; }
+.flaticon-man-avatar-1:before { content: "\f10f"; }
+.flaticon-man-avatar-image-for-profile:before { content: "\f110"; }
+.flaticon-man-avatar-with-bald-head-sunglasses-and-mustache:before { content: "\f111"; }
+.flaticon-young-male-avatar:before { content: "\f112"; }
+.flaticon-man-with-mustache-avatar:before { content: "\f113"; }
+.flaticon-student-male-avatar-image:before { content: "\f114"; }
+.flaticon-man-avatar:before { content: "\f115"; }
+.flaticon-young-male-avatar-image:before { content: "\f116"; }
+.flaticon-adult-man-avatar-with-short-curly-hair-and-mustache:before { content: "\f117"; }
+.flaticon-nerd-male-profile-avatar:before { content: "\f118"; }
+.flaticon-nerd-man-with-curly-hair-and-circular-eyeglasses-avatar:before { content: "\f119"; }
+.flaticon-woman-avatar-1:before { content: "\f11a"; }
+.flaticon-man-with-short-hair-profile-avatar:before { content: "\f11b"; }
+.flaticon-woman-with-dark-long-hair-avatar:before { content: "\f11c"; }
+.flaticon-woman-avatar:before { content: "\f11d"; }

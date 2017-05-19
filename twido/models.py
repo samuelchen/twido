@@ -13,6 +13,7 @@ from django.templatetags.static import static
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
+
 try:
     UserModel = get_user_model()
 except AppRegistryNotReady:
@@ -29,21 +30,84 @@ class SocialPlatform(object):
     TWITTER = 'TW'
     FACEBOOK = 'FB'
     WEIBO = 'WB'
-    # SocialAccountChoices = (
-    #     (TWITTER, 'Twitter'),
-    #     (FACEBOOK, 'Facebook'),
-    #     (WEIBO, 'Weibo'),
-    # )
     _texts = {
         TWITTER: _('Twitter'),
         FACEBOOK: _('Facebook'),
         WEIBO: _('Weibo'),
     }
-    SocialAccountChoices = _texts.items()
+    Choices = _texts.items()
 
     @classmethod
     def get_text(cls, code):
         return cls._texts[code]
+
+
+class Gender(object):
+    """
+    Constants and choice for gender
+    """
+    MALE = 'M'
+    FEMALE = 'F'
+    NEITHER = 'N'
+    PRIVATE = 'P'
+    _texts = {
+        MALE: _('Male'),
+        FEMALE: _('Female'),
+        NEITHER: _('Neither'),
+        PRIVATE: _('Private'),
+    }
+    _icons = {
+        MALE: 'flaticon-man-with-short-hair-profile-avatar',
+        FEMALE: 'flaticon-woman-with-dark-long-hair-avatar',
+        NEITHER: 'flaticon-avatar-of-a-person-with-dark-short-hair',
+        PRIVATE: 'flaticon-personal-profile-image',
+    }
+    _imgs = {
+        MALE: static('twido/img/avatar-man.png'),
+        FEMALE: static('twido/img/avatar-woman.png'),
+        NEITHER: static('twido/img/avatar-neither.png'),
+        PRIVATE: static('twido/img/avatar-private.png'),
+    }
+    _texts_and_icons = []
+    _texts_and_imgs = []
+    Choices = _texts.items()
+    Icons = _icons.items()
+    Texts = _texts.items()
+    Images = _imgs.items()
+
+    @classmethod
+    def get_texts_and_icons(cls):
+        if cls._texts_and_icons:
+            return cls._texts_and_icons
+
+        rc = []
+        for k, v in cls._texts.items():
+            rc.append((k, {'text': v, 'icon': cls._icons.get(k)}))
+        cls._texts_and_icons = sorted(rc)
+        return cls._texts_and_icons
+
+    @classmethod
+    def get_texts_and_imgs(cls):
+        if cls._texts_and_imgs:
+            return cls._texts_and_imgs
+
+        rc = []
+        for k, v in cls._texts.items():
+            rc.append((k, {'text': v, 'img': cls._imgs.get(k)}))
+        cls._texts_and_imgs = sorted(rc)
+        return cls._texts_and_imgs
+
+    @classmethod
+    def get_text(cls, code):
+        return cls._texts[code]
+
+    @classmethod
+    def get_icon(cls, code):
+        return cls._icons[code]
+
+    @classmethod
+    def get_img(cls, code):
+        return cls._imgs[code]
 
 # ------ Common Models -----
 
@@ -70,7 +134,7 @@ class UserProfile(models.Model):
     created_at = models.DateTimeField(editable=False)
 
     name = models.CharField(max_length=100, null=True, blank=True)  # real/nick/display name
-    gender = models.BooleanField(default=False)
+    gender = models.CharField(max_length=1, default=Gender.PRIVATE, choices=Gender.Choices)
     timezone = models.CharField(max_length=50, null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     lang = models.CharField(max_length=20, default='en', verbose_name='Language')
@@ -129,7 +193,13 @@ class UserProfile(models.Model):
         if self.img_url:
             return self.img_url
         else:
-            return static('twido/img/avatar-man.png') if self.gender else static('twido/img/avatar-woman.png')
+            return Gender.get_img(self.gender)
+
+    def get_gender_icon(self):
+        return Gender.get_icon(self.gender)
+
+    def get_gender_text(self):
+        return Gender.get_text(self.gender)
 
     @property
     def is_faked(self):
@@ -203,7 +273,7 @@ class SocialAccount(ProfileBasedModel):
     Social accounts such as Twitter, Facebook and Weibo.
     """
     account = models.CharField(max_length=100, db_index=True)      # maybe screen_name, email or etc.
-    platform = models.CharField(max_length=2, choices=SocialPlatform.SocialAccountChoices, default=SocialPlatform.TWITTER)
+    platform = models.CharField(max_length=2, choices=SocialPlatform.Choices, default=SocialPlatform.TWITTER)
     name = models.CharField(max_length=100, null=True, blank=True)  # nick name, user.first_name/user.last_name
     tokens = models.TextField(verbose_name='Tokens JSON')
     rawid = models.CharField(max_length=100, null=True, blank=True)
@@ -259,7 +329,7 @@ class RawStatus(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     username = models.CharField(max_length=100, db_index=True, verbose_name='Social Screen Name')
     text = models.TextField(verbose_name='Status Text')
-    source = models.CharField(max_length=2, choices=SocialPlatform.SocialAccountChoices)
+    source = models.CharField(max_length=2, choices=SocialPlatform.Choices)
     parsed = models.BooleanField(default=False)
     raw = models.TextField(verbose_name='Raw Data')
 
@@ -368,7 +438,7 @@ class TaskStatus(object):
     DONE = 9
     EXPIRED = 10
     CANCEL = -1
-    _text = {
+    _texts = {
         NEW: _('New'),
         STARTED: _('Started'),
         PAUSED: _('Paused'),
@@ -384,13 +454,13 @@ class TaskStatus(object):
         CANCEL: 'glyphicon glyphicon-remove text-muted',
         EXPIRED: 'glyphicon glyphicon-exclamation-sign text-danger',
     }
-    Choices = _text.items()
+    Choices = _texts.items()
     GlyphIcons = _glyphicons.items()
 
     @classmethod
     def get_text(cls, status):
         assert -1 <= status <= 10
-        return cls._text[status]
+        return cls._texts[status]
 
     @classmethod
     def get_glyphicon(cls, status):

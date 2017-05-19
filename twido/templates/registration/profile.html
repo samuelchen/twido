@@ -60,13 +60,23 @@
                             <div class="form-group {% if 'gender' in errors %}has-error{% endif %}">
                                 <label for="id_gender" class="col-lg-3 control-label">{% trans 'Gender' %}</label>
                                 <div class="col-lg-9">
-                                    <div class="radio">
-                                        <label><img class="avatar-sm" src="{% static 'twido/img/avatar-man.png' %}"> <input name="gender" id="id_gender1" value="1" {% if profile.gender %}checked=""{% endif %} type="radio">
-                                            {% trans 'Male' %}
+                                    <div class="radio" id="id_gender">
+                                    {% for key, item in Gender.get_texts_and_imgs %}
+                                        <label><img class="avatar-sm" src="{{ item.img }}"> <input name="gender" value="{{ key }}" {% if profile.gender == key %}checked=""{% endif %} type="radio">
+                                            {{ item.text }}
                                         </label> &nbsp;
-                                        <label><img class="avatar-sm" src="{% static 'twido/img/avatar-woman.png' %}"> <input name="gender" id="id_gender2" value="" {% if not profile.gender %}checked=""{% endif %}  type="radio">
-                                            {% trans 'Female' %}
-                                        </label>
+                                    {% endfor %}
+{#                                        <label><img class="avatar-sm" src="{% static 'twido/img/avatar-man.png' %}"> <input name="gender" id="id_gender1" value="1" {% if profile.gender %}checked=""{% endif %} type="radio">#}
+{#                                            {% trans 'Male' %}#}
+{#                                        </label> &nbsp;#}
+{#                                        <label><img class="avatar-sm" src="{% static 'twido/img/avatar-woman.png' %}"> <input name="gender" id="id_gender2" value="" {% if not profile.gender %}checked=""{% endif %}  type="radio">#}
+{#                                            {% trans 'Female' %}#}
+{#                                        </label>#}
+{#                                        {% for key, item in Gender.get_texts_and_icons %}#}
+{#                                        <label><i class="{{ item.icon }}"></i> <input name="gender" value="{{ key }}" {% if profile.gender == key %}checked=""{% endif %}  type="radio">#}
+{#                                            {{ item.text }}#}
+{#                                        </label>#}
+{#                                        {% endfor %}#}
                                     </div>
                                 </div>
                             </div>
