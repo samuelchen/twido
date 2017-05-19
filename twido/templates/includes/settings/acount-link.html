@@ -129,16 +129,13 @@
                                                     platform: "{{ social_platforms.TWITTER }}"
                                                 },
                                                 success: function (response) {
-                                                    console.log('success');
                                                     panel.children().first().text(response.name);
                                                 },
                                                 error: function (response) {
-                                                    console.log('error');
-                                                    console.log(response.statusCode() + '  ' + response.responseText);
-                                                    _sys_err(response.responseText);
+                                                    console.log(response.status + '  ' + response.responseText);
+                                                    _error(response.responseText);
                                                 },
                                                 complete: function (data) {
-                                                    console.log('complete');
                                                     panel.removeClass('overlay');
                                                 }
                                             });

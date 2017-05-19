@@ -50,6 +50,36 @@ class TodoView(DetailView, BaseViewMixin):
     model = Todo
     fields = ['title', 'profile', 'labels', 'text', 'list']
 
+    def get_context_data(self, **kwargs):
+        context = super(TodoView, self).get_context_data(**kwargs)
+        profile = self.request.user.profile
+        p = self.request.GET.get('p')   # current page
+
+        if 'pk' in context:
+            pk = context['pk']
+            thelist = get_object_or_404(TodoList, profile=profile, id=pk)
+        else:
+            thelist = TodoList.get_default(profile)
+
+        context['thelist'] = thelist
+
+        if 'page' not in context:
+            context['page'] = paginate(Todo.objects.filter(profile=profile, list=thelist), cur_page=p, entries_per_page=10)
+        if 'todolists' not in context:
+            context['todolists'] = TodoList.objects.filter(profile=profile).all()
+            context['lists'] = TodoList.objects.filter(profile=profile).all()
+        if 'taskstatus' not in context:
+            context['taskstatus'] = TaskStatus
+
+        # if 'errors' not in context:
+        #     context['errors'] = {}
+        #
+        # if 'messages' not in context:
+        #     context['messages'] = []
+
+        # context['form'] = TodoListForm()
+        return context
+
     @method_decorator(sensitive_post_parameters())
     def post(self, request, pk, *args, **kwargs):
         req = request.POST

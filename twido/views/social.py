@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables
 from django.views.generic import TemplateView
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 import simplejson as json
 from tweepy import TweepError
 from .base import BaseViewMixin
@@ -27,7 +27,9 @@ class I18N_MSGS(object):
     social_conflict_link = _('Conflict. This social account is linked with another user.')
     too_frequent = _('Too frequent (3 hours). Last time was at %s.')
     social_link_first = _('You need to link your social account first.')
-
+    social_link_success = _('You are successfully linked to your social account.')
+    social_profile_updated = _('Your social profile is updated.')
+    social_fail_to_get_token = _('Error! Failed to get access token.')
 
 class SocialView(TemplateView, BaseViewMixin):
 
@@ -90,6 +92,8 @@ class SocialView(TemplateView, BaseViewMixin):
                         # TODO: change response and text
                         return HttpResponseNotAllowed(I18N_MSGS.social_fail_to_link)
 
+                    self.success(I18N_MSGS.social_link_success)
+
         elif platform == SocialPlatform.FACEBOOK:
             raise NotImplementedError
         elif platform == SocialPlatform.WEIBO:
@@ -129,6 +133,7 @@ class SocialView(TemplateView, BaseViewMixin):
                         return resp
                     self.update_twitter_account(json.loads(acc.tokens), acc.profile, commit=True)
                     data = {'name': acc.name}
+                    self.success(I18N_MSGS.social_profile_updated)
                     return JsonResponse(data)
                 except SocialAccount.DoesNotExist:
                     return HttpResponseNotFound(I18N_MSGS.social_link_first)
@@ -188,6 +193,7 @@ class SocialView(TemplateView, BaseViewMixin):
         try:
             access_data = auth.get_access_token(oauth_verifier)
         except TweepError as err:
+            self.error(I18N_MSGS.social_fail_to_get_token)
             log.debug(err)
             log.error('Error! Failed to get access token.')
 
