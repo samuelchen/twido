@@ -18,7 +18,7 @@
                                             <li class="bottom-right"><span title="{% trans 'Labels' %}" data-name="labels" data-type="select2" data-pk="{{ todo.id }}"
                                                   data-url="{% url 'todo' todo.id %}">{{ todo.labels| default_if_none:'' }}</span></li>
                                             <li class="buttons small" style="white-space: nowrap; display: none;">
-                                                <a name="detail" title="{% trans 'Detail' %}" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
+                                                <a name="detail" href="{% url 'todo' todo.id %}" title="{% trans 'Detail' %}" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
                                                 <a name="del-todo" data-task-id="{{ todo.id }}"  title="{% trans 'Delete' %}" class="label label-danger small"><i class="glyphicon glyphicon-remove"></i></a>
                                             </li>
                                         </ul>

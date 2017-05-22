@@ -37,52 +37,30 @@ class I18N_MSGS(object):
     prop_cannot_change = _('"%s" can not be changed.')
 
 
-class TodoDetailView(DetailView, BaseViewMixin):
-    model = Todo
-
-
-class TodoCreateView(CreateView, BaseViewMixin):
-    model = Todo
-    fields = ['title', 'profile', 'labels', 'text', 'list']
-
-
-class TodoView(DetailView, BaseViewMixin):
-    model = Todo
-    fields = ['title', 'profile', 'labels', 'text', 'list']
+class TodoView(TemplateView, BaseViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super(TodoView, self).get_context_data(**kwargs)
         profile = self.request.user.profile
-        p = self.request.GET.get('p')   # current page
+        p = self.request.GET.get('p', None)   # current page
 
-        if 'pk' in context:
-            pk = context['pk']
-            thelist = get_object_or_404(TodoList, profile=profile, id=pk)
-        else:
-            thelist = TodoList.get_default(profile)
-
-        context['thelist'] = thelist
+        pk = context['pk']
+        task = get_object_or_404(Todo, profile=profile, id=pk)
+        context['thetask'] = task
 
         if 'page' not in context:
-            context['page'] = paginate(Todo.objects.filter(profile=profile, list=thelist), cur_page=p, entries_per_page=10)
-        if 'todolists' not in context:
-            context['todolists'] = TodoList.objects.filter(profile=profile).all()
-            context['lists'] = TodoList.objects.filter(profile=profile).all()
+            context['page'] = paginate(Todo.objects.filter(profile=profile, list=task.list), cur_page=p, entries_per_page=10)
+
         if 'taskstatus' not in context:
             context['taskstatus'] = TaskStatus
 
-        # if 'errors' not in context:
-        #     context['errors'] = {}
-        #
-        # if 'messages' not in context:
-        #     context['messages'] = []
-
-        # context['form'] = TodoListForm()
         return context
 
-    @method_decorator(sensitive_post_parameters())
     def post(self, request, pk, *args, **kwargs):
+        # AJAX
+        # TODO: move to rest api
         req = request.POST
+
         if pk is not None:
             pk = int(pk)
             name = req.get('name', None)
@@ -114,11 +92,6 @@ class TodoView(DetailView, BaseViewMixin):
             return HttpResponseBadRequest(I18N_MSGS.primary_key_is_none)
 
 
-class TodoDeleteView(DeleteView, BaseViewMixin):
-    model = Todo
-    success_url = reverse_lazy('home')
-
-
 class TodoListView(TemplateView, BaseViewMixin):
 
     def get_context_data(self, **kwargs):
@@ -142,17 +115,11 @@ class TodoListView(TemplateView, BaseViewMixin):
         if 'taskstatus' not in context:
             context['taskstatus'] = TaskStatus
 
-        # if 'errors' not in context:
-        #     context['errors'] = {}
-        #
-        # if 'messages' not in context:
-        #     context['messages'] = []
-
-        # context['form'] = TodoListForm()
         return context
 
     def post(self, request, *args, **kwargs):
         # AJAX
+        # TODO: move to rest api
 
         req = request.POST
         # print(req)

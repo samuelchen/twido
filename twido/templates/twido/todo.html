@@ -4,7 +4,7 @@
 
 {% block head %}
 {#    <link rel="{% static 'jqueryui/dragdrop/jquery-ui.min.css' %}">#}
-    <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>
+{#    <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>#}
 {#    <script language="JavaScript" src="{% static 'twido/js/bootstrap-confirmation.min.js' %}"></script>#}
     {% include 'includes/editable-head-ref.html' %}
     <script language="JavaScript" type="text/javascript">
@@ -21,18 +21,41 @@
         <div class="row">
             <!-- left col -->
             <div class="col-lg-3 col-md-3 col-sm-4">
-                <div class="bs-component">
-                    {% include 'twido/includes-list/todos.html' %}
+
+                <div class="panel panel-default" name="{{ thetask.list.name }}">
+                    <div class="panel-heading small">
+                        <ul class="list-inline">
+                            <li><h3 class="panel-title">{{ thetask.list.name|capfirst }}</h3></li>
+                        </ul>
+                    </div>
+                    <ul class="list-group">
+                        {% for task in page %}
+                            <a href="{% url 'todo' task.id %}" class="list-group-item small {% if thetask.id == task.id %}active{% endif %}">
+                                <ul class="list-inline">
+{#                                    <a href="{% url 'todo' thetask.id %}">#}
+                                    <li><i title={{ task.get_status_text }} class="{{ task.get_status_glyphicon }}"></i></li>
+                                    <li>{{ task.title | url2link | safe }}</li>
+                                    <li class="top-right">
+                                        <span title="Deadline" class="small">
+                                            {{ task.deadline |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}
+                                        </span>
+                                    </li>
+{#                                    </a>#}
+                                </ul>
+                            </a>
+                        {% endfor %}
+                    </ul>
                 </div>
+
 
                 <div class="bs-component">
                     <form id="id_form_action" action="{{ request.path }}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action">
                         <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add" title="{% trans 'Create a new list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Create List' %}</a>
+                            <a name="add" title="{% trans 'Create a task to current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Add Task' %}</a>
                             {% if not thelist.is_default %}
-                            <a name="del" title="{% trans 'Delete current list' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete List' %}</a>
+                            <a name="del" title="{% trans 'Delete current task' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete Task' %}</a>
                             {% endif %}
                         </div>
                     </form>
@@ -48,13 +71,13 @@
 {#                        <h2 id="listname" class="text-center">{{ thelist.name | upper }}</h2>#}
                         <div class="panel">
                             {% include 'includes/django-messags-inc.html' %}
-                            {% include 'twido/includes-list/todolist-form.html' %}
+                            {% include 'twido/includes-list/todo-form.html' %}
                         </div>
 
-                        {% include 'twido/includes-list/todos.html' %}
-                        <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add-todo" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
-                        </div>
+{#                        {% include 'twido/includes-list/todos.html' %}#}
+{#                        <div class="btn-group btn-group-justified btn-group-sm">#}
+{#                            <a name="add-todo" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>#}
+{#                        </div>#}
                     </div>
 
                 </div>
@@ -70,84 +93,28 @@
 
 
     <script type="text/javascript" language="JavaScript">
-
-    $(document).ready(function(){
-        var form_action = $("#id_form_action");
-
-        $("a.btn").tooltip({container: 'body'}).click(function(e){
-            var action = $(this).attr('name');
-            form_action.find("input[name='action']").val(action);
-            if ($.inArray(action, ['add', 'add-todo']) >= 0) form_action.submit();
-            // if action is "del", need to confirm (code below)
-        });
-
-        form_action.find('a[name="del"]').confirmation({
-            onConfirm: function () {
-                form_action.submit();
-            },
-            html: 'true',
-            title: '<span class="text-danger">{% trans 'DANGER : Delete list' %} "{{ thelist.name }}(id:{{ thelist.id }})" ?</span>'
-                        +'<p/><p class="small">{% trans 'All tasks in this list will be moved to default list' %}',
-            placement: 'right'
-        });
-
+{##}
+{#    $(document).ready(function(){#}
+{#        var form_action = $("#id_form_action");#}
+{##}
+{#        $("a.btn").tooltip({container: 'body'}).click(function(e){#}
+{#            var action = $(this).attr('name');#}
+{#            form_action.find("input[name='action']").val(action);#}
+{#            if ($.inArray(action, ['add', 'add-todo']) >= 0) form_action.submit();#}
+{#            // if action is "del", need to confirm (code below)#}
+{#        });#}
+{##}
+{#        form_action.find('a[name="del"]').confirmation({#}
+{#            onConfirm: function () {#}
+{#                form_action.submit();#}
+{#            },#}
+{#            html: 'true',#}
+{#            title: '<span class="text-danger">{% trans 'DANGER : Delete list' %} "{{ thelist.name }}(id:{{ thelist.id }})" ?</span>'#}
+{#                        +'<p/><p class="small">{% trans 'All tasks in this list will be moved to default list' %}',#}
+{#            placement: 'right'#}
+{#        });#}
+{##}
         $(".editable").addClass('no_underline').css("cursor", "pointer");
-
-
-        {# --- drag & drop to move --- #}
-        $("#id_todos").find(".list-group-item").draggable({
-            cursor: "move",
-            cursorAt: {top: 0, left: 0},
-            helper: function (event) {
-{#                return $('<li class="list-group-item small">' + $(this).text() + '</li>');#}
-                $(this).fadeOut().fadeIn();
-                return $('<i class="glyphicon glyphicon-tasks large"></i>');
-            }
-        });
-        $("#id_lists").find(".list-group-item").droppable({
-            accept: '.list-group-item',
-            classes: {
-                "ui-droppable-hover": "list-group-item-info"
-            },
-            drop: function (event, ui) {
-                if ($(this).hasClass('active')) return ;
-                var list_id = $(this).data("id");
-                var task_id = ui.draggable.data("id");
-                move_task(task_id, list_id);
-                badge_count($(this).parent().find(".active").find(".badge"), -1);
-                badge_count($(this).find(".badge"), 1);
-                $(this).fadeOut().fadeIn();
-            }
-        });
-
-    });
-
-    function move_task(task_id, list_id) {
-        var entry = $("#id_todos").find("[data-id='" + task_id + "']");
-        var task_name = entry.find("span[data-name='title']").text();
-        var list_name = entry.data('name');
-        $.ajax("{{ request.path }}", {
-            method: 'POST',
-            data: {
-                action: "move-todo",
-                task_id: task_id,
-                list_id: list_id
-            },
-            success: function (resp) {
-                var list_name = $("#id_lists").find("[data-id='" + list_id + "']").text();
-{#                console.log(list_name);#}
-                _success('{% trans 'Task "{0}" moved to list "{1}".' %}'.f(task_name, list_name), true);  // message incl
-                console.debug('Todo task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
-                entry.fadeOut();
-            },
-            error: function (resp) {
-                _error('{% trans 'Fail to move task "{0}". <br>Status: {1} <br>Content: {2}' %}'.f(
-                                task_name, resp.status, resp.statusText),
-                        true);    // message incl
-                entry.fadeOut().fadeIn().fadeOut().fadeIn();
-                return resp.status + ' ' + resp.statusText;
-            }
-        });
-    }
+{#    }#}
     </script>
 {% endblock %}
