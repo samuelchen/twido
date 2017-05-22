@@ -1,0 +1,83 @@
+{% extends "base.html" %}{% load staticfiles %}
+
+{% block title %}test2{% endblock %}
+
+{% block head %}
+<style>
+    .iframe-container {
+        width: 100%;
+        position: absolute;
+        top: 150px;
+        bottom: 0;
+        left: 0;
+    }
+
+    iframe {
+{#      margin-top: 20px;#}
+{#      margin-bottom: 30px;#}
+        position: absolute;
+        width: 100%;
+        height: 100%;
+
+        -moz-border-radius: 12px;
+        -webkit-border-radius: 12px;
+        border-radius: 12px;
+
+        -moz-box-shadow: 4px 4px 14px #000;
+        -webkit-box-shadow: 4px 4px 14px #000;
+        box-shadow: 4px 4px 14px #000;
+
+    {#  -moz-transform:rotate(20deg);#}
+    {#  -webkit-transform:rotate(20deg);#}
+    {#  -o-transform:rotate(20deg);#}
+    {#  -ms-transform:rotate(20deg);#}
+    {#  filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=.2);#}
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container-fluid container-responsive">
+        <div class="page-header">
+            <h3 class="my-title">test 2</h3>
+            <button id="go">GO</button>
+            <button id="collect">Collect</button>
+        </div>
+
+        {% include 'includes/django-messags-inc.html' %}
+
+        <div class="iframe-container" >
+        <iframe id="id_frame_content" src="http://localhost:8000" ></iframe>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'twido/js/tb.js' %}"></script>
+    <script type="text/javascript" language="JavaScript">
+        var f = $("#id_frame_content");
+
+        $("#go").click(function(e){
+            console.log('go');
+                        f.attr('src', 'http://www.open-open.com/lib/view/open1477469239478.html');
+
+
+{#            console.log(taobao.urls.cart);#}
+{#            f.attr('src', taobao.urls.cart);#}
+{##}
+{#            f.on("load", function(e){#}
+{#                alert(f.contents().find("#id_timezone").val());#}
+{#            });#}
+
+        });
+
+        $("#collect").click(function(e){
+            console.log(f.contents().find("title"));
+{#            var items = taobao.get_items(f.contents());#}
+{#            console.log(items);#}
+        });
+    </script>
+{% endblock %}
