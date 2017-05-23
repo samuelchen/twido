@@ -5,6 +5,7 @@ data
 migrations
 *.sqlite3
 tmp
+top/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
