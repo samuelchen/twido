@@ -8,3 +8,9 @@
     <link href="{% static 'select2-3.4.4/select2.css' %}" rel="stylesheet" type="text/css">
     <script src="{% static 'select2-3.4.4/select2.js' %}"></script>
     <link href="{% static 'twido/css/select2-bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <script language="JavaScript" src="{% static 'twido/js/bootstrap-confirmation.min.js' %}"></script>
+    <script language="JavaScript" type="text/javascript">
+        $.fn.editable.defaults.mode = 'inline';
+        $.fn.editable.defaults.showbuttons = false;
+        $.fn.editable.defaults.onblur = 'submit';
+    </script>

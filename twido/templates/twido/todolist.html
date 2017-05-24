@@ -5,13 +5,8 @@
 {% block head %}
 {#    <link rel="{% static 'jqueryui/dragdrop/jquery-ui.min.css' %}">#}
     <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>
-    <script language="JavaScript" src="{% static 'twido/js/bootstrap-confirmation.min.js' %}"></script>
     {% include 'includes/editable-head-ref.html' %}
-    <script language="JavaScript" type="text/javascript">
-        $.fn.editable.defaults.mode = 'inline';
-        $.fn.editable.defaults.showbuttons = false;
-        $.fn.editable.defaults.onblur = 'submit';
-    </script>
+
 {% endblock %}
 
 {% block content %}
@@ -22,7 +17,7 @@
 
         <div class="row">
             <!-- left col -->
-            <div class="col-lg-3 col-md-3 col-sm-4">
+            <div class="col-lg-4 col-md-4">
                 <div class="bs-component">
                     {% include 'twido/includes-list/todolists-menu.html' %}
                 </div>
@@ -39,10 +34,15 @@
                         </div>
                     </form>
                 </div>
+
+                <div class="bs-component">
+                {% include 'twido/includes-list/todolist-form.html' %}
+                </div>
+
             </div>
 
             <!-- main col -->
-            <div class="col-lg-8 col-md-8 col-sm-7">
+            <div class="col-lg-7 col-md-7">
                 <div class="row">
 
                     <div class="bs-component">
@@ -50,12 +50,11 @@
 {#                        <h2 id="listname" class="text-center">{{ thelist.name | upper }}</h2>#}
                         <div class="panel">
                             {% include 'includes/django-messags-inc.html' %}
-                            {% include 'twido/includes-list/todolist-form.html' %}
                         </div>
 
-                        {% include 'twido/includes-list/todos.html' %}
+                        {% include 'twido/includes-list/tasks.html' %}
                         <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add-todo" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
+                            <a name="add-task" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
                         </div>
                     </div>
 
@@ -74,12 +73,16 @@
     <script type="text/javascript" language="JavaScript">
 
     $(document).ready(function(){
+
+        $(".editable").addClass('no_underline').css("cursor", "pointer");
+
+
         var form_action = $("#id_form_action");
 
         $("a.btn").tooltip({container: 'body'}).click(function(e){
             var action = $(this).attr('name');
             form_action.find("input[name='action']").val(action);
-            if ($.inArray(action, ['add', 'add-todo']) >= 0) form_action.submit();
+            if ($.inArray(action, ['add', 'add-task']) >= 0) form_action.submit();
             // if action is "del", need to confirm (code below)
         });
 
@@ -93,11 +96,9 @@
             placement: 'right'
         });
 
-        $(".editable").addClass('no_underline').css("cursor", "pointer");
-
 
         {# --- drag & drop to move --- #}
-        $("#id_todos").find(".list-group-item").draggable({
+        $("ul[name='tasks_incl']").find(".list-group-item").draggable({
             cursor: "move",
             cursorAt: {top: 0, left: 0},
             helper: function (event) {
@@ -106,7 +107,7 @@
                 return $('<i class="glyphicon glyphicon-tasks large"></i>');
             }
         });
-        $("#id_lists").find(".list-group-item").droppable({
+        $("div[name='lists_incl']").find(".list-group-item").droppable({
             accept: '.list-group-item',
             classes: {
                 "ui-droppable-hover": "list-group-item-info"
@@ -125,21 +126,21 @@
     });
 
     function move_task(task_id, list_id) {
-        var entry = $("#id_todos").find("[data-id='" + task_id + "']");
+        var entry = $("#ul[name='tasks_incl']").find("[data-id='" + task_id + "']");
         var task_name = entry.find("span[data-name='title']").text();
         var list_name = entry.data('name');
         $.ajax("{{ request.path }}", {
             method: 'POST',
             data: {
-                action: "move-todo",
+                action: "move-task",
                 task_id: task_id,
                 list_id: list_id
             },
             success: function (resp) {
-                var list_name = $("#id_lists").find("[data-id='" + list_id + "']").text();
+                var list_name = $(ul[name='lists_incl']).find("[data-id='" + list_id + "']").text();
 {#                console.log(list_name);#}
                 _success('{% trans 'Task "{0}" moved to list "{1}".' %}'.f(task_name, list_name), true);  // message incl
-                console.debug('Todo task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
+                console.debug('Task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
                 entry.fadeOut();
             },
             error: function (resp) {

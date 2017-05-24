@@ -56,4 +56,9 @@ class HomeView(TemplateView, BaseViewMixin):
              'tasks': Todo.objects.filter(profile=profile, deadline__lt=timezone.now()).exclude(
                  status__in=(TaskStatus.DONE, TaskStatus.CANCEL))[:entries]},
         ]
+
+        context['fields'] = ('status', 'title', 'deadline')
+        context['editables'] = ('status', 'title', 'deadline')
+        context['actions'] = ('detail',)
+        context['taskstatus'] = TaskStatus
         return context

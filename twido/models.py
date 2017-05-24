@@ -10,6 +10,7 @@ from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
 # from simple_email_confirmation.models import SimpleEmailConfirmationUserMixin
 from django.templatetags.static import static
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
@@ -109,8 +110,72 @@ class Gender(object):
     def get_img(cls, code):
         return cls._imgs[code]
 
-# ------ Common Models -----
 
+class TaskStatus(object):
+    NEW = 0
+    STARTED = 1
+    PAUSED = 2
+    DONE = 9
+    EXPIRED = 10
+    CANCEL = -1
+    _texts = {
+        NEW: _('New'),
+        STARTED: _('Started'),
+        PAUSED: _('Paused'),
+        DONE: _('Done'),
+        CANCEL: _('Cancelled'),
+        EXPIRED: _('Expired'),
+    }
+    _glyphicons = {
+        NEW: 'glyphicon glyphicon-file text-muted ',
+        STARTED: 'glyphicon glyphicon-play text-info',
+        PAUSED: 'glyphicon glyphicon-pause text-info',
+        DONE: 'glyphicon glyphicon-ok text-success',
+        CANCEL: 'glyphicon glyphicon-remove text-muted',
+        EXPIRED: 'glyphicon glyphicon-exclamation-sign text-danger',
+    }
+    Choices = _texts.items()
+    GlyphIcons = _glyphicons.items()
+
+    @classmethod
+    def get_text(cls, status):
+        assert -1 <= status <= 10
+        return cls._texts[status]
+
+    @classmethod
+    def get_glyphicon(cls, status):
+        assert -1 <= status <= 10
+        return cls._glyphicons[status]
+
+
+# ----- Spider models -----
+
+class RawStatus(models.Model):
+    """
+    Base class for all raw statuses.
+    """
+    id = models.BigAutoField(primary_key=True)
+    rawid = models.CharField(max_length=50, db_index=True, unique=True, verbose_name='Raw ID')
+    created_at = models.DateTimeField(editable=False)
+    timestamp = models.DateTimeField(auto_now=True)
+    username = models.CharField(max_length=100, db_index=True, verbose_name='Social Screen Name')
+    text = models.TextField(verbose_name='Status Text')
+    source = models.CharField(max_length=2, choices=SocialPlatform.Choices)
+    parsed = models.BooleanField(default=False)
+    raw = models.TextField(verbose_name='Raw Data')
+
+    def __str__(self):
+        return 'status(%s, id=%s, rawid=%s, user=%s, text="%s")' % (
+            self.source, self.id, self.rawid, self.username,
+            self.text if len(self.text) <= 20 else self.text[0:20] + '...')
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+        super(RawStatus, self).save(*args, **kwargs)
+
+
+# ------ Common Models -----
 
 class UserProfile(models.Model):
     """
@@ -175,7 +240,7 @@ class UserProfile(models.Model):
 
     def get_name(self):
         """
-        Return a display name. (never return email including user.username)
+        Return a display name. (never return email or user.username)
         :return a display name
         """
         if self.name:
@@ -232,6 +297,9 @@ class Config(ProfileBasedModel):
 
     class Meta:
         unique_together = ('profile', 'name')
+
+    def __str__(self):
+        return '%s=%s' % (self.name, self.value)
 
     @classmethod
     def get_user_conf(cls, profile, name):
@@ -317,51 +385,15 @@ class SocialAccount(ProfileBasedModel):
     def get_img_url(self):
         return self.img_url or static('twido/img/avatar-man.png')
 
-# ----- Spider models -----
-
-class RawStatus(models.Model):
-    """
-    Base class for all raw statuses.
-    """
-    id = models.BigAutoField(primary_key=True)
-    rawid = models.CharField(max_length=50, db_index=True, unique=True, verbose_name='Raw ID')
-    created_at = models.DateTimeField(editable=False)
-    timestamp = models.DateTimeField(auto_now=True)
-    username = models.CharField(max_length=100, db_index=True, verbose_name='Social Screen Name')
-    text = models.TextField(verbose_name='Status Text')
-    source = models.CharField(max_length=2, choices=SocialPlatform.Choices)
-    parsed = models.BooleanField(default=False)
-    raw = models.TextField(verbose_name='Raw Data')
-
-    def __str__(self):
-        return 'status(%s, id=%s, rawid=%s, user=%s, text="%s")' % (
-            self.source, self.id, self.rawid, self.username,
-            self.text if len(self.text) <= 20 else self.text[0:20] + '...')
-
-    def save(self, *args, **kwargs):
-        if not self.created_at:
-            self.created_at = timezone.now()
-        super(RawStatus, self).save(*args, **kwargs)
-
 
 # ----- Task models -----
-
-# class TaskType(object):
-#     TODO = 'T'
-#     WISH = 'W'
-#     APPOINTMENT = 'A'
-#     TaskTypeChoice = (
-#         (TODO, 'Todo'),
-#         (WISH, 'Wish'),
-#         (APPOINTMENT, 'Appointment')
-#     )
 
 
 class List(ProfileBasedModel):
     """
      A list contains one or more things you want. (todolist, wishlist, ...)
     """
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     reminder = models.DateTimeField(null=True, blank=True)
     related_users = models.TextField(validators=[validate_comma_separated_integer_list], null=True, blank=True,
                                      db_index=True, verbose_name='Related Persons (comma separated)')
@@ -431,49 +463,12 @@ class TodoList(List):
             log.info('todo list %s is deleted.' % s)
 
 
-class TaskStatus(object):
-    NEW = 0
-    STARTED = 1
-    PAUSED = 2
-    DONE = 9
-    EXPIRED = 10
-    CANCEL = -1
-    _texts = {
-        NEW: _('New'),
-        STARTED: _('Started'),
-        PAUSED: _('Paused'),
-        DONE: _('Done'),
-        CANCEL: _('Cancelled'),
-        EXPIRED: _('Expired'),
-    }
-    _glyphicons = {
-        NEW: 'glyphicon glyphicon-file text-muted ',
-        STARTED: 'glyphicon glyphicon-play text-info',
-        PAUSED: 'glyphicon glyphicon-pause text-info',
-        DONE: 'glyphicon glyphicon-ok text-success',
-        CANCEL: 'glyphicon glyphicon-remove text-muted',
-        EXPIRED: 'glyphicon glyphicon-exclamation-sign text-danger',
-    }
-    Choices = _texts.items()
-    GlyphIcons = _glyphicons.items()
-
-    @classmethod
-    def get_text(cls, status):
-        assert -1 <= status <= 10
-        return cls._texts[status]
-
-    @classmethod
-    def get_glyphicon(cls, status):
-        assert -1 <= status <= 10
-        return cls._glyphicons[status]
-
-
 class Task(ProfileBasedModel):
     """
     Base task model for todo, wish and schedule appointment
     """
     created_at = models.DateTimeField(editable=False)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=100)
     status = models.SmallIntegerField(choices=TaskStatus.Choices, default=TaskStatus.NEW, db_index=True)
     text = models.TextField(null=True, blank=True)
     labels = models.TextField(null=True, blank=True)
@@ -502,6 +497,9 @@ class Task(ProfileBasedModel):
     def get_status_glyphicon(self):
         return TaskStatus.get_glyphicon(self.status)
 
+    def get_view_path(self):
+        raise NotImplementedError
+
     def __str__(self):
         return '%s (id=%d)' % (self.title, self.id)
 
@@ -512,6 +510,9 @@ class Todo(Task):
     """
     list = models.ForeignKey(to=TodoList)
     deadline = models.DateTimeField(null=True, blank=True)
+
+    def get_view_path(self):
+        return reverse('todo', args=(self.id,))
 
 
 class Appointment(Task):

@@ -2,11 +2,11 @@
 
 {% block title %}{% trans 'Home' %}{% endblock %}
 
-{#{% block head %}#}
-{#<style type="text/css">#}
-{#    {{ css | safe }}#}
-{#</style>#}
-{#{% endblock %}#}
+{% block head %}
+{#    <link rel="{% static 'jqueryui/dragdrop/jquery-ui.min.css' %}">#}
+    <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>
+    {% include 'includes/editable-head-ref.html' %}
+{% endblock %}
 
 {% block content %}
 
@@ -47,21 +47,26 @@
                                 </ul>
                             </div>
                             <div class="panel-body">{{ taskset.text }}</div>
-                            <ul class="list-group">
-                                {% for task in taskset.tasks %}
-                                    <li class="list-group-item small">
-                                        <ul class="list-inline">
-                                            <li><i title={{ task.get_status_text }} class="{{ task.get_status_glyphicon }}"></i></li>
-                                            <li>{{ task.title | url2link | safe }}</li>
-                                            <li class="top-right">
-                                                <span title="Deadline" class="small">
-                                                    {{ task.deadline |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                            {% with taskset.tasks as page %}
+                            <div class="small">
+                                {% include 'twido/includes-list/tasks.html' %}
+                            </div>
+                            {% endwith %}
+{#                            <ul class="list-group">#}
+{#                                {% for task in taskset.tasks %}#}
+{#                                    <li class="list-group-item small">#}
+{#                                        <ul class="list-inline">#}
+{#                                            <li><i title={{ task.get_status_text }} class="{{ task.get_status_glyphicon }}"></i></li>#}
+{#                                            <li>{{ task.title | url2link | safe }}</li>#}
+{#                                            <li class="top-right">#}
+{#                                                <span title="Deadline" class="small">#}
+{#                                                    {{ task.deadline |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}#}
+{#                                                </span>#}
+{#                                            </li>#}
+{#                                        </ul>#}
+{#                                    </li>#}
+{#                                {% endfor %}#}
+{#                            </ul>#}
                         </div>
                     {% endfor %}
                 </div>
@@ -81,4 +86,9 @@
 
 {% block script %}
     {#    <script type="text/javascript" src="{% static 'pyqueuer/js/GitHub-Repo-Widget.min.js' %}"></script>#}
+    <script language="javascript" type="text/javascript">
+        $(document).ready(function(e){
+            $(".editable").addClass('no_underline').css("cursor", "pointer");
+        });
+    </script>
 {% endblock %}

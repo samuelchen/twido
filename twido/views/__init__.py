@@ -9,6 +9,6 @@ from .home import HomeView
 from .profile import ProfileView, ProfileUsernamesJsonView
 from .setting import SettingView
 from .social import SocialView
-from .todo import TodoListView, TodoView
+from .task import TodoListView, TodoView
 from .wish import WishListView
 from .account import RegisterView, LoginView
