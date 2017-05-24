@@ -419,7 +419,7 @@ class WishList(List):
 
 class TodoList(List):
     """
-    A wish list contains one or more things you want to do or buy.
+    A Todo list contains one or more things you want to do or buy.
     """
     def delete(self, using=None, keep_parents=False):
         s = str(self)
@@ -472,14 +472,14 @@ class Task(ProfileBasedModel):
     """
     Base task model for todo, wish and schedule appointment
     """
-    social_account = models.ForeignKey(to=SocialAccount, db_index=True, null=True, blank=True)
     created_at = models.DateTimeField(editable=False)
     title = models.CharField(max_length=200)
-    text = models.TextField(verbose_name='Origin Text', null=True, blank=True)
     status = models.SmallIntegerField(choices=TaskStatus.Choices, default=TaskStatus.NEW, db_index=True)
+    text = models.TextField(null=True, blank=True)
+    labels = models.TextField(null=True, blank=True)
 
     content = models.TextField(null=True, blank=True)
-    labels = models.TextField(null=True, blank=True)
+    social_account = models.ForeignKey(to=SocialAccount, db_index=True, null=True, blank=True)
     raw = models.OneToOneField(to=RawStatus, null=True, blank=True)
 
     class Meta:
@@ -504,6 +504,7 @@ class Task(ProfileBasedModel):
 
     def __str__(self):
         return '%s (id=%d)' % (self.title, self.id)
+
 
 class Todo(Task):
     """

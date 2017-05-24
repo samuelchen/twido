@@ -7,31 +7,39 @@
     .iframe-container {
         width: 100%;
         position: absolute;
-        top: 150px;
+        top: 220px;
         bottom: 0;
-        left: 0;
+        left: 50px;
     }
 
-    iframe {
+    .frame {
 {#      margin-top: 20px;#}
 {#      margin-bottom: 30px;#}
-        position: absolute;
-        width: 100%;
-        height: 100%;
+{#        margin-left: 50px;#}
+        position: relative;
+{#        width: 100%;#}
+{#        height: 100%;#}
+        width: 700px;
+        height: 200px
+    }
 
+    .round {
         -moz-border-radius: 12px;
         -webkit-border-radius: 12px;
         border-radius: 12px;
+    }
 
+    .shadow {
         -moz-box-shadow: 4px 4px 14px #000;
         -webkit-box-shadow: 4px 4px 14px #000;
         box-shadow: 4px 4px 14px #000;
-
-    {#  -moz-transform:rotate(20deg);#}
-    {#  -webkit-transform:rotate(20deg);#}
-    {#  -o-transform:rotate(20deg);#}
-    {#  -ms-transform:rotate(20deg);#}
-    {#  filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=.2);#}
+    }
+    .rotate {
+      -moz-transform:rotate(-20deg);
+      -webkit-transform:rotate(-20deg);
+      -o-transform:rotate(-20deg);
+      -ms-transform:rotate(-20deg);
+      filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=-0.2);
     }
 </style>
 {% endblock %}
@@ -49,24 +57,27 @@
         {% include 'includes/django-messags-inc.html' %}
 
         <div class="iframe-container" >
-        <iframe id="id_frame_content" src="http://localhost:8000" ></iframe>
+            <ul class="list-inline">
+            <li class="panel panel-default"><div class="panel-heading"><span class="panel-title">aaaaaa</span></div><div class="panel-body"><iframe id="id_frame_content" class="frame round shadow " src="https://item.taobao.com/item.htm?spm=a21c0.8071293.pinzhi.1.q8wtUv&scm=1007.12144.81309.5748_0&pvid=1e0e5b50-09fd-40ab-9778-247cebef36aa&id=538224408940" ></iframe></div></li>
+{#            <li><iframe id="id_frame_content" class="frame round shadow " src="http://www.vip.com/detail-1219069-208051052.html" ></iframe></li>#}
+            <li><iframe id="id_frame_content" class="frame round shadow " src="https://item.jd.com/11348540195.html?cpdad=1DLSUE" ></iframe></li>
+            <li><iframe id="id_frame_content" class="frame round shadow " src="http://item.jumei.com/d170518p474546zc.html?from=ppt_yayang_170523_pos_2_11&status=zs" ></iframe></li>
+{#            <li><iframe id="id_frame_content" class="frame round shadow " src="https://www.amazon.cn/dp/B000F5NNPY/ref=gwgfloorv1_AGS_bal_1?_encoding=UTF8&ie=UTF8&smid=A2EDK7H33M5FFG&pf_rd_p=c3f808b3-b344-4372-bd50-fcfe737492f9&pf_rd_s=desktop-4&pf_rd_t=36701&pf_rd_i=desktop&pf_rd_m=A1AJ19PSB66TGU&pf_rd_r=4D8TZ4Y70CMZ1CS4RMCJ&pf_rd_r=4D8TZ4Y70CMZ1CS4RMCJ&pf_rd_p=c3f808b3-b344-4372-bd50-fcfe737492f9" ></iframe></li>#}
+            </ul>
         </div>
+
 
     </div>
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'twido/js/tb.js' %}"></script>
+{#    <script src="{% static 'twido/js/tb.js' %}"></script>#}
     <script type="text/javascript" language="JavaScript">
         var f = $("#id_frame_content");
 
         $("#go").click(function(e){
             console.log('go');
-                        f.attr('src', 'http://www.open-open.com/lib/view/open1477469239478.html');
-
-
-{#            console.log(taobao.urls.cart);#}
-{#            f.attr('src', taobao.urls.cart);#}
+            f.attr('src', 'http://localhost:8000');
 {##}
 {#            f.on("load", function(e){#}
 {#                alert(f.contents().find("#id_timezone").val());#}
@@ -75,9 +86,12 @@
         });
 
         $("#collect").click(function(e){
-            console.log(f.contents().find("title"));
+{#            console.log(f.contents().find("title"));#}
 {#            var items = taobao.get_items(f.contents());#}
 {#            console.log(items);#}
         });
+
+
+
     </script>
 {% endblock %}
