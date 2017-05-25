@@ -127,9 +127,9 @@ class TaskStatus(object):
         EXPIRED: _('Expired'),
     }
     _glyphicons = {
-        NEW: 'glyphicon glyphicon-file text-muted ',
+        NEW: 'glyphicon glyphicon-record text-primary ',
         STARTED: 'glyphicon glyphicon-play text-info',
-        PAUSED: 'glyphicon glyphicon-pause text-info',
+        PAUSED: 'glyphicon glyphicon-pause text-default',
         DONE: 'glyphicon glyphicon-ok text-success',
         CANCEL: 'glyphicon glyphicon-remove text-muted',
         EXPIRED: 'glyphicon glyphicon-exclamation-sign text-danger',
@@ -391,7 +391,7 @@ class SocialAccount(ProfileBasedModel):
 
 class List(ProfileBasedModel):
     """
-     A list contains one or more things you want. (todolist, wishlist, ...)
+     A list contains one or more things you want or want to do. (todolist, wishlist, ...)
     """
     name = models.CharField(max_length=100)
     reminder = models.DateTimeField(null=True, blank=True)
@@ -401,7 +401,6 @@ class List(ProfileBasedModel):
 
     class Meta:
         unique_together = ('profile', 'name')
-        abstract = True
 
     __default_name = '__default__'
 
@@ -432,7 +431,7 @@ class List(ProfileBasedModel):
         return self.name == self.__default_name
 
     def __str__(self):
-        return "%d:%s" % (self.id, self.name)
+        return "%s (id=%d)" % (self.name, self.id)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None, is_default=False):
@@ -441,25 +440,13 @@ class List(ProfileBasedModel):
         return super(List, self).save(force_insert=force_insert, force_update=force_update,
                                       using=using, update_fields=update_fields)
 
-
-class WishList(List):
-    """
-    A wish list contains one or more things you want.
-    """
-    pass
-
-
-class TodoList(List):
-    """
-    A Todo list contains one or more things you want to do or buy.
-    """
     def delete(self, using=None, keep_parents=False):
         s = str(self)
-        log.debug('deleting todo list %s' % s)
+        log.debug('deleting list %s' % s)
         with transaction.atomic():
-            Todo.objects.filter(list=self, profile=self.profile).update(list=self.get_default(self.profile))
+            Task.objects.filter(list=self, profile=self.profile).update(list=self.get_default(self.profile))
             log.debug('all tasks in todo list %s are moved to default list.' % s)
-            super(TodoList, self).delete(using=using, keep_parents=keep_parents)
+            super(List, self).delete(using=using, keep_parents=keep_parents)
             log.info('todo list %s is deleted.' % s)
 
 
@@ -472,13 +459,12 @@ class Task(ProfileBasedModel):
     status = models.SmallIntegerField(choices=TaskStatus.Choices, default=TaskStatus.NEW, db_index=True)
     text = models.TextField(null=True, blank=True)
     labels = models.TextField(null=True, blank=True)
+    reminder = models.DateTimeField(null=True, blank=True)
+    list = models.ForeignKey(to=List)
 
     content = models.TextField(null=True, blank=True)
     social_account = models.ForeignKey(to=SocialAccount, db_index=True, null=True, blank=True)
     raw = models.OneToOneField(to=RawStatus, null=True, blank=True)
-
-    class Meta:
-        abstract = True
 
     def save(self, *args, **kwargs):
         if not self.created_at:
@@ -498,61 +484,40 @@ class Task(ProfileBasedModel):
         return TaskStatus.get_glyphicon(self.status)
 
     def get_view_path(self):
-        raise NotImplementedError
+        return reverse('task', args=(self.id, ))
 
     def __str__(self):
         return '%s (id=%d)' % (self.title, self.id)
 
 
-class Todo(Task):
-    """
-    Todo entity
-    """
-    list = models.ForeignKey(to=TodoList)
-    deadline = models.DateTimeField(null=True, blank=True)
-
-    def get_view_path(self):
-        return reverse('todo', args=(self.id,))
-
-
-class Appointment(Task):
-    """
-    Schedule appointment
-    """
-    start_at = models.DateTimeField()
-    end_at = models.DateTimeField()
-    location = models.TextField()
-
-
-class Wish(Task):
-    """
-    A wish means a thing you want (maybe a travel, a bag or even a lover.)
-    """
-    list = models.ForeignKey(to=WishList)
-    img = models.BinaryField()
-
-
-
-# class WishListRel(models.Model):
+# class Todo(Task):
 #     """
-#     Wish-list and wish relationship. Wishes on a wish-list of a user.
+#     Todo entity
 #     """
-#     list = models.ForeignKey(to=WishList)
-#     task = models.ForeignKey(to=Wish)
+#     # list = models.ForeignKey(to=TodoList)
+#     deadline = models.DateTimeField(null=True, blank=True)
 #
-#     class Meta:
-#         unique_together = ('list', 'task')
-
-
-# class TodoListRel(models.Model):
-#     """
-#     Wish-list and wish relationship. Wishes on a wish-list of a user.
-#     """
-#     list = models.ForeignKey(to=TodoList)
-#     task = models.ForeignKey(to=Wish)
+#     def get_view_path(self):
+#         return reverse('todo', args=(self.id,))
 #
-#     class Meta:
-#         unique_together = ('list', 'task')
+#
+# class Appointment(Task):
+#     """
+#     Schedule appointment
+#     """
+#     start_at = models.DateTimeField()
+#     end_at = models.DateTimeField()
+#     location = models.TextField()
+#
+#
+# class Wish(Task):
+#     """
+#     A wish means a thing you want (maybe a travel, a bag or even a lover.)
+#     """
+#     # list = models.ForeignKey(to=WishList)
+#     img = models.BinaryField()
+
+
 
 
 # ========== Admin Pages ==========

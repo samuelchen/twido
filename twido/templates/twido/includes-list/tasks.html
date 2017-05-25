@@ -1,38 +1,39 @@
 {# Tasks list (read only) #}
 {# vars: page - current page of tasks (pagination instance or iterable) #}
 {#       taskstatus - model TaskStatus #}
-{#       fields - list of supported fields (e.g. 'name', 'text') #}
-{#       editable - list of supported editable field names (e.g. 'name', 'text') #}
-{#       actions - list of supported actions. ('detail', 'del') #}
+{#       tasks_fields - tuple of supported fields. By default, show all. (e.g. 'name', 'text') #}
+{#       tasks_editable - tuple of supported editable field names. By default, none is editable. (e.g. 'name', 'text') #}
+{#       tasks_actions - tuple of supported actions. By default, no action available. ('detail', 'del') #}
+{#       tasks_empty_well - boolean to enable/disable messages when tasks is empty. By default, false. #}
 
-{% load i18n customer_tags %}<!-- BEGIN of tasks (read only) -->
+{% load i18n customer_tags %}<!-- BEGIN of tasks -->
 {#                        <div class="bs-component">#}
                             <ul class="list-group" name="tasks_incl">
                                 {% for task in page %}
                                     <li data-id="{{ task.id }}" class="list-group-item task-item">
                                         <ul class="list-inline">
-                                            {% if not fields or 'status' in fields %}
+                                            {% if not tasks_fields or 'status' in tasks_fields %}
                                             <li><span title="{% trans 'Status' %}: {{ task.get_status_text }}" data-name="status" data-type="select" data-pk="{{ task.id }}"
                                                   data-url="{{ task.get_view_path }}"><i class="{{ task.get_status_glyphicon }}"></i></span></li>
                                             {% endif %}
-                                            {% if not fields or 'deadline' in fields %}
-                                            <li class="top-right"><span title="{% trans 'Deadline' %}" class="small" data-name="deadline" data-type="datetime" data-pk="{{ task.id }}"
-                                                  data-url="{{ task.get_view_path }}">{{ task.deadline |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}</span></li>
+                                            {% if not tasks_fields or 'reminder' in tasks_fields %}
+                                            <li class="top-right"><span title="{% trans 'Reminder' %}" class="small" data-name="reminder" data-type="datetime" data-pk="{{ task.id }}"
+                                                  data-url="{{ task.get_view_path }}">{{ task.reminder |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}</span></li>
                                             {% endif %}
-                                            {% if not fields or 'title' in fields %}
+                                            {% if not tasks_fields or 'title' in tasks_fields %}
                                             <li><span data-name="title" data-type="text" data-pk="{{ task.id }}"
                                                   data-url="{{ task.get_view_path }}">{{ task.title | url2link }}</span></li>
                                             {% endif %}
-                                            {% if not fields or 'labels' in fields %}
+                                            {% if not tasks_fields or 'labels' in tasks_fields %}
                                             <li class="bottom-right"><span title="{% trans 'Labels' %}" data-name="labels" data-type="select2" data-pk="{{ task.id }}"
                                                   data-url="{{ task.get_view_path }}">{{ task.labels| default_if_none:'' }}</span></li>
                                             {% endif %}
-                                            {% if actions %}
+                                            {% if tasks_actions %}
                                             <li class="buttons small" style="white-space: nowrap; display: none;">
-                                                {% if 'detail' in actions %}
+                                                {% if 'detail' in tasks_actions %}
                                                 <a name="detail" href="{{ task.get_view_path }}" title="{% trans 'Detail' %}" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
                                                 {% endif %}
-                                                {% if 'del' in actions %}
+                                                {% if 'del' in tasks_actions %}
                                                 <a name="del-task" data-task-id="{{ task.id }}"  title="{% trans 'Delete' %}" class="label label-danger small"><i class="glyphicon glyphicon-remove"></i></a>
                                                 {% endif %}
                                             </li>
@@ -41,7 +42,7 @@
                                     </li>
                                 {% endfor %}
                             </ul>
-                            {% if not page or page.count <= 0 %}
+                            {% if tasks_empty_well and not page %}
                             <div class="well">
                                 {% trans 'List is empty. Please click "Create Task" button to add.' %}
                             </div>
@@ -54,12 +55,13 @@
                         <script language="JavaScript" type="text/javascript">
 
                             $(document).ready(function(){
-                                make_task_fields_editable([{% for fld in editables %}"{{ fld }}",{% endfor %}],
-                                [{% for a in actions %}"{{ a }}",{% endfor %}]);
+                                make_task_fields_editable([{% for fld in tasks_editables %}"{{ fld }}",{% endfor %}],
+                                [{% for a in tasks_actions %}"{{ a }}",{% endfor %}]);
                             });
 
 
                             function make_task_fields_editable(fields, actions) {
+                                /* arg fields is editable fields */
 
                                 var tasks_container = $("ul[name='tasks_incl']");
 
@@ -140,8 +142,8 @@
                                     });
                                 }
 
-                                if ($.inArray('deadline', fields) >= 0) {
-                                    tasks_container.find('span[data-name="deadline"]').tooltip().editable({
+                                if ($.inArray('reminder', fields) >= 0) {
+                                    tasks_container.find('span[data-name="reminder"]').tooltip().editable({
                                         mode: 'popup',
                                         {#                                    showbuttons: 'true',#}
                                         placement: 'left',
@@ -222,4 +224,4 @@
                             }
 
                         </script>
-<!-- END of tasks (read only) -->
+<!-- END of tasks -->

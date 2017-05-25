@@ -1,25 +1,22 @@
 {% extends "base.html" %}{% load customer_tags staticfiles i18n %}
 
-{% block title %}{% trans 'Todos' %}{% endblock %}
+{% block title %}{% trans 'Tasks' %}{% endblock %}
 
 {% block head %}
-{#    <link rel="{% static 'jqueryui/dragdrop/jquery-ui.min.css' %}">#}
     <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>
     {% include 'includes/editable-head-ref.html' %}
-
 {% endblock %}
 
 {% block content %}
 
     <div class="bs-docs-section container-fluid container-responsive">
 
-{#        {% include 'includes/blank-div-row.html' %}#}
-
         <div class="row">
+
             <!-- left col -->
             <div class="col-lg-4 col-md-4">
                 <div class="bs-component">
-                    {% include 'twido/includes-list/todolists-menu.html' %}
+                    {% include 'twido/includes-list/lists-menu.html' %}
                 </div>
 
                 <div class="bs-component">
@@ -36,7 +33,7 @@
                 </div>
 
                 <div class="bs-component">
-                {% include 'twido/includes-list/todolist-form.html' %}
+                {% include 'twido/includes-list/list-form.html' %}
                 </div>
 
             </div>
@@ -84,6 +81,7 @@
             form_action.find("input[name='action']").val(action);
             if ($.inArray(action, ['add', 'add-task']) >= 0) form_action.submit();
             // if action is "del", need to confirm (code below)
+{#            $(this).disable();#}
         });
 
         form_action.find('a[name="del"]').confirmation({
@@ -126,9 +124,10 @@
     });
 
     function move_task(task_id, list_id) {
-        var entry = $("#ul[name='tasks_incl']").find("[data-id='" + task_id + "']");
+        var entry = $("ul[name='tasks_incl']").find("[data-id='" + task_id + "']");
         var task_name = entry.find("span[data-name='title']").text();
-        var list_name = entry.data('name');
+        var list_name = $("[name='lists_incl']").find("[data-id='" + list_id + "']").data('name');
+
         $.ajax("{{ request.path }}", {
             method: 'POST',
             data: {
@@ -137,8 +136,6 @@
                 list_id: list_id
             },
             success: function (resp) {
-                var list_name = $(ul[name='lists_incl']).find("[data-id='" + list_id + "']").text();
-{#                console.log(list_name);#}
                 _success('{% trans 'Task "{0}" moved to list "{1}".' %}'.f(task_name, list_name), true);  // message incl
                 console.debug('Task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
                 entry.fadeOut();

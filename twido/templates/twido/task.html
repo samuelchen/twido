@@ -1,17 +1,11 @@
 {% extends "base.html" %}{% load customer_tags staticfiles i18n %}
 
-{% block title %}{% trans 'Todo Detail' %}{% endblock %}
+{% block title %}{% trans 'Task Detail' %}{% endblock %}
 
 {% block head %}
-{#    <link rel="{% static 'jqueryui/dragdrop/jquery-ui.min.css' %}">#}
 {#    <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>#}
-{#    <script language="JavaScript" src="{% static 'twido/js/bootstrap-confirmation.min.js' %}"></script>#}
     {% include 'includes/editable-head-ref.html' %}
-    <script language="JavaScript" type="text/javascript">
-        $.fn.editable.defaults.mode = 'inline';
-        $.fn.editable.defaults.showbuttons = false;
-        $.fn.editable.defaults.onblur = 'submit';
-    </script>
+
 {% endblock %}
 
 {% block content %}
@@ -30,21 +24,23 @@
                     </div>
                     <ul class="list-group">
                         {% for task in page %}
-                            <a href="{% url 'todo' task.id %}" class="list-group-item small {% if thetask.id == task.id %}active{% endif %}">
+                            <a href="{% url 'task' task.id %}?p={{ page.number }}" class="list-group-item small {% if thetask.id == task.id %}active{% endif %}">
                                 <ul class="list-inline">
                                     <li><i title={{ task.get_status_text }} class="{{ task.get_status_glyphicon }}"></i></li>
                                     <li>{{ task.title | url2link | safe }}</li>
                                     <li class="top-right">
-                                        <span title="Deadline" class="small">
-                                            {{ task.deadline |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}
+                                        <span title="Reminder" class="small">
+                                            {{ task.reminder |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}
                                         </span>
                                     </li>
                                 </ul>
                             </a>
                         {% endfor %}
                     </ul>
+                    <div class="text-center">
+                        {% include 'includes/paginatition.html' %}
+                    </div>
                 </div>
-
 
                 <div class="bs-component">
                     <form id="id_form_action" action="{{ request.path }}" method="post">
@@ -62,16 +58,9 @@
 
             <!-- main col -->
             <div class="col-lg-8 col-md-8 col-sm-7">
-                <div class="row">
-
-                    <div class="bs-component">
-
-                        <div class="panel">
-                            {% include 'includes/django-messags-inc.html' %}
-                            {% include 'twido/includes-list/task-form.html' %}
-                        </div>
-                    </div>
-
+                <div class="row container">
+                    {% include 'includes/django-messags-inc.html' %}
+                    {% include 'twido/includes-list/task-form.html' %}
                 </div>
             </div>
 

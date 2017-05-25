@@ -13,7 +13,8 @@ from django.utils.translation import ugettext_lazy as _
 import simplejson as json
 from tweepy import TweepError
 from .base import BaseViewMixin
-from ..models import Todo, Wish, WishList, TodoList, UserProfile, SocialPlatform, SocialAccount
+from ..models import UserProfile, SocialPlatform, SocialAccount
+from ..models import Task, List
 from ..utils import TwitterClientManager
 
 import logging

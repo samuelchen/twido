@@ -9,9 +9,9 @@
 
                                     <!-- name -->
                                     <div class="form-group">
-                                        <label for="title" class="col-lg-2 control-label">{% trans 'Task Title' %}</label>
+                                        <label for="title" class="col-lg-2 col-md-2 control-label">{% trans 'Task Title' %}</label>
 
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-10 col-md-10">
                                             <span id="title" data-type="text" data-pk="{{ thetask.id }}"
                                                   data-url="{{ request.path }}">
                                                 {{ thetask.title }}
@@ -21,9 +21,9 @@
 
                                     <!-- status -->
                                     <div class="form-group">
-                                        <label for="status" class="col-lg-2 control-label">{% trans 'Status' %}</label>
+                                        <label for="status" class="col-lg-2 col-md-2 control-label">{% trans 'Status' %}</label>
 
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-10 col-md-10">
                                             <span id="status" data-type="select" data-pk="{{ thetask.id }}"
                                                   data-url="{{ request.path }}"><i class="{{ thetask.get_status_glyphicon }}">
                                             </i> {{ thetask.get_status_text }}</span>
@@ -34,20 +34,20 @@
 
                                     <!-- reminder -->
                                     <div class="form-group">
-                                        <label for="deadline" class="col-lg-2 control-label">{% trans 'Deadline' %}</label>
+                                        <label for="reminder" class="col-lg-2 col-md-2 control-label">{% trans 'Deadline' %}</label>
 
-                                        <div class="col-lg-10">
-                                            <span id="deadline" data-type="datetime" data-pk="{{ thetask.id }}"
-                                                  data-url="{{ request.path }}">{{ thetask.deadline | default_if_none:'' }}</span>
+                                        <div class="col-lg-10 col-md-10">
+                                            <span id="reminder" data-type="datetime" data-pk="{{ thetask.id }}"
+                                                  data-url="{{ request.path }}">{{ thetask.reminder | default_if_none:'' }}</span>
 {#                                            <span class="help-block">The time to remind me.</span>#}
                                         </div>
                                     </div>
 
                                     <!-- labels -->
                                     <div class="form-group">
-                                        <label for="labels" class="col-lg-2 control-label">{% trans 'Labels' %}</label>
+                                        <label for="labels" class="col-lg-2 col-md-2 control-label">{% trans 'Labels' %}</label>
 
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-10 col-md-10">
                                             <span id="labels" data-type="select2" data-pk="{{ thetask.id }}"
                                                   data-url="{{ request.path }}"
                                                   data-value="{{ thetask.labels | default_if_none:'' }}">
@@ -57,9 +57,9 @@
 
                                     <!-- long text -->
                                     <div class="form-group">
-                                        <label for="text" class="col-lg-2 control-label">{% trans 'Detail Text' %}</label>
+                                        <label for="text" class="col-lg-2 col-md-2 control-label">{% trans 'Detail Text' %}</label>
 
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-10 col-md-10">
                                             <span id="text" data-type="textarea" data-pk="{{ thetask.id }}"
                                                   data-url="{{ request.path }}">{{ thetask.text | default_if_none:'' }}</span>
 {#                                            <span class="help-block">Long description.</span>#}
@@ -156,7 +156,7 @@
                                     }
                                 });
 
-                                $('#deadline').editable({
+                                $('#reminder').editable({
                                     mode: 'popup',
                                     placement: 'right',
                                     allowClear: 'true',

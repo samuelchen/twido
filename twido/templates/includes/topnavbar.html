@@ -21,7 +21,8 @@
                     <ul class="nav navbar-nav">
                         {% if request.user.is_authenticated %}
                         <li class="{% if request.path == '/home/' %}active{% endif %}"><a href="{% url 'home' %}">{% trans 'Home' %}{% if request.path == '/home/' %}<span class="sr-only">(current)</span>{% endif %}</a></li>
-                        <li class="{% if request.path == '/todolist/' %}active{% endif %}"><a href="{% url 'todolist' %}">{% trans 'Todos' %}{% if request.path == '/todolist/' %}<span class="sr-only">(current)</span>{% endif %}</a></li>
+{#                        <li class="{% if request.path == '/todolist/' %}active{% endif %}"><a href="{% url 'todolist' %}">{% trans 'Todos' %}{% if request.path == '/todolist/' %}<span class="sr-only">(current)</span>{% endif %}</a></li>#}
+                        <li class="{% if request.path == '/list/' %}active{% endif %}"><a href="{% url 'list' %}">{% trans 'Lists' %}{% if request.path == '/list/' %}<span class="sr-only">(current)</span>{% endif %}</a></li>
 {#                        <li><a href="{% url 'wishlist' %}">Wishes</a></li>#}
 {#                        <li class="dropdown">#}
 {#                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"#}

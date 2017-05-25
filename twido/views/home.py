@@ -8,7 +8,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
 from .base import BaseViewMixin
-from ..models import SocialAccount, TodoList, WishList, Todo, TaskStatus
+from ..models import SocialAccount, TaskStatus
+from ..models import Task, List
 
 
 from pyutils.langutil import PropertyDict, MutableEnum
@@ -16,6 +17,7 @@ from pyutils.langutil import PropertyDict, MutableEnum
 I18N_MSGS = MutableEnum(
     home_tasks_title_today=_('today'),
     home_tasks_text_today=_('Come on, you are about to completed all the tasks!'),
+    # home_tasks_text_today_empty=_('Cheers, you have completed all the tasks for today!'),
     home_tasks_title_soon=_('soon'),
     home_tasks_text_soon=_('Tasks in %d days (including those without deadline)'),
     home_tasks_title_expired=_('expired'),
@@ -25,13 +27,14 @@ I18N_MSGS = MutableEnum(
 
 @method_decorator(login_required, 'dispatch')
 class HomeView(TemplateView, BaseViewMixin):
+
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
 
         profile = self.request.user.profile
         accs = SocialAccount.objects.filter(profile=profile).values_list('platform')
 
-        context['todolists'] = TodoList.objects.filter(profile=profile).all()
+        context['lists'] = List.objects.filter(profile=profile).all()
 
         soon_days = 3
         entries = 10
@@ -42,23 +45,23 @@ class HomeView(TemplateView, BaseViewMixin):
             {'title': I18N_MSGS.home_tasks_title_today,
              'text': I18N_MSGS.home_tasks_text_today,
              'class': '',
-             'tasks': Todo.objects.filter(profile=profile, deadline__range=(today, tomorrow))[:entries]},
+             'tasks': Task.objects.filter(profile=profile, reminder__range=(today, tomorrow))[:entries]},
             {'title': I18N_MSGS.home_tasks_title_soon,
              'text': I18N_MSGS.home_tasks_text_soon % soon_days,
              'class': '',
-             'tasks': Todo.objects.filter(profile=profile).filter(
-                 Q(deadline__lt=timezone.now() - timedelta(days=soon_days)) | Q(deadline=None))[:entries]},
+             'tasks': Task.objects.filter(profile=profile).filter(
+                 Q(reminder__lt=timezone.now() - timedelta(days=soon_days)) | Q(reminder=None))[:entries]},
             {'title': I18N_MSGS.home_tasks_title_expired,
              'text': I18N_MSGS.home_tasks_text_expired % {'expire': TaskStatus.get_text(TaskStatus.EXPIRED),
                                                           'cancel': TaskStatus.get_text(TaskStatus.CANCEL)
                                                           },
              'class': '',
-             'tasks': Todo.objects.filter(profile=profile, deadline__lt=timezone.now()).exclude(
+             'tasks': Task.objects.filter(profile=profile, reminder__lt=timezone.now()).exclude(
                  status__in=(TaskStatus.DONE, TaskStatus.CANCEL))[:entries]},
         ]
 
-        context['fields'] = ('status', 'title', 'deadline')
-        context['editables'] = ('status', 'title', 'deadline')
-        context['actions'] = ('detail',)
+        context['tasks_fields'] = ('status', 'title', 'reminder')
+        context['tasks_editables'] = ('status', 'title', 'reminder')
+        context['tasks_actions'] = ('detail',)
         context['taskstatus'] = TaskStatus
         return context

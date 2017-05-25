@@ -5,8 +5,9 @@
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView
 
-from ..models import Todo, Wish, UserProfile
+from ..models import UserProfile
 from ..models import SocialAccount
+from ..models import Task, List
 from .base import BaseViewMixin
 from pyutils.langutil import MutableEnum
 
@@ -40,8 +41,8 @@ class IndexView(TemplateView, BaseViewMixin):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
 
-        context['todos'] = Todo.objects.all()[:10]
-        context['wishes'] = Wish.objects.all()[:10]
+        context['todos'] = Task.objects.all()[:10]
+        # context['wishes'] = Wish.objects.all()[:10]
         # delta = timedelta(days=7)
         # dt = datetime.utcnow() - delta
         # context['profiles'] = UserProfile.objects.filter(user__date_joined__gt=dt).order_by('-user__date_joined')[:10]

@@ -46,7 +46,7 @@
 
         <!-- fast backward -->
         <li>
-            <a href="?p={% if page.number|add:"10" > page.paginator.num_pages %}{{ page.painator.num_pages }}{% else %}{{ page.number|add:'10' }}{% endif %}" aria-label="Prev">
+            <a href="?p={% if page.number|add:"10" > page.paginator.num_pages %}{{ page.paginator.num_pages }}{% else %}{{ page.number|add:'10' }}{% endif %}" aria-label="Prev">
             <span aria-hidden="true"><i class="glyphicon glyphicon-fast-forward"></i></span>
         </a></li>
 

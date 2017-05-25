@@ -3,7 +3,7 @@
 
 from django.forms import ModelForm
 from django import forms
-from .models import TodoList, Todo, UserProfile
+from .models import Task, UserProfile
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
