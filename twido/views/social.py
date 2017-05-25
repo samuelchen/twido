@@ -255,14 +255,11 @@ class SocialView(TemplateView, BaseViewMixin):
     def combine_profile_with_twitter_account(self, profile, social_account):
         acc = social_account
         sys_profile = UserProfile.get_sys_profile()
-        # sys_todolist = TodoList.get_default(profile=sys_profile)
-        default_todolist = TodoList.get_default(profile=profile)
-        default_wishlist = WishList.get_default(profile=profile)
+        default_list = List.get_default(profile=profile)
 
         if acc.profile != profile:
             acc.profile = profile
             acc.save()
         # TODO: investigate the performance.
         # Todo.objects.filter(profile=sys_profile, social_account=acc, list=sys_todolist).update(profile=profile, list=default_list)
-        Todo.objects.filter(profile=sys_profile, social_account=acc).update(profile=profile, list=default_todolist)
-        Wish.objects.filter(profile=sys_profile, social_account=acc).update(profile=profile, list=default_wishlist)
+        Task.objects.filter(profile=sys_profile, social_account=acc).update(profile=profile, list=default_list)
