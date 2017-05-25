@@ -13,6 +13,7 @@ from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import pgettext_lazy
 from django.db import transaction
 
 try:
@@ -54,8 +55,8 @@ class Gender(object):
     _texts = {
         MALE: _('Male'),
         FEMALE: _('Female'),
-        NEITHER: _('Neither'),
-        PRIVATE: _('Private'),
+        NEITHER: pgettext_lazy('gender', 'Neither'),
+        PRIVATE: pgettext_lazy('gender', 'Private'),
     }
     _icons = {
         MALE: 'flaticon-man-with-short-hair-profile-avatar',
@@ -182,8 +183,8 @@ class UserProfile(models.Model):
     User Profile.
 
     Django User is used for authorization (login/logout/register).
-    User.username will always set to User.email.
-    The Django User model's "email" field is useless.
+    User.username will always be set to User.email.
+    The Django User.email field is useless.
 
     email -> login account.
     username -> user.username. Account ID.
@@ -220,7 +221,7 @@ class UserProfile(models.Model):
         p, created = cls.objects.get_or_create(username=cls.__sys_profile_uname)
         if created:
             p.email = cls.__sys_profile_uname + '@localhost'
-            p.name = _('SYS')
+            p.name = pgettext_lazy('system account name', 'SYS')
             p.save()
             log.info('System profile (%s) is created.' % cls.__sys_profile_uname)
         cls.__sys_profile = p

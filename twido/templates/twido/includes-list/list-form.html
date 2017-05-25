@@ -13,9 +13,9 @@
 {#                                    <legend class="edit">{{ thelist.name }}</legend>#}
                                     <!-- name -->
                                     <div class="form-group">
-                                        <label for="name" class="col-lg-2 control-label">{% trans 'List Name' %}</label>
+                                        <label for="name" class="col-lg-3 control-label">{% trans 'List Name' %}</label>
 
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-9">
                                             <span id="name" data-type="text" data-pk="{{ thelist.id }}"
                                                   data-url="{{ request.path }}">
                                                 {{ thelist.name }}
@@ -25,9 +25,9 @@
 
                                     <!-- reminder -->
                                     <div class="form-group">
-                                        <label for="reminder" class="col-lg-2 control-label">{% trans 'Reminder' %}</label>
+                                        <label for="reminder" class="col-lg-3 control-label">{% trans 'Reminder' %}</label>
 
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-9">
                                             <span id="reminder" data-type="datetime" data-pk="{{ thelist.id }}"
                                                   data-url="{{ request.path }}">{{ thelist.reminder | default_if_none:'' }}</span>
 {#                                            <span class="help-block">The time to remind me.</span>#}
@@ -36,9 +36,9 @@
 
                                     <!-- related users -->
                                     <div class="form-group">
-                                        <label for="related_users" class="col-lg-2 control-label">{% trans 'Related Persons' %}</label>
+                                        <label for="related_users" class="col-lg-3 control-label">{% trans 'Related Persons' %}</label>
 
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-9">
                                             <span id="related_users" data-type="select2" data-pk="{{ thelist.id }}"
                                                   data-url="{{ request.path }}"
                                                   data-value="{{ thelist.related_users | default_if_none:'' }}">
@@ -55,9 +55,9 @@
 
                                     <!-- long text -->
                                     <div class="form-group">
-                                        <label for="text" class="col-lg-2 control-label">{% trans 'Description' %}</label>
+                                        <label for="text" class="col-lg-3 control-label">{% trans 'Description' %}</label>
 
-                                        <div class="col-lg-10">
+                                        <div class="col-lg-9">
                                             <span id="text" data-type="textarea" data-pk="{{ thelist.id }}"
                                                   data-url="{{ request.path }}">{{ thelist.text | default_if_none:'' }}</span>
 {#                                            <span class="help-block">Long description.</span>#}

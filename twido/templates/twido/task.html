@@ -47,7 +47,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="action">
                         <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add" title="{% trans 'Create a task to current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Create Task' %}</a>
+                            <a name="add" title="{% trans 'Add a task to current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Add Task' %}</a>
                             {% if not thelist.is_default %}
                             <a name="del" title="{% trans 'Delete current task' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete Task' %}</a>
                             {% endif %}
@@ -58,7 +58,7 @@
 
             <!-- main col -->
             <div class="col-lg-8 col-md-8 col-sm-7">
-                <div class="row container">
+                <div class="row">
                     {% include 'includes/django-messags-inc.html' %}
                     {% include 'twido/includes-list/task-form.html' %}
                 </div>
