@@ -22,7 +22,7 @@ class ProfileInline(admin.StackedInline):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ( 'name', 'gender', 'timezone', 'location', 'lang', 'img_url'),
+            'fields': ('name', 'gender', 'timezone', 'location', 'lang', 'img_url'),
         }),
     )
 
@@ -38,8 +38,10 @@ class MyUserCreationForm(UserCreationForm):
     fields = ('email', )
 
     def __init__(self, *args, **kwargs):
-        super(MyUserCreationForm, self).__init__(*args, **kwargs)
+        # super class's super. NOT incorrect. Skip USERNAME invoking in super.__init__
+        super(UserCreationForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
+        self.fields['email'].widget.attrs.update({'autofocus': ''})
 
 
 class MyUserChangeForm(UserChangeForm):
@@ -78,7 +80,7 @@ class CustomUserAdmin(UserAdmin):
     get_name.short_description = 'Name'
 
     def get_gender(self, obj):
-        return obj.profile.gender
+        return obj.profile.get_gender_text()
     get_gender.short_description = 'Gender'
 
     def changelist_view(self, request, extra_context=None):
