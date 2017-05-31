@@ -11,7 +11,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.views import login as login_func_view
 
-from ..forms import UserProfileCreationForm
+from ..models.admins import UserProfileCreationForm
 import logging
 from .base import BaseViewMixin
 

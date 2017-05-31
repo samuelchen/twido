@@ -46,7 +46,9 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="panel-body">{{ taskset.text }}</div>
+                            <div class="panel-body"><span class="text-muted small">
+                                {% if taskset.count > 0 %}{{ taskset.text }}{% else %}{{ taskset.empty }}{% endif %}
+                            </span></div>
                             {% with taskset.tasks as page %}
                             <div class="small">
                                 {% include 'twido/includes-list/tasks.html' %}
