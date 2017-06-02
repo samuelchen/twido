@@ -10,13 +10,24 @@
                             <h4 class="list-group-item-heading">{% trans 'Lists' %}</h4>
                         </a>
                         {% for lst in lists %}
-                            {% if not lst.is_default %}
+                            {% if not lst.is_sys %}
+                            <a href="{% url 'list' lst.id %}" data-id="{{ lst.id }}" data-name="{{ lst.name }}"
+                               class="list-group-item dropable {% if thelist.id == lst.id %}active{% endif %}">
+                                <i class="glyphicon {% if thelist.id == lst.id %}glyphicon-folder-open{% else %}glyphicon-folder-close{% endif %} small"> </i>
+                                  {{ lst.get_name }}
+                                <span class="badge">{{ lst.task_set.count }}</span></a>
+                            {% endif %}
+                        {% endfor %}
+
+                        <a class="list-group-item divider">
+                            <h4 class="list-group-item-heading">{% trans 'Customized Lists' %}</h4>
+                        </a>
+                        {% for lst in customized_list %}
                             <a href="{% url 'list' lst.id %}" data-id="{{ lst.id }}" data-name="{{ lst.name }}"
                                class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">
                                 <i class="glyphicon {% if thelist.id == lst.id %}glyphicon-folder-open{% else %}glyphicon-folder-close{% endif %} small"> </i>
-                                  {{ lst.name }}
+                                  {% trans lst.get_name %}
                                 <span class="badge">{{ lst.task_set.count }}</span></a>
-                            {% endif %}
                         {% endfor %}
                     </div>
 

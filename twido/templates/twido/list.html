@@ -28,7 +28,7 @@
                         <input type="hidden" name="action">
                         <div class="btn-group btn-group-justified btn-group-sm">
                             <a name="add" title="{% trans 'Create a new list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Create List' %}</a>
-                            {% if not thelist.is_default %}
+                            {% if not thelist.is_sys %}
                             <a name="del" title="{% trans 'Delete current list' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete List' %}</a>
                             {% endif %}
                             <a name="export" title="{% trans 'Export current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Export List' %}</a>
@@ -123,7 +123,7 @@
                 return $('<i class="glyphicon glyphicon-tasks large"></i>');
             }
         });
-        $("[name='lists_incl']").find(".list-group-item").droppable({
+        $("[name='lists_incl']").find(".list-group-item.dropable").droppable({
             accept: '.list-group-item',
             classes: {
                 "ui-droppable-hover": "list-group-item-info"

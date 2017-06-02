@@ -47,7 +47,7 @@
                                 </ul>
                             </div>
                             <div class="panel-body"><span class="text-muted small">
-                                {% if taskset.count > 0 %}{{ taskset.text }}{% else %}{{ taskset.empty }}{% endif %}
+                                {% if taskset.tasks.count <= 0 and taskset.empty %}{{ taskset.empty }}{% else %}{{ taskset.text }}{% endif %}
                             </span></div>
                             {% with taskset.tasks as page %}
                             <div class="small">

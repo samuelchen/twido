@@ -14,6 +14,8 @@ from ..models import Task, List
 
 from pyutils.langutil import PropertyDict, MutableEnum
 # class I18N_MSGS(object):
+from twido.models.task import CustomizedList
+
 I18N_MSGS = MutableEnum(
     home_tasks_title_today=_('today'),
     home_tasks_text_today=_('Come on, you are about to completed all the tasks!'),
@@ -34,7 +36,9 @@ class HomeView(TemplateView, BaseViewMixin):
         profile = self.request.user.profile
         accs = SocialAccount.objects.filter(profile=profile).values_list('platform')
 
-        context['lists'] = List.objects.filter(profile=profile).all()
+        context['lists'] = List.objects.filter(profile=profile).order_by('name')
+        customized_list = CustomizedList(profile=profile)
+        context['customized_list'] = customized_list.get_all_lists()
 
         soon_days = 3
         entries = 10

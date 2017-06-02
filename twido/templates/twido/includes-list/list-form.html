@@ -6,6 +6,10 @@
                             <div class="text-center">
                             <H3>{% trans 'Default List' %}</H3> <span>{% trans '(unlisted tasks)' %}</span>
                             </div>
+                        {% elif thelist.is_sys %}
+                            <div class="text-center">
+                            <H3>{% trans thelist.text %}</H3> <span>{% trans '(unlisted tasks)' %}</span>
+                            </div>
                         {% else %}
                             <form class="form-horizontal" method="post" action="{% url 'list' thelist.id %}">
                                 {% csrf_token %}

@@ -15,12 +15,14 @@ from wsgiref.util import FileWrapper
 from io import StringIO
 from pyutils.django.response import download_file_response
 import simplejson as json
+from pyutils.json import to_serializable
+
 from ..models import Task,  List, TaskStatus
+from ..models import CustomizedList
 from .base import BaseViewMixin
 from .common import paginate
 
 import logging
-from pyutils.json import to_serializable
 
 log = logging.getLogger(__name__)
 
@@ -77,6 +79,8 @@ class ListView(TemplateView, BaseViewMixin):
         context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=thelist).select_related('list'),
                                    cur_page=p, entries_per_page=10)
         context['lists'] = ListModel.objects.filter(profile=profile).all()
+        customized_list = CustomizedList(profile=profile, list_model=ListModel, task_model=TaskModel)
+        context['customized_list'] = customized_list.get_all_lists()
 
         # variables for tasks.html includes
         context['taskstatus'] = TaskStatus

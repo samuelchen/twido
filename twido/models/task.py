@@ -4,10 +4,13 @@
 """
 Task and list related models
 """
+from datetime import timedelta
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 from django.core.validators import validate_comma_separated_integer_list
+from django.utils.functional import lazy, SimpleLazyObject
 from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
 from .common import ProfileBasedModel, UserProfile
@@ -43,10 +46,8 @@ class List(ProfileBasedModel):
             default_list = cls.objects.get(name=cls.__default_name, profile=profile)
         except cls.DoesNotExist:
             default_list = cls(name=cls.__default_name, profile=profile)
-
-        default_list.text = _('The default list. It will be created automatically (even if you delete it).')
-        default_list.save(is_default=True)
-
+            default_list.text = _('The default list. It will be created automatically (even if you delete it).')
+            default_list.save(is_default=True)
         return default_list
 
     @property
@@ -54,8 +55,21 @@ class List(ProfileBasedModel):
         return self.name == self.__default_name
 
     @property
+    def is_sys(self):
+        return self.name.startswith('__')
+
+    @property
     def default(self):
         return self.get_default(self.profile)
+
+    def get_name(self):
+
+        if self.is_sys:
+            return self.name.lstrip('__')
+        elif self.is_default:
+            return _('Default')
+        else:
+            return self.name
 
     def get_related_profiles(self):
         return UserProfile.objects.filter(username__in=(self.related_users.split(',') or ''))
@@ -119,6 +133,81 @@ class Task(ProfileBasedModel):
 
     def __str__(self):
         return '%s (id=%d)' % (self.title, self.id)
+
+
+class CustomizedList(object):
+    # entries = models.IntegerField(default=10, help_text=_('Entries per list page.'))
+
+    __today_name = '__today'
+    __today_text = 'today'         # trans it later
+    __today = None
+
+    __soon_name = '__soon'
+    __soon_text = 'soon'           # trans it later
+    __soon = None
+
+    __expired_name = '__expired'
+    __expired_text = 'expired'     # trans it later
+    __expired = None
+
+    def __init__(self, profile, list_model=List, task_model=Task, entries_per_page=10):
+        self.ListModel = list_model
+        self.TaskModel = task_model
+        self.profile = profile
+        self.entries = entries_per_page
+        self.soon_days = 3
+
+    def get_all_lists(self):
+        return (
+            self.get_today_list(),
+            self.get_soon_list(),
+            self.get_expired_list()
+        )
+
+    def get_today_list(self):
+        if not self.__today:
+            lst, created = self.ListModel.objects.get_or_create(profile=self.profile, name=self.__today_name)
+            if created:
+                lst.text = self.__today_text
+                lst.save()
+            lst.task_set = SimpleLazyObject(self.get_today_tasks)
+            self.__today = lst
+        return self.__today
+
+    def get_soon_list(self):
+        if not self.__soon:
+            lst, created = self.ListModel.objects.get_or_create(profile=self.profile, name=self.__soon_name)
+            if created:
+                lst.text = self.__soon_text
+                lst.save()
+            lst.task_set = SimpleLazyObject(self.get_soon_tasks)
+            self.__soon = lst
+        return self.__soon
+
+    def get_expired_list(self):
+        if not self.__expired:
+            lst, created = self.ListModel.objects.get_or_create(profile=self.profile, name=self.__expired_name)
+            if created:
+                lst.text = self.__expired_text
+                lst.save()
+            lst.task_set = SimpleLazyObject(self.get_expired_tasks)
+            self.__expired = lst
+        return self.__expired
+
+    def get_today_tasks(self):
+        now = timezone.now()
+        today = timezone.datetime(now.year, now.month, now.day, tzinfo=timezone.utc)
+        tomorrow = today + timedelta(days=1)
+        return self.TaskModel.objects.filter(profile=self.profile, reminder__range=(today, tomorrow))[:self.entries]
+
+    def get_soon_tasks(self):
+        return self.TaskModel.objects.filter(profile=self.profile).filter(
+            Q(reminder__lt=timezone.now() - timedelta(days=self.soon_days)) | Q(reminder=None))[:self.entries]
+
+    def get_expired_tasks(self):
+        return self.TaskModel.objects.filter(profile=self.profile, reminder__lt=timezone.now()).exclude(
+            status__in=(TaskStatus.DONE, TaskStatus.CANCEL))[:self.entries]
+
 
 
 # class Todo(Task):
