@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-from .models import UserProfile, UserModel
-
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin  # 从django继承过来后进行定制
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm # admin中涉及到的两个表单
 from django.utils import timezone
+from .models import UserProfile, UserModel
 
 
 class ProfileInline(admin.StackedInline):
@@ -33,15 +32,28 @@ class ProfileInline(admin.StackedInline):
 
 
 # custom user admin
+# TODO: still have problem with "add user" in admin
 class MyUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
 
-    fields = ('email', )
+    class Meta:
+        model = UserModel
+        fields = ("email", "password1", "password2")
 
     def __init__(self, *args, **kwargs):
         # super class's super. NOT incorrect. Skip USERNAME invoking in super.__init__
         super(UserCreationForm, self).__init__(*args, **kwargs)
-        self.fields['email'].required = True
         self.fields['email'].widget.attrs.update({'autofocus': ''})
+        self.fields.keyOrder = ['email', 'password1', 'password2']
+
+    def clean(self):
+        """
+        Normal cleanup + username generation.
+        """
+        cleaned_data = super(UserCreationForm, self).clean()
+        if 'email' in cleaned_data:
+            cleaned_data['username'] = cleaned_data['email']
+        return cleaned_data
 
 
 class MyUserChangeForm(UserChangeForm):

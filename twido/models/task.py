@@ -29,10 +29,13 @@ class List(ProfileBasedModel):
                                      db_index=True, verbose_name='Related Persons (comma separated)')
     text = models.TextField(null=True, blank=True)
 
-    class Meta:
-        unique_together = ('profile', 'name')
+    # class Meta:
+    #     unique_together = ('profile', 'name')
 
     __default_name = '__default__'
+
+    def __str__(self):
+        return "%s (id=%d)" % (self.name, self.id)
 
     @classmethod
     def get_default(cls, profile):
@@ -47,6 +50,10 @@ class List(ProfileBasedModel):
         return default_list
 
     @property
+    def is_default(self):
+        return self.name == self.__default_name
+
+    @property
     def default(self):
         return self.get_default(self.profile)
 
@@ -55,13 +62,6 @@ class List(ProfileBasedModel):
 
     def get_related_usernames(self):
         return self.related_users.split(',')
-
-    @property
-    def is_default(self):
-        return self.name == self.__default_name
-
-    def __str__(self):
-        return "%s (id=%d)" % (self.name, self.id)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None, is_default=False):

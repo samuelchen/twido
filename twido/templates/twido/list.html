@@ -16,10 +16,12 @@
 
             <!-- left col -->
             <div class="col-lg-4 col-md-4">
+                <!-- menu -->
                 <div class="bs-component">
                     {% include 'twido/includes-list/lists-menu.html' %}
                 </div>
 
+                <!-- button -->
                 <div class="bs-component">
                     <form id="id_form_action" action="{{ request.path }}" method="post">
                         {% csrf_token %}
@@ -29,10 +31,19 @@
                             {% if not thelist.is_default %}
                             <a name="del" title="{% trans 'Delete current list' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete List' %}</a>
                             {% endif %}
+                            <a name="export" title="{% trans 'Export current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Export List' %}</a>
+                            <a name="import" title="{% trans 'Import a list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Import List' %}</a>
                         </div>
+                    </form>
+                    <form id="id_form_upload" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {#  TODO: handle big file / streaming #}
+                        <input type="hidden" name="action" value="import">
+                        <input type="file" id="id_file_upload" name="choose_file" onchange="$(this).closest('form').submit();" style="display: none" />
                     </form>
                 </div>
 
+                <!-- list form -->
                 <div class="bs-component">
                 {% include 'twido/includes-list/list-form.html' %}
                 </div>
@@ -80,8 +91,9 @@
         $("a.btn").tooltip({container: 'body'}).click(function(e){
             var action = $(this).attr('name');
             form_action.find("input[name='action']").val(action);
-            if ($.inArray(action, ['add', 'add-task']) >= 0) form_action.submit();
-            // if action is "del", need to confirm (code below)
+            // if action is "del" related, need to confirm
+            // if upload, need to let user to choose file.
+            if ($.inArray(action, ['del', 'del-task', 'import']) < 0) form_action.submit();
 {#            $(this).disable();#}
         });
 
@@ -95,9 +107,14 @@
             placement: 'right'
         });
 
+        form_action.find('a[name="import"]').click(function(e){
+            var choose_file = $('input[name="choose_file"]');
+            choose_file.click();
+        });
+
 
         {# --- drag & drop to move --- #}
-        $("ul[name='tasks_incl']").find(".list-group-item").draggable({
+        $("[name='tasks_incl']").find(".list-group-item").draggable({
             cursor: "move",
             cursorAt: {top: 0, left: 0},
             helper: function (event) {
@@ -106,7 +123,7 @@
                 return $('<i class="glyphicon glyphicon-tasks large"></i>');
             }
         });
-        $("div[name='lists_incl']").find(".list-group-item").droppable({
+        $("[name='lists_incl']").find(".list-group-item").droppable({
             accept: '.list-group-item',
             classes: {
                 "ui-droppable-hover": "list-group-item-info"
@@ -150,5 +167,6 @@
             }
         });
     }
+
     </script>
 {% endblock %}

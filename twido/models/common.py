@@ -129,6 +129,17 @@ class ProfileBasedModel(models.Model):
     class Meta:
         abstract = True
 
+    def to_dict(self, fields=()):
+        if fields:
+            return type(self).objects.filter(id=self.id).values(fields)[0]
+        else:
+            return type(self).objects.filter(id=self.id).values()[0]
+
+    def from_dict(self, thedict):
+        for k, v in thedict.items():
+            if hasattr(self, k):
+                setattr(self, k, v)
+
 
 class Config(ProfileBasedModel):
     """

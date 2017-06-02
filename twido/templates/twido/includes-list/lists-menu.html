@@ -19,4 +19,17 @@
                             {% endif %}
                         {% endfor %}
                     </div>
+
+                    <script language="JavaScript" type="text/javascript">
+                        $(document).ready(function(){
+                            var menu_container = $('[name="lists_incl"]');
+                            scroll_to_div(menu_container, menu_container.find(".list-group-item.active"));
+                        });
+                        function scroll_to_div(container, div) {
+                            // jquery obj
+                            container.animate({
+                                scrollTop: div.offset().top
+                            });
+                        }
+                    </script>
 <!-- END lists menu -->

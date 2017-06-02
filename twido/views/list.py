@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import transaction
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, get_object_or_404
@@ -8,11 +10,18 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
+from django.core import serializers
+from wsgiref.util import FileWrapper
+from io import StringIO
+from pyutils.django.response import download_file_response
+import simplejson as json
 from ..models import Task,  List, TaskStatus
 from .base import BaseViewMixin
 from .common import paginate
 
 import logging
+from pyutils.json import to_serializable
+
 log = logging.getLogger(__name__)
 
 
@@ -31,6 +40,9 @@ class I18N_MSGS(object):
 
     # model
     prop_cannot_change = _('"%s" can not be changed.')
+
+    file_incorrect_format = _('File is broken or incorrect content.')
+    list_imported = _('List with tasks is imported successfully.')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -81,16 +93,18 @@ class ListView(TemplateView, BaseViewMixin):
 
         ListModel = self.get_list_model()
         TaskModel = self.get_task_model()
-        req = request.POST
-        # print(req)
 
+        req = request.POST
         profile = request.user.profile
         action = req.get('action', None)
+        log.debug('list view action: %s' % action)
 
         if 'pk' in kwargs:
             pk = kwargs['pk']
         else:
             pk = ListModel.get_default(profile).id
+
+        log.debug('list view pk: %s' % pk)
 
         if action is not None:
             # HTTP response for form.submit
@@ -109,6 +123,70 @@ class ListView(TemplateView, BaseViewMixin):
                     lst.delete()
                     self.info(I18N_MSGS.list_deleted % s)
                 return redirect(self.get_view_name())
+            elif action == 'export':
+                lst = get_object_or_404(ListModel, profile=profile, pk=pk)
+                list_dict = lst.to_dict()
+                del list_dict['id']
+                tasks = []
+                for task in lst.task_set.all():
+                    task_dict = task.to_dict()
+                    del task_dict['id']
+                    tasks.append(task_dict)
+                list_dict['tasks'] = tasks
+
+                data = json.dumps(list_dict, ensure_ascii=False, indent=2, default=to_serializable)
+                # l = len(data)
+
+                # gen file download
+                stream_buf = StringIO(data)
+                stream_buf.seek(0)
+                f = FileWrapper(stream_buf)
+                response = HttpResponse(f, content_type='application/json')
+                response['Content-Disposition'] = 'attachment; filename=lists.json'
+                # response = download_file_response(stream_buf, filename='lists.json', content_type='application/json')
+                # response['Content-Length'] = l
+                return response
+            elif action == 'import':
+                # TODO: handle big file and stream.
+                file = request.FILES.get('choose_file')
+                list_dict = None
+                if file:
+                    log.debug('importing file: name="%s" size=%s' % (file.name, file.size))
+                    s = file.read()
+                    file.close()
+                    try:
+                        list_dict = json.loads(s)
+                        print(list_dict)
+                    except json.JSONDecodeError as err:
+                        log.debug('import list error: ' + str(err))
+                        self.error(I18N_MSGS.file_incorrect_format)
+                if list_dict:
+                    try:
+                        lst = ListModel()
+                        lst.from_dict(list_dict)
+                        lst.profile = profile
+                        lst.save()
+
+                        if 'tasks' in list_dict:
+                            tasklist = list_dict['tasks']
+                            tasks = []
+                            for task in tasklist:
+                                t = TaskModel()
+                                t.from_dict(task)
+                                t.profile = profile
+                                t.list = lst
+                                t.social_account = None
+                                t.raw = None
+                                tasks.append(t)
+                            TaskModel.objects.bulk_create(tasks)
+                            self.success(I18N_MSGS.list_imported)
+                            return redirect(self.get_view_name(), pk=lst.id)
+                    except Exception as err:
+                        log.exception(err)
+                        self.error(I18N_MSGS.file_incorrect_format)
+
+                return self.get(request, *args, **kwargs)
+
             elif action == 'add-task':
                 task = TaskModel.objects.create(profile=profile, list_id=pk, title=I18N_MSGS.task_new_name)
                 return redirect(self.get_view_name(), pk=pk)
@@ -152,4 +230,5 @@ class ListView(TemplateView, BaseViewMixin):
             except Exception as err:
                 log.exception(err)
                 return HttpResponseBadRequest(I18N_MSGS.prop_cannot_change % (name, value))
+
         return HttpResponse('')

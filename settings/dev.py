@@ -4,6 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 print('dev settings')
 DEBUG = True if __debug__ and os.getenv('TWIDO_DEBUG') else False
 
+# STATIC_ROOT = '/home/samuel/static'
+MEDIA_ROOT = './media'
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Shanghai'
 
