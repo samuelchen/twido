@@ -27,9 +27,11 @@
                         });
                         function scroll_to_div(container, div) {
                             // jquery obj
-                            container.animate({
-                                scrollTop: div.offset().top
-                            });
+                            if (container.length && div.length) {
+                                container.animate({
+                                    scrollTop: div.offset().top
+                                });
+                            }
                         }
                     </script>
 <!-- END lists menu -->
