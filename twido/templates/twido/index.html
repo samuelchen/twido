@@ -45,14 +45,13 @@
             <div class="col-lg-7 col-lg-offset-1 col-md-7 col-md-offset-1">
                 <div class="row">
                     {% for task in todos %}
-                        <div class="panel panel-info">
+                        <div class="panel panel-default">
                             <div class="panel-heading">
-                                <ul class="list-inline">
-                                    <li><h3 class="panel-title">{{ task.get_owner_name | safe }}</h3></li>
-{#                                    <li><span class="label label-default">#todo</span></li>#}
+                                <span class="panel-title">{{ task.title | url2link | safe  }}</span>
+                                <ul class="list-inline small">
+                                    <li class="small">@{{ task.get_owner_name | safe }}</li>
+                                    <li class="small">{{ task.created_at }}</li>
                                 </ul>
-                                <h5>{{ task.title | url2link | safe  }}</h5>
-                                <h6 class="text">{{ task.created_at }}</h6>
                             </div>
                             {% if task.text %}
                             <div class="panel-body">

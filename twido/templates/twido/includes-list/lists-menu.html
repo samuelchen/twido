@@ -1,0 +1,48 @@
+{# TodoList menu #}
+{# vars: thelist - current list to display #}
+{#       lists - query of all lists #}
+
+{% load i18n %}<!-- BEGIN lists menu -->
+
+                    <div class="list-group" name="lists_incl"  style="overflow-y: auto; max-height: 400px; ">
+                        <a href="{% url 'list' %}" data-id="{{ thelist.default.id }}" data-name="{{ thelist.default.name }}"
+                           class="list-group-item {% if thelist.is_default %}active{% endif %}">
+                            <h4 class="list-group-item-heading">{% trans 'Lists' %}</h4>
+                        </a>
+                        {% for lst in lists %}
+                            {% if not lst.is_sys %}
+                            <a href="{% url 'list' lst.id %}" data-id="{{ lst.id }}" data-name="{{ lst.name }}"
+                               class="list-group-item dropable {% if thelist.id == lst.id %}active{% endif %}">
+                                <i class="glyphicon {% if thelist.id == lst.id %}glyphicon-folder-open{% else %}glyphicon-folder-close{% endif %} small"> </i>
+                                  {{ lst.get_name }}
+                                <span class="badge">{{ lst.task_set.count }}</span></a>
+                            {% endif %}
+                        {% endfor %}
+
+                        <a class="list-group-item divider">
+                            <h4 class="list-group-item-heading">{% trans 'Customized Lists' %}</h4>
+                        </a>
+                        {% for lst in customized_list %}
+                            <a href="{% url 'list' lst.id %}" data-id="{{ lst.id }}" data-name="{{ lst.name }}"
+                               class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">
+                                <i class="glyphicon {% if thelist.id == lst.id %}glyphicon-folder-open{% else %}glyphicon-folder-close{% endif %} small"> </i>
+                                  {% trans lst.get_name %}
+                                <span class="badge">{{ lst.task_set.count }}</span></a>
+                        {% endfor %}
+                    </div>
+
+                    <script language="JavaScript" type="text/javascript">
+                        $(document).ready(function(){
+                            var menu_container = $('[name="lists_incl"]');
+                            scroll_to_div(menu_container, menu_container.find(".list-group-item.active"));
+                        });
+                        function scroll_to_div(container, div) {
+                            // jquery obj
+                            if (container.length && div.length) {
+                                container.animate({
+                                    scrollTop: div.offset().top
+                                });
+                            }
+                        }
+                    </script>
+<!-- END lists menu -->

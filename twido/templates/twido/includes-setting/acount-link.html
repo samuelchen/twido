@@ -11,13 +11,14 @@
                                         <div class="col-lg-9">
                                             <span class="form-control" id="id_account_twitter">
                                                 <span>{{ social_accounts.TW.name | default_if_none:'' }}</span>
+                                                <span class="small text-info">@{{ social_accounts.TW.account }}</span>
                                                 <span class="pull-right">
-                                                    <a id="id_tw_update" data-toggle="tooltip" title="Update Twitter Information"><i class="glyphicon glyphicon-refresh"></i></a>
-                                                    <a id="id_tw_link" data-toggle="tooltip" title="Link to Twitter"><i class="glyphicon glyphicon-link"></i></a>
+                                                    <a id="id_tw_update" data-toggle="tooltip" title="{% trans 'Update Twitter Information' %}"><i class="glyphicon glyphicon-refresh"></i></a>
+                                                    <a id="id_tw_link" data-toggle="tooltip" title="{% trans 'Link to Twitter' %}"><i class="glyphicon glyphicon-link"></i></a>
                                                 </span>
                                             </span>
 
-                                            <span class="help-block small">{% trans 'Account ID, unique and immutable in system.' %}</span>
+                                            <span class="help-block small">{% trans 'Your linked twitter account.' %}</span>
                                         </div>
                                     </div>
 

@@ -27,7 +27,6 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
 
-
     # (r'^robots\.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt', 'mimetype': 'text/plain'}),
     # (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/img/favicon.ico'}),
 
@@ -44,16 +43,10 @@ urlpatterns = [
     url(r'^social/(?P<action>link)/$', views.SocialView.as_view(template_name=t('social.html')), name='social'),
     url(r'^social/(?P<action>update)/$', views.SocialView.as_view(template_name=t('social.html')), name='social'),
 
-    # url(r'^todolist/create/$', view.TodoListView.as_view(template_name=t('todolist-create.html')), name='todolist-create'),
-    url(r'^todolist/$', views.TodoListView.as_view(template_name=t('todolist.html')), name='todolist'),
-    url(r'^todolist/(?P<pk>[0-9]+)/$', views.TodoListView.as_view(template_name=t('todolist.html')), name='todolist'),
+    url(r'^list/$', views.ListView.as_view(template_name=t('list.html')), name='list'),
+    url(r'^list/(?P<pk>[0-9]+)/$', views.ListView.as_view(template_name=t('list.html')), name='list'),
 
-    # url(r'^todo/create/$', view.TodoCreateView.as_view(template_name=t('todo-create.html')), name='todo-create'),
-    url(r'^todo/(?P<pk>[0-9]+)/$', views.TodoView.as_view(template_name=t('todo.html')), name='todo'),
-
-    url(r'^wishlist/$', views.WishListView.as_view(template_name=t('wishlist.html')), name='wishlist'),
-    url(r'^wishlist/(?P<pk>[0-9]+)/$', views.WishListView.as_view(template_name=t('wishlist.html')), name='wishlist'),
-
+    url(r'^task/(?P<pk>[0-9]+)/$', views.TaskView.as_view(template_name=t('task.html')), name='task'),
 
     url(r'^json/usernames/$', views.ProfileUsernamesJsonView.as_view()),
 

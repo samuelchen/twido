@@ -1,48 +1,57 @@
 {% extends "base.html" %}{% load customer_tags staticfiles i18n %}
 
-{% block title %}{% trans 'Todos' %}{% endblock %}
+{% block title %}{% trans 'Tasks' %}{% endblock %}
 
 {% block head %}
-{#    <link rel="{% static 'jqueryui/dragdrop/jquery-ui.min.css' %}">#}
     <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>
-    <script language="JavaScript" src="{% static 'twido/js/bootstrap-confirmation.min.js' %}"></script>
+{#    <script language="JavaScript" src="{% static 'jqueryui/jquery.ui.touch-punch.min.js' %}"></script>#}
     {% include 'includes/editable-head-ref.html' %}
-    <script language="JavaScript" type="text/javascript">
-        $.fn.editable.defaults.mode = 'inline';
-        $.fn.editable.defaults.showbuttons = false;
-        $.fn.editable.defaults.onblur = 'submit';
-    </script>
 {% endblock %}
 
 {% block content %}
 
     <div class="bs-docs-section container-fluid container-responsive">
 
-{#        {% include 'includes/blank-div-row.html' %}#}
-
         <div class="row">
+
             <!-- left col -->
-            <div class="col-lg-3 col-md-3 col-sm-4">
+            <div class="col-lg-4 col-md-4">
+                <!-- menu -->
                 <div class="bs-component">
-                    {% include 'twido/includes-list/todolists-menu.html' %}
+                    {% include 'twido/includes-list/lists-menu.html' %}
                 </div>
 
+                <!-- button -->
                 <div class="bs-component">
                     <form id="id_form_action" action="{{ request.path }}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action">
                         <div class="btn-group btn-group-justified btn-group-sm">
                             <a name="add" title="{% trans 'Create a new list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Create List' %}</a>
-                            {% if not thelist.is_default %}
+                            {% if not thelist.is_sys %}
                             <a name="del" title="{% trans 'Delete current list' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete List' %}</a>
                             {% endif %}
+                            <a name="export" title="{% trans 'Export current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Export List' %}</a>
+                            <a name="import" title="{% trans 'Import a list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Import List' %}</a>
                         </div>
                     </form>
+                    <form id="id_form_upload" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {#  TODO: handle big file / streaming #}
+                        <input type="hidden" name="action" value="import">
+                        <input type="file" id="id_file_upload" name="choose_file" onchange="$(this).closest('form').submit();" style="display: none" />
+                    </form>
                 </div>
+
+                <!-- list form -->
+                <div class="bs-component">
+                {% include 'twido/includes-list/list-form.html' %}
+                </div>
+
             </div>
 
             <!-- main col -->
-            <div class="col-lg-8 col-md-8 col-sm-7">
+            <div class="col-lg-7 col-md-7">
                 <div class="row">
 
                     <div class="bs-component">
@@ -50,12 +59,11 @@
 {#                        <h2 id="listname" class="text-center">{{ thelist.name | upper }}</h2>#}
                         <div class="panel">
                             {% include 'includes/django-messags-inc.html' %}
-                            {% include 'twido/includes-list/todolist-form.html' %}
                         </div>
 
-                        {% include 'twido/includes-list/todos.html' %}
+                        {% include 'twido/includes-list/tasks.html' %}
                         <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add-todo" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
+                            <a name="add-task" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
                         </div>
                     </div>
 
@@ -74,13 +82,19 @@
     <script type="text/javascript" language="JavaScript">
 
     $(document).ready(function(){
+
+        $(".editable").addClass('no_underline').css("cursor", "pointer");
+
+
         var form_action = $("#id_form_action");
 
         $("a.btn").tooltip({container: 'body'}).click(function(e){
             var action = $(this).attr('name');
             form_action.find("input[name='action']").val(action);
-            if ($.inArray(action, ['add', 'add-todo']) >= 0) form_action.submit();
-            // if action is "del", need to confirm (code below)
+            // if action is "del" related, need to confirm
+            // if upload, need to let user to choose file.
+            if ($.inArray(action, ['del', 'del-task', 'import']) < 0) form_action.submit();
+{#            $(this).disable();#}
         });
 
         form_action.find('a[name="del"]').confirmation({
@@ -93,11 +107,14 @@
             placement: 'right'
         });
 
-        $(".editable").addClass('no_underline').css("cursor", "pointer");
+        form_action.find('a[name="import"]').click(function(e){
+            var choose_file = $('input[name="choose_file"]');
+            choose_file.click();
+        });
 
 
         {# --- drag & drop to move --- #}
-        $("#id_todos").find(".list-group-item").draggable({
+        $("[name='tasks_incl']").find(".list-group-item").draggable({
             cursor: "move",
             cursorAt: {top: 0, left: 0},
             helper: function (event) {
@@ -106,7 +123,7 @@
                 return $('<i class="glyphicon glyphicon-tasks large"></i>');
             }
         });
-        $("#id_lists").find(".list-group-item").droppable({
+        $("[name='lists_incl']").find(".list-group-item.dropable").droppable({
             accept: '.list-group-item',
             classes: {
                 "ui-droppable-hover": "list-group-item-info"
@@ -125,21 +142,20 @@
     });
 
     function move_task(task_id, list_id) {
-        var entry = $("#id_todos").find("[data-id='" + task_id + "']");
+        var entry = $("ul[name='tasks_incl']").find("[data-id='" + task_id + "']");
         var task_name = entry.find("span[data-name='title']").text();
-        var list_name = entry.data('name');
+        var list_name = $("[name='lists_incl']").find("[data-id='" + list_id + "']").data('name');
+
         $.ajax("{{ request.path }}", {
             method: 'POST',
             data: {
-                action: "move-todo",
+                action: "move-task",
                 task_id: task_id,
                 list_id: list_id
             },
             success: function (resp) {
-                var list_name = $("#id_lists").find("[data-id='" + list_id + "']").text();
-{#                console.log(list_name);#}
                 _success('{% trans 'Task "{0}" moved to list "{1}".' %}'.f(task_name, list_name), true);  // message incl
-                console.debug('Todo task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
+                console.debug('Task "' + task_name + '" (id=' + task_id + ') moved to list "' + list_name + '"');
                 entry.fadeOut();
             },
             error: function (resp) {
@@ -151,5 +167,6 @@
             }
         });
     }
+
     </script>
 {% endblock %}

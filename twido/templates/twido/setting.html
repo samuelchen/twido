@@ -4,11 +4,6 @@
 
 {% block head %}
     {% include 'includes/editable-head-ref.html' %}
-    <script language="JavaScript" type="text/javascript">
-        $.fn.editable.defaults.mode = 'inline';
-        $.fn.editable.defaults.showbuttons = false;
-        $.fn.editable.defaults.onblur = 'submit';
-    </script>
 {% endblock %}
 
 {% block content %}
@@ -56,12 +51,12 @@
 
                             {# General Setting #}
                             <div class="tab-pane fade active in" id="general">
-                                {% include 'includes/settings/general.html' %}
+                                {% include 'twido/includes-setting/general.html' %}
                             </div>
 
                             {# Account Linking Setting #}
                             <div class="tab-pane fade" id="account">
-                                {% include 'includes/settings/acount-link.html' %}
+                                {% include 'twido/includes-setting/acount-link.html' %}
                             </div>
 
                             <div class="tab-pane fade" id="dropdown1">
