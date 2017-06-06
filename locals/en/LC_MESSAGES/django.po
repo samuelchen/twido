@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-06 15:46+0800\n"
+"POT-Creation-Date: 2017-06-06 16:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -115,11 +115,12 @@ msgid "Expired"
 msgstr ""
 
 #: .\twido\models\task.py:50
-msgid "The default list. It will be created automatically (even if you delete it)."
+msgid "The default list contains unlisted tasks."
 msgstr ""
 
-#: .\twido\models\task.py:71
-msgid "Default"
+#: .\twido\models\task.py:69
+msgctxt "sys list"
+msgid "default"
 msgstr ""
 
 #: .\twido\models\task.py:151
@@ -147,6 +148,15 @@ msgstr ""
 
 #: .\twido\models\task.py:164
 msgid "Tasks passed the deadline."
+msgstr ""
+
+#: .\twido\models\task.py:169
+msgctxt "sys list"
+msgid "all"
+msgstr ""
+
+#: .\twido\models\task.py:170
+msgid "All my tasks."
 msgstr ""
 
 #: .\twido\settings.py:149
@@ -351,11 +361,6 @@ msgstr ""
 msgid "Default List"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:7
-#: .\twido\templates\twido\includes-list\list-form.html:11
-msgid "(unlisted tasks)"
-msgstr ""
-
 #: .\twido\templates\twido\includes-list\list-form.html:20
 msgid "List Name"
 msgstr ""
@@ -555,20 +560,20 @@ msgstr ""
 msgid "Redirect to profile updating page ... <br>If redirection did not start, please <a href=\"%s\">click me to profile</a>."
 msgstr ""
 
-#: .\twido\views\home.py:31
+#: .\twido\views\home.py:16
 msgid "Come on, you are about to completed all the tasks!"
 msgstr ""
 
-#: .\twido\views\home.py:32
+#: .\twido\views\home.py:17
 msgid "Cheers, you have completed all the tasks for today!"
 msgstr ""
 
-#: .\twido\views\home.py:35
+#: .\twido\views\home.py:20
 #, python-format
 msgid "Tasks in %d days (including those without deadline)"
 msgstr ""
 
-#: .\twido\views\home.py:39
+#: .\twido\views\home.py:25
 #, python-format
 msgid "Tasks passed the deadline. Restart them or you may want to mark all these tasks \"%(expire)s\" or \"%(cancel)s\"."
 msgstr ""
@@ -618,6 +623,11 @@ msgstr ""
 
 #: .\twido\views\list.py:50
 msgid "List with tasks is imported successfully."
+msgstr ""
+
+#: .\twido\views\list.py:52
+msgctxt "list prefix"
+msgid "imported"
 msgstr ""
 
 #: .\twido\views\profile.py:20

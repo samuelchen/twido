@@ -11,7 +11,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy, pgettext
 from django.core import serializers
 from wsgiref.util import FileWrapper
 from io import StringIO
@@ -49,6 +49,8 @@ class I18N_MSGS(object):
     file_incorrect_format = _('File is broken or incorrect content.')
     list_imported = _('List with tasks is imported successfully.')
 
+    imported = pgettext_lazy('list prefix', 'imported')
+
 
 @method_decorator(login_required, name='dispatch')
 class ListView(TemplateView, BaseViewMixin):
@@ -67,16 +69,22 @@ class ListView(TemplateView, BaseViewMixin):
         context = super(ListView, self).get_context_data(**kwargs)
         ListModel = self.get_list_model()
         TaskModel = self.get_task_model()
+        log.debug('ListModel is %s' % ListModel)
+        log.debug('TaskModel is %s' % TaskModel)
 
         profile = self.request.user.profile
-        p = self.request.GET.get('p', 1)   # current page
+        p = self.request.GET.get('p', 1)   # current page of tasks
         context['p'] = p
+        log.debug('current page of tasks: %s (%s) ' % (p, type(p)))
 
         if 'pk' in context:
             pk = context['pk']
             thelist = get_object_or_404(ListModel, profile=profile, id=pk)
+            log.debug('list view pk: %s' % pk)
         else:
             thelist = ListModel.get_default(profile)
+
+        log.debug('thelist: %s' % thelist)
 
         context['thelist'] = thelist
         context['lists'] = ListModel.objects.filter(profile=profile).all()
@@ -141,9 +149,13 @@ class ListView(TemplateView, BaseViewMixin):
                 list_dict = lst.to_dict()
                 del list_dict['id']
                 if lst.is_sys:
-                    list_dict['name'] = _(list_dict['name'].lstrip('_').rstrip('_'))
+                    list_dict['name'] = pgettext('sys_list', lst.get_name())
+                    sys_list = SysList(profile=profile)
+                    task_set = sys_list[lst.name].tasks
+                else:
+                    task_set = lst.task_set.all()
                 tasks = []
-                for task in lst.task_set.all():
+                for task in task_set:
                     task_dict = task.to_dict()
                     del task_dict['id']
                     del task_dict['list_id']
@@ -180,6 +192,7 @@ class ListView(TemplateView, BaseViewMixin):
                     try:
                         lst = ListModel()
                         lst.from_dict(list_dict)
+                        lst.name = '%s (%s)' % (lst.name, I18N_MSGS.imported)
                         lst.profile = profile
                         lst.save()
 

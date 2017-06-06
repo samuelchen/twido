@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-06 15:46+0800\n"
+"POT-Creation-Date: 2017-06-06 16:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <me@samuelchen.net>\n"
@@ -114,17 +114,18 @@ msgid "Expired"
 msgstr "已超期"
 
 #: .\twido\models\task.py:50
-msgid "The default list. It will be created automatically (even if you delete it)."
-msgstr "默认清单。本清单将会自动创建（即使您将其删除）。"
+msgid "The default list contains unlisted tasks."
+msgstr "默认清单包含未加入列表的任务。"
 
-#: .\twido\models\task.py:71
-msgid "Default"
+#: .\twido\models\task.py:69
+msgctxt "sys list"
+msgid "default"
 msgstr "默认清单"
 
 #: .\twido\models\task.py:151
 msgctxt "sys list"
 msgid "today"
-msgstr "今天"
+msgstr "今日清单"
 
 #: .\twido\models\task.py:152
 msgid "Tasks need to be done by today. (including expired)"
@@ -133,7 +134,7 @@ msgstr "今日内需要完成的任务。（包含已经超过期限的）"
 #: .\twido\models\task.py:157
 msgctxt "sys list"
 msgid "soon"
-msgstr "近期"
+msgstr "近期清单"
 
 #: .\twido\models\task.py:158
 msgid "Tasks in near future (including those without deadline)"
@@ -142,11 +143,20 @@ msgstr "近期的任务 （包含没有设定期限的任务）"
 #: .\twido\models\task.py:163
 msgctxt "sys list"
 msgid "expired"
-msgstr "已超期"
+msgstr "已超期清单"
 
 #: .\twido\models\task.py:164
 msgid "Tasks passed the deadline."
 msgstr "超过期限的任务"
+
+#: .\twido\models\task.py:169
+msgctxt "sys list"
+msgid "all"
+msgstr "全部"
+
+#: .\twido\models\task.py:170
+msgid "All my tasks."
+msgstr "我的所有任务"
 
 #: .\twido\settings.py:149
 msgid "TWIDO"
@@ -354,11 +364,6 @@ msgstr "登录"
 msgid "Default List"
 msgstr "默认清单"
 
-#: .\twido\templates\twido\includes-list\list-form.html:7
-#: .\twido\templates\twido\includes-list\list-form.html:11
-msgid "(unlisted tasks)"
-msgstr "（未加入清单的任务）"
-
 #: .\twido\templates\twido\includes-list\list-form.html:20
 msgid "List Name"
 msgstr "清单名"
@@ -558,20 +563,20 @@ msgstr "注册成功。"
 msgid "Redirect to profile updating page ... <br>If redirection did not start, please <a href=\"%s\">click me to profile</a>."
 msgstr "正在重定向到个人资料更新页面 ... <br>如果没有自动刷新，请<a href=\"%s\">点击这里到个人资料页面</a>。"
 
-#: .\twido\views\home.py:31
+#: .\twido\views\home.py:16
 msgid "Come on, you are about to completed all the tasks!"
 msgstr "加油，您就要完成今天所有待办事项了！"
 
-#: .\twido\views\home.py:32
+#: .\twido\views\home.py:17
 msgid "Cheers, you have completed all the tasks for today!"
 msgstr "恭喜，您已经完成今天所有待办事项了！"
 
-#: .\twido\views\home.py:35
+#: .\twido\views\home.py:20
 #, python-format
 msgid "Tasks in %d days (including those without deadline)"
 msgstr "%d天内的任务 （包含没有设定期限的任务）"
 
-#: .\twido\views\home.py:39
+#: .\twido\views\home.py:25
 #, python-format
 msgid "Tasks passed the deadline. Restart them or you may want to mark all these tasks \"%(expire)s\" or \"%(cancel)s\"."
 msgstr "已经超过期限的任务。请重新开始这些任务，或者将它们标记为 \"%(expire)s\" 或者 \"%(cancel)s\"。"
@@ -623,6 +628,11 @@ msgstr "错误的文件内容或者文件已被破坏"
 msgid "List with tasks is imported successfully."
 msgstr "清单包括其任务已成功导入。"
 
+#: .\twido\views\list.py:52
+msgctxt "list prefix"
+msgid "imported"
+msgstr "导入的"
+
 #: .\twido\views\profile.py:20
 msgid "Profile is saved successfully."
 msgstr "个人信息已成功保存。"
@@ -673,6 +683,12 @@ msgstr "数据库主键为None"
 #, python-format
 msgid "\"%(prop)s\" can not be \"%(value)s\""
 msgstr "\"%(prop)s\" 不能为 \"%(value)s\""
+
+#~ msgid "The default list. It will be created automatically (even if you delete it)."
+#~ msgstr "默认清单。本清单将会自动创建（即使您将其删除）。"
+
+#~ msgid "(unlisted tasks)"
+#~ msgstr "（未加入清单的任务）"
 
 #~ msgid "Customized Lists"
 #~ msgstr "自定义清单"

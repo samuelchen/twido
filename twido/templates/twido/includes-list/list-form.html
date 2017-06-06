@@ -4,11 +4,11 @@
 {% load i18n %}<!-- BEGIN list detail setting -->
                         {% if thelist.is_default %}
                             <div class="text-center">
-                            <H3>{% trans 'Default List' %}</H3> <span>{% trans '(unlisted tasks)' %}</span>
+                            <H3>{% trans 'Default List' %}</H3> <span>{% trans thelist.text %}</span>
                             </div>
                         {% elif thelist.is_sys %}
                             <div class="text-center">
-                            <H3>{% trans thelist.text %}</H3> <span>{% trans '(unlisted tasks)' %}</span>
+                            <H3>{% trans thelist.get_name|capfirst context 'sys list' %}</H3> <span>{% trans thelist.text %}</span>
                             </div>
                         {% else %}
                             <form class="form-horizontal" method="post" action="{% url 'list' thelist.id %}">

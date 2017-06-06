@@ -10,12 +10,12 @@ from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 from django.core.validators import validate_comma_separated_integer_list
-from django.utils.functional import lazy, SimpleLazyObject
-from django.utils.translation import ugettext_lazy as _, pgettext_lazy
+from django.utils.functional import SimpleLazyObject
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy, ugettext_noop
 from django.db import transaction
 from .common import ProfileBasedModel, UserProfile
 from .consts import TaskStatus
-from pyutils.langutil import MutableEnum, PropertyDict, SingletonBase
+from pyutils.langutil import PropertyDict
 from .social import SocialAccount
 from .spider import RawStatus
 
@@ -47,7 +47,7 @@ class List(ProfileBasedModel):
             default_list = cls.objects.get(name=cls.__default_name, profile=profile)
         except cls.DoesNotExist:
             default_list = cls(name=cls.__default_name, profile=profile)
-            default_list.text = _('The default list. It will be created automatically (even if you delete it).')
+            default_list.text = ugettext_noop('The default list contains unlisted tasks.')
             default_list.save(is_default=True)
         return default_list
 
@@ -65,10 +65,10 @@ class List(ProfileBasedModel):
 
     def get_name(self):
 
-        if self.is_sys:
+        if self.is_default:
+            return pgettext_lazy('sys list', 'default')
+        elif self.is_sys:
             return pgettext_lazy('sys list', self.name.lstrip('_'))
-        elif self.is_default:
-            return _('Default')
         else:
             return self.name
 
@@ -149,21 +149,27 @@ class SysList(object):
             ('__today', PropertyDict(
                 name='__today',
                 title=pgettext_lazy('sys list', 'today'),   # for i18n text generation usage
-                text=_('Tasks need to be done by today. (including expired)'),
+                text=ugettext_noop('Tasks need to be done by today. (including expired)'),
                 tasks=SimpleLazyObject(self.__get_today_tasks)
             )),
             ('__soon', PropertyDict(
                 name='__soon',
                 title=pgettext_lazy('sys list', 'soon'),    # for i18n text generation usage
-                text=_('Tasks in near future (including those without deadline)'),
+                text=ugettext_noop('Tasks in near future (including those without deadline)'),
                 tasks=SimpleLazyObject(self.__get_soon_tasks)
             )),
             ('__expired', PropertyDict(
                 name='__expired',
                 title=pgettext_lazy('sys list', 'expired'),   # for i18n text generation usage
-                text=_('Tasks passed the deadline.'),
+                text=ugettext_noop('Tasks passed the deadline.'),
                 tasks=SimpleLazyObject(self.__get_expired_tasks)
-            ))
+            )),
+            ('__all', PropertyDict(
+                name='__all',
+                title=pgettext_lazy('sys list', 'all'),   # for i18n text generation usage
+                text=ugettext_noop('All my tasks.'),
+                tasks=SimpleLazyObject(self.__get_all_tasks)
+            )),
         ))
 
         # for translation usage (not working)
@@ -210,6 +216,8 @@ class SysList(object):
         return self.TaskModel.objects.filter(profile=self.profile, reminder__lt=timezone.now()).exclude(
             status__in=(TaskStatus.DONE, TaskStatus.CANCEL))
 
+    def __get_all_tasks(self):
+        return self.TaskModel.objects.filter(profile=self.profile)
 
 
 # class Todo(Task):
