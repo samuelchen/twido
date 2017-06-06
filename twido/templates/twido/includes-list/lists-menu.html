@@ -19,15 +19,15 @@
                             {% endif %}
                         {% endfor %}
 
-                        <a class="list-group-item divider">
-                            <h4 class="list-group-item-heading">{% trans 'Customized Lists' %}</h4>
+                        <a class="list-group-item">
+                            <h4 class="list-group-item-heading">{% trans 'Query Lists' %}</h4>
                         </a>
-                        {% for lst in customized_list %}
+                        {% for lst in sys_lists.values %}
                             <a href="{% url 'list' lst.id %}" data-id="{{ lst.id }}" data-name="{{ lst.name }}"
                                class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">
                                 <i class="glyphicon {% if thelist.id == lst.id %}glyphicon-folder-open{% else %}glyphicon-folder-close{% endif %} small"> </i>
                                   {% trans lst.get_name %}
-                                <span class="badge">{{ lst.task_set.count }}</span></a>
+                                <span class="badge">{{ lst.tasks.count }}</span></a>
                         {% endfor %}
                     </div>
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-31 16:41+0800\n"
+"POT-Creation-Date: 2017-06-06 15:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <me@samuelchen.net>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\account\admin.py:90 .\account\admin.py:101
+#: .\account\admin.py:102 .\account\admin.py:113
 msgid "Permissions"
 msgstr "权限"
 
-#: .\account\admin.py:91 .\account\admin.py:102
+#: .\account\admin.py:103 .\account\admin.py:114
 msgid "Important dates"
 msgstr "重要日期"
 
-#: .\settings\dev.py:24
+#: .\settings\dev.py:27
 msgid "MWL"
 msgstr "忙完了"
 
@@ -113,9 +113,40 @@ msgstr "已取消"
 msgid "Expired"
 msgstr "已超期"
 
-#: .\twido\models\task.py:44
+#: .\twido\models\task.py:50
 msgid "The default list. It will be created automatically (even if you delete it)."
 msgstr "默认清单。本清单将会自动创建（即使您将其删除）。"
+
+#: .\twido\models\task.py:71
+msgid "Default"
+msgstr "默认清单"
+
+#: .\twido\models\task.py:151
+msgctxt "sys list"
+msgid "today"
+msgstr "今天"
+
+#: .\twido\models\task.py:152
+msgid "Tasks need to be done by today. (including expired)"
+msgstr "今日内需要完成的任务。（包含已经超过期限的）"
+
+#: .\twido\models\task.py:157
+msgctxt "sys list"
+msgid "soon"
+msgstr "近期"
+
+#: .\twido\models\task.py:158
+msgid "Tasks in near future (including those without deadline)"
+msgstr "近期的任务 （包含没有设定期限的任务）"
+
+#: .\twido\models\task.py:163
+msgctxt "sys list"
+msgid "expired"
+msgstr "已超期"
+
+#: .\twido\models\task.py:164
+msgid "Tasks passed the deadline."
+msgstr "超过期限的任务"
 
 #: .\twido\settings.py:149
 msgid "TWIDO"
@@ -324,25 +355,31 @@ msgid "Default List"
 msgstr "默认清单"
 
 #: .\twido\templates\twido\includes-list\list-form.html:7
+#: .\twido\templates\twido\includes-list\list-form.html:11
 msgid "(unlisted tasks)"
 msgstr "（未加入清单的任务）"
 
-#: .\twido\templates\twido\includes-list\list-form.html:16
+#: .\twido\templates\twido\includes-list\list-form.html:20
 msgid "List Name"
 msgstr "清单名"
 
-#: .\twido\templates\twido\includes-list\list-form.html:28
+#: .\twido\templates\twido\includes-list\list-form.html:32
 #: .\twido\templates\twido\includes-list\tasks.html:20
+#: .\twido\templates\twido\includes-list\tasks.html:149
 msgid "Reminder"
 msgstr "提醒"
 
-#: .\twido\templates\twido\includes-list\list-form.html:39
+#: .\twido\templates\twido\includes-list\list-form.html:43
 msgid "Related Persons"
 msgstr "相关人"
 
-#: .\twido\templates\twido\includes-list\list-form.html:58
+#: .\twido\templates\twido\includes-list\list-form.html:62
 msgid "Description"
 msgstr "描述"
+
+#: .\twido\templates\twido\includes-list\lists-menu.html:23
+msgid "Query Lists"
+msgstr "查询清单"
 
 #: .\twido\templates\twido\includes-list\task-form.html:12
 msgid "Task Title"
@@ -350,7 +387,7 @@ msgstr "任务标题"
 
 #: .\twido\templates\twido\includes-list\task-form.html:24
 #: .\twido\templates\twido\includes-list\tasks.html:16
-#: .\twido\templates\twido\includes-list\tasks.html:87
+#: .\twido\templates\twido\includes-list\tasks.html:88
 msgid "Status"
 msgstr "状态"
 
@@ -375,20 +412,20 @@ msgstr "详细"
 msgid "Delete"
 msgstr "删除"
 
-#: .\twido\templates\twido\includes-list\tasks.html:47
+#: .\twido\templates\twido\includes-list\tasks.html:48
 msgid "List is empty. Please add task by clicking the button."
 msgstr "该清单为空，请点击按钮添加任务。"
 
-#: .\twido\templates\twido\includes-list\tasks.html:181
+#: .\twido\templates\twido\includes-list\tasks.html:184
 msgid "DANGER : Delete this task"
 msgstr "危险操作： 删除该任务"
 
-#: .\twido\templates\twido\includes-list\tasks.html:212
+#: .\twido\templates\twido\includes-list\tasks.html:215
 #, python-brace-format
 msgid "Task \"{0}\" deleted."
 msgstr "任务 \"{0}\" 已删除."
 
-#: .\twido\templates\twido\includes-list\tasks.html:217
+#: .\twido\templates\twido\includes-list\tasks.html:220
 #, python-brace-format
 msgid "Fail to delete task \"{0}\". <br>Status: {1} <br>Content: {2}"
 msgstr "删除任务 \"{0}\" 失败. <br>状态: {1} <br>内容: {2}"
@@ -434,44 +471,60 @@ msgstr "网站显示的主题"
 msgid "Tasks"
 msgstr "任务"
 
-#: .\twido\templates\twido\list.html:28
+#: .\twido\templates\twido\list.html:30
 msgid "Create a new list"
 msgstr "创建一个新的清单"
 
-#: .\twido\templates\twido\list.html:28
+#: .\twido\templates\twido\list.html:30
 msgid "Create List"
 msgstr "新建清单"
 
-#: .\twido\templates\twido\list.html:30
+#: .\twido\templates\twido\list.html:32
 msgid "Delete current list"
 msgstr "删除当前清单 "
 
-#: .\twido\templates\twido\list.html:30
+#: .\twido\templates\twido\list.html:32
 msgid "Delete List"
 msgstr "删除清单 "
 
-#: .\twido\templates\twido\list.html:55 .\twido\templates\twido\task.html:50
+#: .\twido\templates\twido\list.html:34
+msgid "Export current list"
+msgstr "导出当前清单 "
+
+#: .\twido\templates\twido\list.html:34
+msgid "Export List"
+msgstr "导出清单"
+
+#: .\twido\templates\twido\list.html:35
+msgid "Import a list"
+msgstr "导入一个清单"
+
+#: .\twido\templates\twido\list.html:35
+msgid "Import List"
+msgstr "导入清单"
+
+#: .\twido\templates\twido\list.html:75 .\twido\templates\twido\task.html:50
 msgid "Add a task to current list"
 msgstr "添加一个任务到当前清单"
 
-#: .\twido\templates\twido\list.html:55
+#: .\twido\templates\twido\list.html:75
 msgid "Create Task"
 msgstr "新任务"
 
-#: .\twido\templates\twido\list.html:93
+#: .\twido\templates\twido\list.html:114
 msgid "DANGER : Delete list"
 msgstr "危险操作：删除清单 "
 
-#: .\twido\templates\twido\list.html:94
+#: .\twido\templates\twido\list.html:115
 msgid "All tasks in this list will be moved to default list"
 msgstr "当前清单所有任务将会被移动到默认清单"
 
-#: .\twido\templates\twido\list.html:140
+#: .\twido\templates\twido\list.html:166
 #, python-brace-format
 msgid "Task \"{0}\" moved to list \"{1}\"."
 msgstr "任务 \"{0}\" 已移动到清单 \"{1}\"."
 
-#: .\twido\templates\twido\list.html:145
+#: .\twido\templates\twido\list.html:171
 #, python-brace-format
 msgid "Fail to move task \"{0}\". <br>Status: {1} <br>Content: {2}"
 msgstr "移动任务 \"{0}\" 失败. <br>状态: {1} <br>内容: {2}"
@@ -505,65 +558,70 @@ msgstr "注册成功。"
 msgid "Redirect to profile updating page ... <br>If redirection did not start, please <a href=\"%s\">click me to profile</a>."
 msgstr "正在重定向到个人资料更新页面 ... <br>如果没有自动刷新，请<a href=\"%s\">点击这里到个人资料页面</a>。"
 
-#: .\twido\views\home.py:18
-msgid "today"
-msgstr "今天"
-
-#: .\twido\views\home.py:19
+#: .\twido\views\home.py:31
 msgid "Come on, you are about to completed all the tasks!"
 msgstr "加油，您就要完成今天所有待办事项了！"
 
-#: .\twido\views\home.py:20
+#: .\twido\views\home.py:32
 msgid "Cheers, you have completed all the tasks for today!"
 msgstr "恭喜，您已经完成今天所有待办事项了！"
 
-#: .\twido\views\home.py:21
-msgid "soon"
-msgstr "近期"
-
-#: .\twido\views\home.py:22
+#: .\twido\views\home.py:35
 #, python-format
 msgid "Tasks in %d days (including those without deadline)"
 msgstr "%d天内的任务 （包含没有设定期限的任务）"
 
-#: .\twido\views\home.py:23
-msgid "expired"
-msgstr "已超期"
-
-#: .\twido\views\home.py:25
+#: .\twido\views\home.py:39
+#, python-format
 msgid "Tasks passed the deadline. Restart them or you may want to mark all these tasks \"%(expire)s\" or \"%(cancel)s\"."
 msgstr "已经超过期限的任务。请重新开始这些任务，或者将它们标记为 \"%(expire)s\" 或者 \"%(cancel)s\"。"
 
-#: .\twido\views\list.py:21
+#: .\twido\views\list.py:33
 #, python-format
 msgid "Invalid request. (action=%s)"
 msgstr "无效请求。 （action=%s)"
 
-#: .\twido\views\list.py:24
+#: .\twido\views\list.py:36
 msgid "New List"
 msgstr "新清单"
 
-#: .\twido\views\list.py:25
+#: .\twido\views\list.py:37
 msgid "Default list can not be deleted."
 msgstr "默认清单不能删除。"
 
-#: .\twido\views\list.py:26
+#: .\twido\views\list.py:38
 msgid "New list is created."
 msgstr "新清单已经创建。"
 
-#: .\twido\views\list.py:27
+#: .\twido\views\list.py:39
 #, python-format
 msgid "List \"%s\" was deleted."
 msgstr "清单 \"%s\" 已经删除."
 
-#: .\twido\views\list.py:30
+#: .\twido\views\list.py:40
+msgid "System list is not able to be changed."
+msgstr "系统清单不可修改"
+
+#: .\twido\views\list.py:41
+msgid "List name can not start with double underscores \"__\" ."
+msgstr "清单名不能以双下划线\"__\"开头"
+
+#: .\twido\views\list.py:44
 msgid "New Task"
 msgstr "新任务"
 
-#: .\twido\views\list.py:33
+#: .\twido\views\list.py:47
 #, python-format
 msgid "\"%s\" can not be changed."
 msgstr "\"%s\" 不可修改)"
+
+#: .\twido\views\list.py:49
+msgid "File is broken or incorrect content."
+msgstr "错误的文件内容或者文件已被破坏"
+
+#: .\twido\views\list.py:50
+msgid "List with tasks is imported successfully."
+msgstr "清单包括其任务已成功导入。"
 
 #: .\twido\views\profile.py:20
 msgid "Profile is saved successfully."
@@ -615,3 +673,6 @@ msgstr "数据库主键为None"
 #, python-format
 msgid "\"%(prop)s\" can not be \"%(value)s\""
 msgstr "\"%(prop)s\" 不能为 \"%(value)s\""
+
+#~ msgid "Customized Lists"
+#~ msgstr "自定义清单"

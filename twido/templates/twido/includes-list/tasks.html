@@ -36,6 +36,7 @@
                                                 {% if 'del' in tasks_actions %}
                                                 <a name="del-task" data-task-id="{{ task.id }}"  title="{% trans 'Delete' %}" class="label label-danger small"><i class="glyphicon glyphicon-remove"></i></a>
                                                 {% endif %}
+                                                {% if debug %}<span class="label label-default">{{ task.list.get_name }}</span>{% endif %}
                                             </li>
                                             {% endif %}
                                         </ul>
@@ -145,9 +146,11 @@
                                 if ($.inArray('reminder', fields) >= 0) {
                                     tasks_container.find('span[data-name="reminder"]').tooltip().editable({
                                         mode: 'popup',
-                                        {#                                    showbuttons: 'true',#}
+                                        title: '{% trans 'Reminder' %}',
+{#                                        showbuttons: 'true',#}
                                         placement: 'left',
                                         allowClear: 'true',
+                                        onblur: 'cancel',
                                         {#                viewFormat: 'dd/mm/yyyy hh:ii',#}
                                         success: function (response, newValue) {
                                             if (response.status == 'error') return response.msg; //msg will be shown in editable form

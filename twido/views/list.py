@@ -6,6 +6,8 @@ from django.db import transaction
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, get_object_or_404
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
@@ -17,8 +19,7 @@ from pyutils.django.response import download_file_response
 import simplejson as json
 from pyutils.json import to_serializable
 
-from ..models import Task,  List, TaskStatus
-from ..models import CustomizedList
+from ..models import Task,  List, TaskStatus, SysList
 from .base import BaseViewMixin
 from .common import paginate
 
@@ -36,6 +37,8 @@ class I18N_MSGS(object):
     list_default_cannot_delete = _('Default list can not be deleted.')
     list_created = _('New list is created.')
     list_deleted = _('List "%s" was deleted.')
+    list_cannot_change_sys = _('System list is not able to be changed.')
+    list_name_cannot_start_with_dbl_underscore = _('List name can not start with double underscores "__" .')
 
     # UI task messages
     task_new_name = _('New Task')
@@ -67,6 +70,7 @@ class ListView(TemplateView, BaseViewMixin):
 
         profile = self.request.user.profile
         p = self.request.GET.get('p', 1)   # current page
+        context['p'] = p
 
         if 'pk' in context:
             pk = context['pk']
@@ -75,12 +79,17 @@ class ListView(TemplateView, BaseViewMixin):
             thelist = ListModel.get_default(profile)
 
         context['thelist'] = thelist
-        context['p'] = p
-        context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=thelist).select_related('list'),
-                                   cur_page=p, entries_per_page=10)
         context['lists'] = ListModel.objects.filter(profile=profile).all()
-        customized_list = CustomizedList(profile=profile, list_model=ListModel, task_model=TaskModel)
-        context['customized_list'] = customized_list.get_all_lists()
+        sys_list = SysList(profile=profile, list_model=ListModel, task_model=TaskModel)
+        context['sys_lists'] = sys_list.all
+
+        # tasks in current page
+        if thelist.is_sys and not thelist.is_default:
+            context['page'] = paginate(sys_list[thelist.name].tasks,
+                                       cur_page=p, entries_per_page=10)
+        else:
+            context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=thelist).select_related('list'),
+                                       cur_page=p, entries_per_page=10)
 
         # variables for tasks.html includes
         context['taskstatus'] = TaskStatus
@@ -131,10 +140,13 @@ class ListView(TemplateView, BaseViewMixin):
                 lst = get_object_or_404(ListModel, profile=profile, pk=pk)
                 list_dict = lst.to_dict()
                 del list_dict['id']
+                if lst.is_sys:
+                    list_dict['name'] = _(list_dict['name'].lstrip('_').rstrip('_'))
                 tasks = []
                 for task in lst.task_set.all():
                     task_dict = task.to_dict()
                     del task_dict['id']
+                    del task_dict['list_id']
                     tasks.append(task_dict)
                 list_dict['tasks'] = tasks
 
@@ -225,10 +237,17 @@ class ListView(TemplateView, BaseViewMixin):
                 return HttpResponseBadRequest(I18N_MSGS.prop_cannot_change % name)
             if name == 'related_users':
                 value = ','.join(req.getlist('value[]', []))
+            if name == 'name' and value.startswith('__'):
+                return HttpResponseBadRequest(I18N_MSGS.list_name_cannot_start_with_dbl_underscore)
+            # TODO: datetime timezone convert
+            # if name == 'reminder':
+            #     value = parse_datetime(value).replace(tzinfo=config.timezone) #timezone.utc)
             if value is not None and value.strip() == '':
                 value = None
             try:
                 lst = ListModel.objects.get(id=pk)
+                if lst.is_sys:
+                    return HttpResponseBadRequest(I18N_MSGS.list_cannot_change_sys)
                 setattr(lst, name, value)
                 lst.save(update_fields=[name, ])
             except Exception as err:

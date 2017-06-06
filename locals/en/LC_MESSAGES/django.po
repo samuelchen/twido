@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-31 16:41+0800\n"
+"POT-Creation-Date: 2017-06-06 15:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\account\admin.py:90 .\account\admin.py:101
+#: .\account\admin.py:102 .\account\admin.py:113
 msgid "Permissions"
 msgstr ""
 
-#: .\account\admin.py:91 .\account\admin.py:102
+#: .\account\admin.py:103 .\account\admin.py:114
 msgid "Important dates"
 msgstr ""
 
-#: .\settings\dev.py:24
+#: .\settings\dev.py:27
 msgid "MWL"
 msgstr ""
 
@@ -114,8 +114,39 @@ msgstr ""
 msgid "Expired"
 msgstr ""
 
-#: .\twido\models\task.py:44
+#: .\twido\models\task.py:50
 msgid "The default list. It will be created automatically (even if you delete it)."
+msgstr ""
+
+#: .\twido\models\task.py:71
+msgid "Default"
+msgstr ""
+
+#: .\twido\models\task.py:151
+msgctxt "sys list"
+msgid "today"
+msgstr ""
+
+#: .\twido\models\task.py:152
+msgid "Tasks need to be done by today. (including expired)"
+msgstr ""
+
+#: .\twido\models\task.py:157
+msgctxt "sys list"
+msgid "soon"
+msgstr ""
+
+#: .\twido\models\task.py:158
+msgid "Tasks in near future (including those without deadline)"
+msgstr ""
+
+#: .\twido\models\task.py:163
+msgctxt "sys list"
+msgid "expired"
+msgstr ""
+
+#: .\twido\models\task.py:164
+msgid "Tasks passed the deadline."
 msgstr ""
 
 #: .\twido\settings.py:149
@@ -321,24 +352,30 @@ msgid "Default List"
 msgstr ""
 
 #: .\twido\templates\twido\includes-list\list-form.html:7
+#: .\twido\templates\twido\includes-list\list-form.html:11
 msgid "(unlisted tasks)"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:16
+#: .\twido\templates\twido\includes-list\list-form.html:20
 msgid "List Name"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:28
+#: .\twido\templates\twido\includes-list\list-form.html:32
 #: .\twido\templates\twido\includes-list\tasks.html:20
+#: .\twido\templates\twido\includes-list\tasks.html:149
 msgid "Reminder"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:39
+#: .\twido\templates\twido\includes-list\list-form.html:43
 msgid "Related Persons"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:58
+#: .\twido\templates\twido\includes-list\list-form.html:62
 msgid "Description"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\lists-menu.html:23
+msgid "Query Lists"
 msgstr ""
 
 #: .\twido\templates\twido\includes-list\task-form.html:12
@@ -347,7 +384,7 @@ msgstr ""
 
 #: .\twido\templates\twido\includes-list\task-form.html:24
 #: .\twido\templates\twido\includes-list\tasks.html:16
-#: .\twido\templates\twido\includes-list\tasks.html:87
+#: .\twido\templates\twido\includes-list\tasks.html:88
 msgid "Status"
 msgstr ""
 
@@ -372,20 +409,20 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:47
+#: .\twido\templates\twido\includes-list\tasks.html:48
 msgid "List is empty. Please add task by clicking the button."
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:181
+#: .\twido\templates\twido\includes-list\tasks.html:184
 msgid "DANGER : Delete this task"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:212
+#: .\twido\templates\twido\includes-list\tasks.html:215
 #, python-brace-format
 msgid "Task \"{0}\" deleted."
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:217
+#: .\twido\templates\twido\includes-list\tasks.html:220
 #, python-brace-format
 msgid "Fail to delete task \"{0}\". <br>Status: {1} <br>Content: {2}"
 msgstr ""
@@ -431,44 +468,60 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:28
+#: .\twido\templates\twido\list.html:30
 msgid "Create a new list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:28
+#: .\twido\templates\twido\list.html:30
 msgid "Create List"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:30
+#: .\twido\templates\twido\list.html:32
 msgid "Delete current list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:30
+#: .\twido\templates\twido\list.html:32
 msgid "Delete List"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:55 .\twido\templates\twido\task.html:50
+#: .\twido\templates\twido\list.html:34
+msgid "Export current list"
+msgstr ""
+
+#: .\twido\templates\twido\list.html:34
+msgid "Export List"
+msgstr ""
+
+#: .\twido\templates\twido\list.html:35
+msgid "Import a list"
+msgstr ""
+
+#: .\twido\templates\twido\list.html:35
+msgid "Import List"
+msgstr ""
+
+#: .\twido\templates\twido\list.html:75 .\twido\templates\twido\task.html:50
 msgid "Add a task to current list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:55
+#: .\twido\templates\twido\list.html:75
 msgid "Create Task"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:93
+#: .\twido\templates\twido\list.html:114
 msgid "DANGER : Delete list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:94
+#: .\twido\templates\twido\list.html:115
 msgid "All tasks in this list will be moved to default list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:140
+#: .\twido\templates\twido\list.html:166
 #, python-brace-format
 msgid "Task \"{0}\" moved to list \"{1}\"."
 msgstr ""
 
-#: .\twido\templates\twido\list.html:145
+#: .\twido\templates\twido\list.html:171
 #, python-brace-format
 msgid "Fail to move task \"{0}\". <br>Status: {1} <br>Content: {2}"
 msgstr ""
@@ -502,65 +555,69 @@ msgstr ""
 msgid "Redirect to profile updating page ... <br>If redirection did not start, please <a href=\"%s\">click me to profile</a>."
 msgstr ""
 
-#: .\twido\views\home.py:18
-msgid "today"
-msgstr ""
-
-#: .\twido\views\home.py:19
+#: .\twido\views\home.py:31
 msgid "Come on, you are about to completed all the tasks!"
 msgstr ""
 
-#: .\twido\views\home.py:20
+#: .\twido\views\home.py:32
 msgid "Cheers, you have completed all the tasks for today!"
 msgstr ""
 
-#: .\twido\views\home.py:21
-msgid "soon"
-msgstr ""
-
-#: .\twido\views\home.py:22
+#: .\twido\views\home.py:35
 #, python-format
 msgid "Tasks in %d days (including those without deadline)"
 msgstr ""
 
-#: .\twido\views\home.py:23
-msgid "expired"
-msgstr ""
-
-#: .\twido\views\home.py:25
+#: .\twido\views\home.py:39
 #, python-format
 msgid "Tasks passed the deadline. Restart them or you may want to mark all these tasks \"%(expire)s\" or \"%(cancel)s\"."
 msgstr ""
 
-#: .\twido\views\list.py:21
+#: .\twido\views\list.py:33
 #, python-format
 msgid "Invalid request. (action=%s)"
 msgstr ""
 
-#: .\twido\views\list.py:24
+#: .\twido\views\list.py:36
 msgid "New List"
 msgstr ""
 
-#: .\twido\views\list.py:25
+#: .\twido\views\list.py:37
 msgid "Default list can not be deleted."
 msgstr ""
 
-#: .\twido\views\list.py:26
+#: .\twido\views\list.py:38
 msgid "New list is created."
 msgstr ""
 
-#: .\twido\views\list.py:27
+#: .\twido\views\list.py:39
 #, python-format
 msgid "List \"%s\" was deleted."
 msgstr ""
 
-#: .\twido\views\list.py:30
+#: .\twido\views\list.py:40
+msgid "System list is not able to be changed."
+msgstr ""
+
+#: .\twido\views\list.py:41
+msgid "List name can not start with double underscores \"__\" ."
+msgstr ""
+
+#: .\twido\views\list.py:44
 msgid "New Task"
 msgstr ""
 
-#: .\twido\views\list.py:33
+#: .\twido\views\list.py:47
 #, python-format
 msgid "\"%s\" can not be changed."
+msgstr ""
+
+#: .\twido\views\list.py:49
+msgid "File is broken or incorrect content."
+msgstr ""
+
+#: .\twido\views\list.py:50
+msgid "List with tasks is imported successfully."
 msgstr ""
 
 #: .\twido\views\profile.py:20

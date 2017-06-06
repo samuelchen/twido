@@ -11,10 +11,11 @@ from django.urls import reverse
 from django.utils import timezone
 from django.core.validators import validate_comma_separated_integer_list
 from django.utils.functional import lazy, SimpleLazyObject
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.db import transaction
 from .common import ProfileBasedModel, UserProfile
 from .consts import TaskStatus
+from pyutils.langutil import MutableEnum, PropertyDict, SingletonBase
 from .social import SocialAccount
 from .spider import RawStatus
 
@@ -65,7 +66,7 @@ class List(ProfileBasedModel):
     def get_name(self):
 
         if self.is_sys:
-            return self.name.lstrip('__')
+            return pgettext_lazy('sys list', self.name.lstrip('_'))
         elif self.is_default:
             return _('Default')
         else:
@@ -135,78 +136,79 @@ class Task(ProfileBasedModel):
         return '%s (id=%d)' % (self.title, self.id)
 
 
-class CustomizedList(object):
-    # entries = models.IntegerField(default=10, help_text=_('Entries per list page.'))
+class SysList(object):
 
-    __today_name = '__today'
-    __today_text = 'today'         # trans it later
-    __today = None
-
-    __soon_name = '__soon'
-    __soon_text = 'soon'           # trans it later
-    __soon = None
-
-    __expired_name = '__expired'
-    __expired_text = 'expired'     # trans it later
-    __expired = None
+    soon_days = 3
 
     def __init__(self, profile, list_model=List, task_model=Task, entries_per_page=10):
         self.ListModel = list_model
         self.TaskModel = task_model
         self.profile = profile
         self.entries = entries_per_page
-        self.soon_days = 3
+        self._meta = PropertyDict((
+            ('__today', PropertyDict(
+                name='__today',
+                title=pgettext_lazy('sys list', 'today'),   # for i18n text generation usage
+                text=_('Tasks need to be done by today. (including expired)'),
+                tasks=SimpleLazyObject(self.__get_today_tasks)
+            )),
+            ('__soon', PropertyDict(
+                name='__soon',
+                title=pgettext_lazy('sys list', 'soon'),    # for i18n text generation usage
+                text=_('Tasks in near future (including those without deadline)'),
+                tasks=SimpleLazyObject(self.__get_soon_tasks)
+            )),
+            ('__expired', PropertyDict(
+                name='__expired',
+                title=pgettext_lazy('sys list', 'expired'),   # for i18n text generation usage
+                text=_('Tasks passed the deadline.'),
+                tasks=SimpleLazyObject(self.__get_expired_tasks)
+            ))
+        ))
 
-    def get_all_lists(self):
-        return (
-            self.get_today_list(),
-            self.get_soon_list(),
-            self.get_expired_list()
-        )
+        # for translation usage (not working)
+        # for meta in self._meta.values():
+        #     meta.title = pgettext_lazy('sys list', meta.name.lstrip('_'))
 
-    def get_today_list(self):
-        if not self.__today:
-            lst, created = self.ListModel.objects.get_or_create(profile=self.profile, name=self.__today_name)
+        self._lists = PropertyDict()
+
+    @property
+    def all(self):
+        if not self._lists:
+            for name in self._meta.keys():
+                self.get(name)
+        return self._lists
+
+    def __getitem__(self, item):
+        return self.get(item)
+
+    def get(self, name):
+        if name not in self._lists:
+            meta = self._meta[name]
+            lst, created = self.ListModel.objects.get_or_create(profile=self.profile, name=name)
             if created:
-                lst.text = self.__today_text
+                lst.text = meta.text
                 lst.save()
-            lst.task_set = SimpleLazyObject(self.get_today_tasks)
-            self.__today = lst
-        return self.__today
+                log.debug('list "%s" created.' % lst)
+            lst.tasks = meta.tasks
+            self._lists[name] = lst
+        return self._lists[name]
 
-    def get_soon_list(self):
-        if not self.__soon:
-            lst, created = self.ListModel.objects.get_or_create(profile=self.profile, name=self.__soon_name)
-            if created:
-                lst.text = self.__soon_text
-                lst.save()
-            lst.task_set = SimpleLazyObject(self.get_soon_tasks)
-            self.__soon = lst
-        return self.__soon
-
-    def get_expired_list(self):
-        if not self.__expired:
-            lst, created = self.ListModel.objects.get_or_create(profile=self.profile, name=self.__expired_name)
-            if created:
-                lst.text = self.__expired_text
-                lst.save()
-            lst.task_set = SimpleLazyObject(self.get_expired_tasks)
-            self.__expired = lst
-        return self.__expired
-
-    def get_today_tasks(self):
+    def __get_today_tasks(self):
         now = timezone.now()
         today = timezone.datetime(now.year, now.month, now.day, tzinfo=timezone.utc)
         tomorrow = today + timedelta(days=1)
-        return self.TaskModel.objects.filter(profile=self.profile, reminder__range=(today, tomorrow))[:self.entries]
+        return self.TaskModel.objects.filter(profile=self.profile, reminder__range=(today, tomorrow))
 
-    def get_soon_tasks(self):
+    def __get_soon_tasks(self):
+        now = timezone.now()
+        soon = now + timedelta(days=self.soon_days)
         return self.TaskModel.objects.filter(profile=self.profile).filter(
-            Q(reminder__lt=timezone.now() - timedelta(days=self.soon_days)) | Q(reminder=None))[:self.entries]
+            Q(reminder__gt=now) & Q(reminder__lt=soon) | Q(reminder=None))
 
-    def get_expired_tasks(self):
+    def __get_expired_tasks(self):
         return self.TaskModel.objects.filter(profile=self.profile, reminder__lt=timezone.now()).exclude(
-            status__in=(TaskStatus.DONE, TaskStatus.CANCEL))[:self.entries]
+            status__in=(TaskStatus.DONE, TaskStatus.CANCEL))
 
 
 

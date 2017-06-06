@@ -44,9 +44,11 @@
                 </div>
 
                 <!-- list form -->
+                {% if not thelist.is_sys %}
                 <div class="bs-component">
                 {% include 'twido/includes-list/list-form.html' %}
                 </div>
+                {% endif %}
 
             </div>
 
@@ -60,6 +62,13 @@
                         <div class="panel">
                             {% include 'includes/django-messags-inc.html' %}
                         </div>
+
+                        <!-- list form -->
+                        {% if thelist.is_sys %}
+                        <div class="bs-component">
+                        {% include 'twido/includes-list/list-form.html' %}
+                        </div>
+                        {% endif %}
 
                         {% include 'twido/includes-list/tasks.html' %}
                         <div class="btn-group btn-group-justified btn-group-sm">
