@@ -246,6 +246,8 @@ class ListView(TemplateView, BaseViewMixin):
             pk = int(pk)
             name = req.get('name', None)
             value = req.get('value', None)
+            assert name is not None
+
             if name in ('id', ):
                 return HttpResponseBadRequest(I18N_MSGS.prop_cannot_change % name)
             if name == 'related_users':

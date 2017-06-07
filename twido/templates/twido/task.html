@@ -16,6 +16,13 @@
             <!-- left col -->
             <div class="col-lg-3 col-md-3 col-sm-4">
 
+{#                <div class="panel panel-default" name="{{ thetask.list.name }}">#}
+{#                    <div class="panel-heading small">#}
+{#                        <h3 class="panel-title">{{ thetask.list.get_name|capfirst }}</h3>#}
+{#                    </div>#}
+{#                    {% include 'twido/includes-list/tasks.html' %}#}
+{#                </div>#}
+
                 <div class="panel panel-default" name="{{ thetask.list.name }}">
                     <div class="panel-heading small">
                         <ul class="list-inline">
@@ -46,11 +53,10 @@
                     <form id="id_form_action" action="{{ request.path }}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="action">
+                        <input type="hidden" name="list_id" value="{{ thetask.list_id }}">
                         <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add" title="{% trans 'Add a task to current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Add Task' %}</a>
-                            {% if not thelist.is_default %}
-                            <a name="del" title="{% trans 'Delete current task' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete Task' %}</a>
-                            {% endif %}
+                            <a name="add-task" title="{% trans 'Add a task to current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Add Task' %}</a>
+                            <a name="del-task" title="{% trans 'Delete current task' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete Task' %}</a>
                         </div>
                     </form>
                 </div>
@@ -74,28 +80,29 @@
 
 
     <script type="text/javascript" language="JavaScript">
-{##}
-{#    $(document).ready(function(){#}
-{#        var form_action = $("#id_form_action");#}
-{##}
-{#        $("a.btn").tooltip({container: 'body'}).click(function(e){#}
-{#            var action = $(this).attr('name');#}
-{#            form_action.find("input[name='action']").val(action);#}
-{#            if ($.inArray(action, ['add', 'add-todo']) >= 0) form_action.submit();#}
-{#            // if action is "del", need to confirm (code below)#}
-{#        });#}
-{##}
-{#        form_action.find('a[name="del"]').confirmation({#}
-{#            onConfirm: function () {#}
-{#                form_action.submit();#}
-{#            },#}
-{#            html: 'true',#}
-{#            title: '<span class="text-danger">{% trans 'DANGER : Delete list' %} "{{ thelist.name }}(id:{{ thelist.id }})" ?</span>'#}
-{#                        +'<p/><p class="small">{% trans 'All tasks in this list will be moved to default list' %}',#}
-{#            placement: 'right'#}
-{#        });#}
-{##}
-        $(".editable").addClass('no_underline').css("cursor", "pointer");
-{#    }#}
+
+        $(document).ready(function(){
+            $(".editable").addClass('no_underline').css("cursor", "pointer");
+
+            var form_action = $("#id_form_action");
+
+            form_action.find("a.btn").tooltip({container: 'body'}).click(function(e){
+                var action = $(this).attr('name');
+                form_action.find("input[name='action']").val(action);
+                // if action is "del" related, need to confirm
+                if ($.inArray(action, ['del-task' ]) < 0) form_action.submit();
+    {#            $(this).disable();#}
+            });
+
+            form_action.find('a[name="del-task"]').confirmation({
+                onConfirm: function () {
+                    form_action.submit();
+                },
+                html: 'true',
+                title: '<span class="text-danger">{% trans 'DANGER : Delete this task' %} "{{ thetask.name }}(id:{{ thetask.id }})" ?</span>',
+                placement: 'bottom'
+            });
+        });
+
     </script>
 {% endblock %}

@@ -5,19 +5,20 @@
 {#       tasks_editable - tuple of supported editable field names. By default, none is editable. (e.g. 'name', 'text') #}
 {#       tasks_actions - tuple of supported actions. By default, no action available. ('detail', 'del') #}
 {#       tasks_empty_well - boolean to enable/disable messages when tasks is empty. By default, false. #}
+{#       thetask (optional) - current task. #}
 
 {% load i18n customer_tags %}<!-- BEGIN of tasks -->
 {#                        <div class="bs-component">#}
                             <ul class="list-group" name="tasks_incl">
                                 {% for task in page %}
-                                    <li data-id="{{ task.id }}" class="list-group-item task-item">
+                                    <li data-id="{{ task.id }}" class="list-group-item task-item {% if thetask.id == task.id %}active{% endif %}">
                                         <ul class="list-inline">
                                             {% if not tasks_fields or 'status' in tasks_fields %}
                                             <li><span title="{% trans 'Status' %}: {{ task.get_status_text }}" data-name="status" data-type="select" data-pk="{{ task.id }}"
                                                   data-url="{{ task.get_view_path }}"><i class="{{ task.get_status_glyphicon }}"></i></span></li>
                                             {% endif %}
                                             {% if not tasks_fields or 'due' in tasks_fields %}
-                                            <li class="top-right"><span title="{% trans 'Due' %}" class="small" data-name="due" data-type="datetime" data-pk="{{ task.id }}"
+                                            <li class="top-right"><span title="{% trans 'Due Date' %}" class="small" data-name="due" data-type="datetime" data-pk="{{ task.id }}"
                                                   data-url="{{ task.get_view_path }}">{{ task.due |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}</span></li>
                                             {% endif %}
                                             {% if not tasks_fields or 'title' in tasks_fields %}
@@ -143,8 +144,10 @@
                                     });
                                 }
 
+                                var field_due = tasks_container.find('span[data-name="due"]');
+                                field_due.tooltip();
                                 if ($.inArray('due', fields) >= 0) {
-                                    tasks_container.find('span[data-name="due"]').tooltip().editable({
+                                    field_due.editable({
                                         mode: 'popup',
                                         title: '{% trans 'Due' %}',
 {#                                        showbuttons: 'true',#}
