@@ -65,8 +65,8 @@ class HomeView(TemplateView, BaseViewMixin):
             task_sets.append(task_set)
         context['task_sets'] = task_sets
 
-        context['tasks_fields'] = ('status', 'title', 'reminder')
-        context['tasks_editables'] = ('status', 'title', 'reminder')
+        context['tasks_fields'] = ('status', 'title', 'due')
+        context['tasks_editables'] = ('status', 'title', 'due')
         context['tasks_actions'] = ('detail',)
         context['taskstatus'] = TaskStatus
         return context

@@ -105,7 +105,7 @@ class Task(ProfileBasedModel):
     status = models.SmallIntegerField(choices=TaskStatus.Choices, default=TaskStatus.NEW, db_index=True)
     text = models.TextField(null=True, blank=True)
     labels = models.TextField(null=True, blank=True)
-    reminder = models.DateTimeField(null=True, blank=True)
+    due = models.DateTimeField(null=True, blank=True)
     list = models.ForeignKey(to=List)
 
     content = models.TextField(null=True, blank=True)
@@ -137,6 +137,9 @@ class Task(ProfileBasedModel):
 
 
 class SysList(object):
+    """
+    System pre-defined query list
+    """
 
     soon_days = 3
 
@@ -204,20 +207,27 @@ class SysList(object):
         now = timezone.now()
         today = timezone.datetime(now.year, now.month, now.day, tzinfo=timezone.utc)
         tomorrow = today + timedelta(days=1)
-        return self.TaskModel.objects.filter(profile=self.profile, reminder__range=(today, tomorrow))
+        return self.TaskModel.objects.filter(profile=self.profile, due__range=(today, tomorrow))
 
     def __get_soon_tasks(self):
         now = timezone.now()
         soon = now + timedelta(days=self.soon_days)
         return self.TaskModel.objects.filter(profile=self.profile).filter(
-            Q(reminder__gt=now) & Q(reminder__lt=soon) | Q(reminder=None))
+            Q(due__gt=now) & Q(due__lt=soon) | Q(due=None))
 
     def __get_expired_tasks(self):
-        return self.TaskModel.objects.filter(profile=self.profile, reminder__lt=timezone.now()).exclude(
+        return self.TaskModel.objects.filter(profile=self.profile, due__lt=timezone.now()).exclude(
             status__in=(TaskStatus.DONE, TaskStatus.CANCEL))
 
     def __get_all_tasks(self):
         return self.TaskModel.objects.filter(profile=self.profile)
+
+
+class SmartList(object):
+    """
+    User defined search list
+    """
+    pass
 
 
 # class Todo(Task):

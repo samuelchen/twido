@@ -101,8 +101,8 @@ class ListView(TemplateView, BaseViewMixin):
 
         # variables for tasks.html includes
         context['taskstatus'] = TaskStatus
-        # context['tasks_fields'] = ('status', 'title', 'reminder', 'labels')
-        context['tasks_editables'] = ('status', 'title', 'reminder', 'labels')
+        # context['tasks_fields'] = ('status', 'title', 'due', 'labels')
+        context['tasks_editables'] = ('status', 'title', 'due', 'labels')
         context['tasks_actions'] = ('detail', 'del')
         context['tasks_empty_well'] = True
 
@@ -253,7 +253,7 @@ class ListView(TemplateView, BaseViewMixin):
             if name == 'name' and value.startswith('__'):
                 return HttpResponseBadRequest(I18N_MSGS.list_name_cannot_start_with_dbl_underscore)
             # TODO: datetime timezone convert
-            # if name == 'reminder':
+            # if name == 'due':
             #     value = parse_datetime(value).replace(tzinfo=config.timezone) #timezone.utc)
             if value is not None and value.strip() == '':
                 value = None

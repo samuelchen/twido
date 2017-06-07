@@ -16,9 +16,9 @@
                                             <li><span title="{% trans 'Status' %}: {{ task.get_status_text }}" data-name="status" data-type="select" data-pk="{{ task.id }}"
                                                   data-url="{{ task.get_view_path }}"><i class="{{ task.get_status_glyphicon }}"></i></span></li>
                                             {% endif %}
-                                            {% if not tasks_fields or 'reminder' in tasks_fields %}
-                                            <li class="top-right"><span title="{% trans 'Reminder' %}" class="small" data-name="reminder" data-type="datetime" data-pk="{{ task.id }}"
-                                                  data-url="{{ task.get_view_path }}">{{ task.reminder |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}</span></li>
+                                            {% if not tasks_fields or 'due' in tasks_fields %}
+                                            <li class="top-right"><span title="{% trans 'Due' %}" class="small" data-name="due" data-type="datetime" data-pk="{{ task.id }}"
+                                                  data-url="{{ task.get_view_path }}">{{ task.due |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}</span></li>
                                             {% endif %}
                                             {% if not tasks_fields or 'title' in tasks_fields %}
                                             <li><span data-name="title" data-type="text" data-pk="{{ task.id }}"
@@ -143,10 +143,10 @@
                                     });
                                 }
 
-                                if ($.inArray('reminder', fields) >= 0) {
-                                    tasks_container.find('span[data-name="reminder"]').tooltip().editable({
+                                if ($.inArray('due', fields) >= 0) {
+                                    tasks_container.find('span[data-name="due"]').tooltip().editable({
                                         mode: 'popup',
-                                        title: '{% trans 'Reminder' %}',
+                                        title: '{% trans 'Due' %}',
 {#                                        showbuttons: 'true',#}
                                         placement: 'left',
                                         allowClear: 'true',

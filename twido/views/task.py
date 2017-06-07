@@ -42,8 +42,8 @@ class TaskView(TemplateView, BaseViewMixin):
             context['taskstatus'] = TaskStatus
 
         # variables for tasks.html includes
-        # context['tasks_fields'] = ('status', 'title', 'reminder', 'labels')
-        # context['tasks_editables'] = ('status', 'title', 'reminder', 'labels')
+        # context['tasks_fields'] = ('status', 'title', 'due', 'labels')
+        # context['tasks_editables'] = ('status', 'title', 'due', 'labels')
         # context['tasks_actions'] = ('detail', 'del')
 
         return context

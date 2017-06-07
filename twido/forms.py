@@ -18,9 +18,9 @@ UserMode = get_user_model()
 # class TodoListForm(ModelForm):
 #     class Meta:
 #         model = TodoList
-#         fields = ['name', 'reminder', 'related_users', 'text']
+#         fields = ['name', 'due', 'related_users', 'text']
 #         widgets = {
-#             'reminder': forms.SplitDateTimeWidget(),
+#             'due': forms.SplitDateTimeWidget(),
 #         }
 #
 #

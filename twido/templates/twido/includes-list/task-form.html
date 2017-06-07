@@ -32,13 +32,13 @@
 
                                     </div>
 
-                                    <!-- reminder -->
+                                    <!-- due -->
                                     <div class="form-group">
-                                        <label for="reminder" class="col-lg-2 col-md-2 control-label">{% trans 'Deadline' %}</label>
+                                        <label for="due" class="col-lg-2 col-md-2 control-label">{% trans 'Deadline' %}</label>
 
                                         <div class="col-lg-10 col-md-10">
-                                            <span id="reminder" data-type="datetime" data-pk="{{ thetask.id }}"
-                                                  data-url="{{ request.path }}">{{ thetask.reminder | default_if_none:'' }}</span>
+                                            <span id="due" data-type="datetime" data-pk="{{ thetask.id }}"
+                                                  data-url="{{ request.path }}">{{ thetask.due | default_if_none:'' }}</span>
 {#                                            <span class="help-block">The time to remind me.</span>#}
                                         </div>
                                     </div>
@@ -156,7 +156,7 @@
                                     }
                                 });
 
-                                $('#reminder').editable({
+                                $('#due').editable({
                                     mode: 'popup',
                                     placement: 'right',
                                     allowClear: 'true',
