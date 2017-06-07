@@ -82,6 +82,8 @@
                             <script language="JavaScript" type="text/javascript">
 
                                 $('#title').editable({
+                                    emptytext: "{% trans '(Click to enter list title.)' %}",
+                                    emptyclass: 'text-muted',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
@@ -166,12 +168,16 @@
                                     datetimepicker: {
                                         weekStart: 1
                                     },
+                                    emptytext: "{% trans '(Click to enter due date & time.)' %}",
+                                    emptyclass: 'text-muted',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
                                 });
 
                                 $('#text').editable({
+                                    emptytext: "{% trans '(Click to enter long detail text.)' %}",
+                                    emptyclass: 'text-muted',
                                     rows: 4,
                                     tpl: "<textarea style='width: 400px'></textarea>",
                                     success: function (response, newValue) {

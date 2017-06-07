@@ -84,6 +84,8 @@
                             <script language="JavaScript" type="text/javascript">
 
                                 $('#name').editable({
+                                    emptytext: "{% trans '(Click to enter list name.)' %}",
+                                    emptyclass: 'text-muted',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
@@ -92,6 +94,8 @@
                                 });
 
                                 $('#related_users').editable({
+                                    emptytext: "{% trans '(Click to enter related persons. User comma \",\" to split.)' %}",
+                                    emptyclass: 'text-muted',
                                     select2: {
                                         width: '200px',
                                         tags: 'true',
@@ -143,11 +147,14 @@
                                     mode: 'popup',
                                     placement: 'right',
                                     allowClear: 'true',
+                                    onblur: 'cancel',
                                     {#                format: 'yyyy-mm-dd hh:ii',#}
                                     {#                viewformat: 'dd/mm/yyyy hh:ii',#}
                                     datetimepicker: {
                                         weekStart: 1
                                     },
+                                    emptytext: "{% trans '(Click to enter reminder date & time.)' %}",
+                                    emptyclass: 'text-muted',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
@@ -156,6 +163,8 @@
                                 $('#text').editable({
                                     rows: 4,
                                     tpl: "<textarea style='width: 400px'></textarea>",
+                                    emptytext: "{% trans '(Click to enter long description.)' %}",
+                                    emptyclass: 'text-muted',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
