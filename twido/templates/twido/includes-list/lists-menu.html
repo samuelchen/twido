@@ -4,7 +4,7 @@
 
 {% load i18n %}<!-- BEGIN lists menu -->
 
-                    <div class="list-group small" name="sys_lists_incl">
+                    <div class="list-group" name="sys_lists_incl">
                         {% for lst in sys_lists.values %}
                             <a href="{% url 'list' lst.id %}" data-id="{{ lst.id }}" data-name="{{ lst.name }}"
                                class="list-group-item {% if thelist.id == lst.id %}active{% endif %}">
@@ -14,7 +14,7 @@
                         {% endfor %}
                     </div>
 
-                    <div class="list-group small" name="lists_incl"  style="overflow-y: auto; max-height: 400px; ">
+                    <div class="list-group" name="lists_incl"  style="overflow-y: auto; max-height: 400px; ">
                         <a href="{% url 'list' %}" data-id="{{ thelist.default.id }}" data-name="{{ thelist.default.name }}"
                            class="list-group-item {% if thelist.is_default %}active{% endif %}">
                             <h4 class="list-group-item-heading">{% trans 'Lists' %}</h4>
