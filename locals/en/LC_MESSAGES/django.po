@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-06 16:49+0800\n"
+"POT-Creation-Date: 2017-06-07 10:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -123,39 +123,39 @@ msgctxt "sys list"
 msgid "default"
 msgstr ""
 
-#: .\twido\models\task.py:151
+#: .\twido\models\task.py:154
 msgctxt "sys list"
 msgid "today"
 msgstr ""
 
-#: .\twido\models\task.py:152
+#: .\twido\models\task.py:155
 msgid "Tasks need to be done by today. (including expired)"
 msgstr ""
 
-#: .\twido\models\task.py:157
+#: .\twido\models\task.py:160
 msgctxt "sys list"
 msgid "soon"
 msgstr ""
 
-#: .\twido\models\task.py:158
+#: .\twido\models\task.py:161
 msgid "Tasks in near future (including those without deadline)"
 msgstr ""
 
-#: .\twido\models\task.py:163
+#: .\twido\models\task.py:166
 msgctxt "sys list"
 msgid "expired"
 msgstr ""
 
-#: .\twido\models\task.py:164
+#: .\twido\models\task.py:167
 msgid "Tasks passed the deadline."
 msgstr ""
 
-#: .\twido\models\task.py:169
+#: .\twido\models\task.py:172
 msgctxt "sys list"
 msgid "all"
 msgstr ""
 
-#: .\twido\models\task.py:170
+#: .\twido\models\task.py:173
 msgid "All my tasks."
 msgstr ""
 
@@ -366,8 +366,6 @@ msgid "List Name"
 msgstr ""
 
 #: .\twido\templates\twido\includes-list\list-form.html:32
-#: .\twido\templates\twido\includes-list\tasks.html:20
-#: .\twido\templates\twido\includes-list\tasks.html:149
 msgid "Reminder"
 msgstr ""
 
@@ -404,6 +402,12 @@ msgstr ""
 
 #: .\twido\templates\twido\includes-list\task-form.html:60
 msgid "Detail Text"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\tasks.html:20
+#: .\twido\templates\twido\includes-list\tasks.html:149
+#: .\twido\templates\twido\task.html:32
+msgid "Due"
 msgstr ""
 
 #: .\twido\templates\twido\includes-list\tasks.html:34

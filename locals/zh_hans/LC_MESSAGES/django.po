@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-06 16:49+0800\n"
+"POT-Creation-Date: 2017-06-07 10:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <me@samuelchen.net>\n"
@@ -122,39 +122,39 @@ msgctxt "sys list"
 msgid "default"
 msgstr "默认清单"
 
-#: .\twido\models\task.py:151
+#: .\twido\models\task.py:154
 msgctxt "sys list"
 msgid "today"
-msgstr "今日清单"
+msgstr "今天"
 
-#: .\twido\models\task.py:152
+#: .\twido\models\task.py:155
 msgid "Tasks need to be done by today. (including expired)"
 msgstr "今日内需要完成的任务。（包含已经超过期限的）"
 
-#: .\twido\models\task.py:157
+#: .\twido\models\task.py:160
 msgctxt "sys list"
 msgid "soon"
-msgstr "近期清单"
+msgstr "近期"
 
-#: .\twido\models\task.py:158
+#: .\twido\models\task.py:161
 msgid "Tasks in near future (including those without deadline)"
 msgstr "近期的任务 （包含没有设定期限的任务）"
 
-#: .\twido\models\task.py:163
+#: .\twido\models\task.py:166
 msgctxt "sys list"
 msgid "expired"
-msgstr "已超期清单"
+msgstr "过期"
 
-#: .\twido\models\task.py:164
+#: .\twido\models\task.py:167
 msgid "Tasks passed the deadline."
 msgstr "超过期限的任务"
 
-#: .\twido\models\task.py:169
+#: .\twido\models\task.py:172
 msgctxt "sys list"
 msgid "all"
 msgstr "全部"
 
-#: .\twido\models\task.py:170
+#: .\twido\models\task.py:173
 msgid "All my tasks."
 msgstr "我的所有任务"
 
@@ -369,8 +369,6 @@ msgid "List Name"
 msgstr "清单名"
 
 #: .\twido\templates\twido\includes-list\list-form.html:32
-#: .\twido\templates\twido\includes-list\tasks.html:20
-#: .\twido\templates\twido\includes-list\tasks.html:149
 msgid "Reminder"
 msgstr "提醒"
 
@@ -408,6 +406,12 @@ msgstr "标签"
 #: .\twido\templates\twido\includes-list\task-form.html:60
 msgid "Detail Text"
 msgstr "详细文本"
+
+#: .\twido\templates\twido\includes-list\tasks.html:20
+#: .\twido\templates\twido\includes-list\tasks.html:149
+#: .\twido\templates\twido\task.html:32
+msgid "Due"
+msgstr "过期"
 
 #: .\twido\templates\twido\includes-list\tasks.html:34
 msgid "Detail"
