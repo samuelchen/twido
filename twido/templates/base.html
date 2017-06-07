@@ -32,14 +32,11 @@
 </head>
 
 {#<body background="{% static 'twido/img/bg.jpg' %}">#}
+{#<body class="{% if view_size == 'S' %}small{% endif %} {% if view_size == 'L' %}large{% endif %}">#}
 <body>
 
 {% include "includes/topnavbar.html" %}
 {% include 'includes/blank-div-row.html' %}
-
-{#<div class="row">#}
-{#    <div>&nbsp;</div>#}
-{#</div>#}
 
 {% block content %}{# CONTENT BLOCK #}{% endblock %}
 

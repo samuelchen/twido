@@ -32,6 +32,10 @@ class BaseViewMixin(ContextMixin):
                 context['LANGUAGE_CODE'] = opt.value
                 translation.activate(context['LANGUAGE_CODE'])
 
+        # if 'view_size' not in context:
+        #     opt = Config.get_user_conf(profile, 'view_size')
+        #     context['view_size'] = opt.value if opt else 'G'
+
         if 'website' not in context:
             context['website'] = {
                 'name': settings.WEBSITE_NAME
