@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
@@ -42,7 +43,7 @@ class HomeView(TemplateView, BaseViewMixin):
 
         context['lists'] = List.objects.filter(profile=profile).order_by('name')
 
-        entries = 10
+        entries = 5
         sys_list = SysList(profile=profile)
         context['sys_lists'] = sys_list.all
 
@@ -56,6 +57,7 @@ class HomeView(TemplateView, BaseViewMixin):
             task_set = {
                 'name': lst.name,
                 'title': lst.get_name,
+                'link': reverse_lazy('list', args=(lst.id,)),
                 'text': I18N_MSGS.home_tasks[lst.name].text if 'text_args' not in I18N_MSGS.home_tasks[lst.name] else
                         I18N_MSGS.home_tasks[lst.name].text % I18N_MSGS.home_tasks[lst.name].text_args,
                 'empty': I18N_MSGS.home_tasks[lst.name].empty,

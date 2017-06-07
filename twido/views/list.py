@@ -61,7 +61,7 @@ class ListView(TemplateView, BaseViewMixin):
     def get_task_model(self):
         return Task
 
-    def get_view_name(self, pk=None):
+    def get_view_name(self):
         return 'list'
 
     def get_context_data(self, **kwargs):
