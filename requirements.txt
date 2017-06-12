@@ -4,7 +4,7 @@ simplejson
 requests
 dateparser
 #mysqlclient
-
+gunicorn
 
 django-bootstrap-themes
 django-simple-email-confirmation

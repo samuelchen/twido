@@ -23,10 +23,5 @@ DATABASES = {
 }
 
 INSTALLED_APPS.extend([
-    'account',
     'gunicorn',
 ])
-
-
-CONFIG_FILE = os.getenv('CONFIG_FILE', 'config.ini')
-

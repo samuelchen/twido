@@ -41,10 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap_themes',
-    # 'bootstrapform',
     'twido',
-    # 'user',
-    # 'simple_email_confirmation',
+    'account',
 ]
 
 MIDDLEWARE = [
