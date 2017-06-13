@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap_themes',
     'twido',
-    'account',
+    # 'account',
 ]
 
 MIDDLEWARE = [

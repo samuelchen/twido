@@ -16,9 +16,5 @@ TIME_ZONE = 'Asia/Shanghai'
 #     'PORT': '14948',
 # }
 
-INSTALLED_APPS.extend([
-    # 'gunicorn',
-])
-
 CONFIG_FILE = os.getenv('CONFIG_FILE', 'config.sam.ini')
 

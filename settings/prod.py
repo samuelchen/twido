@@ -8,8 +8,8 @@ SECRET_KEY = 'askojdfpoasdhfu98sdyf792ylJ^*%&%$wdfjj2oie29u3y29'
 
 WEBSITE_NAME = _('My Wonderful Life 2')
 
-STATIC_ROOT = '/home/samuel/static'
-MEDIA_ROOT = '/home/samuel/media'
+STATIC_ROOT = '/srv/twido/static'
+MEDIA_ROOT = '/srv/twido/media'
 
 LANGUAGE_CODE = 'en-us'
 
@@ -21,7 +21,3 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-INSTALLED_APPS.extend([
-    'gunicorn',
-])
