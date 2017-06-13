@@ -2,11 +2,12 @@
 # coding: utf-8
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin  # 从django继承过来后进行定制
+from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm # admin中涉及到的两个表单
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils import timezone
-from .models import UserProfile, UserModel
+from .models import UserProfile
+from .models.common import UserModel
 
 
 class ProfileInline(admin.StackedInline):
