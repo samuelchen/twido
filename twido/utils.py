@@ -70,6 +70,7 @@ class TwitterClientManager(object):
         #                            consumer_secret=cls.cfg.twitter.consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
         api = tweepy.API(auth, proxy=cls.cfg.common.proxy or '')
+        api.TweepError = tweepy.error.TweepError
         return api
 
 
@@ -95,6 +96,8 @@ class TweepyOAuthHandler(tweepy.OAuthHandler):
             }
             return self.oauth.fetch_request_token(url, proxies=proxies)
         except Exception as e:
+            # TODO: handle bad authorization exception (config.ini not set)
+            # Error: Token request failed with code 400, response was '{"errors":[{"code":215,"message":"Bad Authentication data."}]}'.
             raise tweepy.TweepError(e)
 
     def get_access_token(self, verifier=None):

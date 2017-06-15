@@ -59,3 +59,4 @@ class SocialAccount(ProfileBasedModel):
 
     def get_img_url(self):
         return self.img_url or static('twido/img/avatar-man.png')
+

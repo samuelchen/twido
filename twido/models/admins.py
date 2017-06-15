@@ -141,20 +141,24 @@ class UserProfileCreationForm(UserCreationForm):
         user = super(UserProfileCreationForm, self).save(commit=False)
         # user.is_active = False  # need to verify email.
         email = self.cleaned_data['email']
-        assert user
-        if not user.username:
-            user.username = email
-        assert user.username
-        profile = None
-        if commit:
-            with transaction.atomic():
-                user.save()
-                assert user and user.username
-                profile, created = UserProfile.objects.get_or_create(user=user)
-                profile.email = email
-                if created:
-                    log.warn('Profile was not created after User created. (%s)' % user.username)
-                    profile.name = user.email[:user.email.find('@')]
-                    profile.username = profile.name + str(int(timezone.now().timestamp()))
-                profile.save()
+        password = self.clean_password2()
+        # assert user
+        # if not user.username:
+        #     user.username = email
+        # assert user.username
+        # profile = None
+        # if commit:
+        #     with transaction.atomic():
+        #         user.save()
+        #         assert user and user.username
+        #         profile, created = UserProfile.objects.get_or_create(user=user)
+        #         profile.email = email
+        #         if created:
+        #             log.warn('Profile was not created after User created. (%s)' % user.username)
+        #             profile.name = user.email[:user.email.find('@')]
+        #             profile.username = profile.name + str(int(timezone.now().timestamp()))
+        #         profile.save()
+        # return profile
+
+        profile, passwd = UserProfile.register(email=email, password=password, commit=True)
         return profile

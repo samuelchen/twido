@@ -3,12 +3,12 @@
 
 {% load i18n %}<!-- BEGIN list detail setting -->
                         {% if thelist.is_default %}
-                            <div class="text-center">
+                            <div class="text-center hidden-sm hidden-xs">
                                 <H3>{% trans 'Default List' %}</H3>
                                 <span class="help-block">{% trans thelist.text %}</span>
                             </div>
                         {% elif thelist.is_sys %}
-                            <div class="text-center">
+                            <div class="text-center hidden-sm hidden-xs">
                                 <H3>{% trans thelist.get_name|capfirst context 'sys list' %}</H3>
                                 <span class="help-block">{% trans thelist.text %}</span>
                             </div>

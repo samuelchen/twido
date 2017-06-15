@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 from datetime import timedelta
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse, HttpResponseNotFound
 from django.shortcuts import redirect
@@ -14,7 +15,7 @@ import simplejson as json
 from tweepy import TweepError
 from .base import BaseViewMixin
 from ..models import UserProfile, SocialPlatform, SocialAccount
-from ..models import Task, List
+from ..models import replace_profile
 from ..utils import TwitterClientManager
 
 import logging
@@ -32,6 +33,7 @@ class I18N_MSGS(object):
     social_profile_updated = _('Your social profile is updated.')
     social_fail_to_get_token = _('Error! Failed to get access token.')
 
+
 class SocialView(TemplateView, BaseViewMixin):
 
     def get_context_data(self, **kwargs):
@@ -47,7 +49,7 @@ class SocialView(TemplateView, BaseViewMixin):
 
     def get(self, request, *args, **kwargs):
 
-        profile = self.request.user.profile
+        profile = self.get_profile()
 
         # TODO: clean/escape data (better use Django form for field validation)
         req = request.GET
@@ -78,22 +80,21 @@ class SocialView(TemplateView, BaseViewMixin):
                         "access_secret": access_secret
                     }
                     # tokens.update(request_token)
-                    try:
-                        acc = self.update_twitter_account(tokens=tokens, profile=profile, commit=True)
-                    except AssertionError as err:
-                        log.exception(err)
-                        resp = HttpResponse(I18N_MSGS.social_conflict_link, status=409)
-                        return resp
+
+
+                    acc = self.update_twitter_account(tokens=tokens, profile=profile, commit=True)
 
                     if acc:
-                        self.combine_profile_with_twitter_account(profile=profile, social_account=acc)
-                        # acc.save()
+                        profile = self.combine_profile_with_twitter_account(request, profile=profile, social_account=acc)
                         log.debug('Social account %s is updated.' % acc)
                     else:
                         # TODO: change response and text
                         return HttpResponseNotAllowed(I18N_MSGS.social_fail_to_link)
 
                     self.success(I18N_MSGS.social_link_success)
+            elif action == 'login':
+                data = self.get_twitter_oauth_url(request)
+                return redirect(data['auth_url'])
 
         elif platform == SocialPlatform.FACEBOOK:
             raise NotImplementedError
@@ -138,7 +139,8 @@ class SocialView(TemplateView, BaseViewMixin):
                     return JsonResponse(data)
                 except SocialAccount.DoesNotExist:
                     return HttpResponseNotFound(I18N_MSGS.social_link_first)
-
+            elif action == 'login':
+                pass
         elif social_platform == SocialPlatform.FACEBOOK:
             raise NotImplementedError
         elif social_platform == SocialPlatform.WEIBO:
@@ -210,19 +212,30 @@ class SocialView(TemplateView, BaseViewMixin):
         access_token = tokens['access_token']
         access_secret = tokens['access_secret']
 
-
-        api = TwitterClientManager.create_api_client(access_token, access_secret)
-        user = api.verify_credentials()
+        user = None
+        try:
+            api = TwitterClientManager.create_api_client(access_token, access_secret)
+            user = api.verify_credentials()
+        except api.TweepError as err:
+            msg = str(err)
+            log.error(msg)
+            err_dict = json.loads(msg)
+            sb = []
+            for code, msg in err_dict:
+                sb.append('%s: %s' % (code, msg))
+            msg = '</li><li>'.join(sb)
+            msg = '<li>' + msg + '</li>'
+            msg = _('Twitter service error:') % msg
+            self.error(_(msg))
+            return None
 
         if user:
             try:
                 acc = SocialAccount.objects.get(account=user.screen_name, platform=SocialPlatform.TWITTER)
-                assert acc.profile == profile or acc.profile == UserProfile.get_sys_profile()
             except SocialAccount.DoesNotExist:
-                acc = SocialAccount()
+                acc = SocialAccount(profile=profile)
 
             acc.tokens = json.dumps(tokens, indent=2, ensure_ascii=False)
-            acc.profile = profile
             acc.platform = SocialPlatform.TWITTER
             acc.account = user.screen_name
             acc.name = user.name
@@ -242,24 +255,40 @@ class SocialView(TemplateView, BaseViewMixin):
             acc.friends_count = user.friends_count
             acc.listed_count = user.listed_count
 
-                # profile_background_image_url
-
             if commit:
                 acc.save()
-            else:
-                # error response
-                pass
 
             return acc
 
-    def combine_profile_with_twitter_account(self, profile, social_account):
-        acc = social_account
-        sys_profile = UserProfile.get_sys_profile()
-        default_list = List.get_default(profile=profile)
+    def combine_profile_with_twitter_account(self, request, profile, social_account):
 
-        if acc.profile != profile:
-            acc.profile = profile
-            acc.save()
-        # TODO: investigate the performance.
-        # Todo.objects.filter(profile=sys_profile, social_account=acc, list=sys_todolist).update(profile=profile, list=default_list)
-        Task.objects.filter(profile=sys_profile, social_account=acc).update(profile=profile, list=default_list)
+        acc = social_account
+
+        # Complex. Check https://github.com/samuelchen/twido/wiki/Social
+        # TODO: relink (or unlink then link)
+        if profile.is_sys:
+            if acc.profile.is_sys:
+                profile, password = UserProfile.register_temp(username=acc.account, platform=SocialPlatform.TWITTER,
+                                                              img_url=acc.img_url)
+                acc.profile = profile
+                acc.save()
+                self.info(_('Your user profile is created. <br>Password is "%s". Please remember and change it.') % password)
+            login(request, acc.profile.user)
+            profile = self.get_profile()
+            log.info('Login with twitter.')
+
+        else:
+            if profile != acc.profile and not acc.profile.is_sys:
+                # already linked to another profile (should be you)
+                if acc.profile.is_temp:
+                    # temp account, relink.
+                    log.info('Auto combine profile "%s" and "%s"' % (profile, acc.profile))
+                    replace_profile(origin_profile=acc.profile, new_profile=profile,
+                                    social_platform=SocialPlatform.TWITTER)
+                else:
+                    # TODO: change profile ?
+                    log.warn('Conflict. Social account "%s" was linked to "%s" already.'
+                             % (acc, acc.profile))
+                    return HttpResponse(I18N_MSGS.social_conflict_link, status=409)
+
+        return profile

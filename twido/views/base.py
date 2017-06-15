@@ -14,10 +14,7 @@ class BaseViewMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         context = super(BaseViewMixin, self).get_context_data(**kwargs)
 
-        if self.request.user.is_anonymous:
-            profile = UserProfile.get_sys_profile()
-        else:
-            profile = self.request.user.profile
+        profile = self.get_profile()
 
         if 'theme' not in context:
             opt = Config.get_user_conf(profile, 'theme')
@@ -57,3 +54,10 @@ class BaseViewMixin(ContextMixin):
     def debug(self, message, tags=''):
         messages.set_level(self.request, messages.DEBUG)
         messages.debug(request=self.request, message=message, extra_tags=tags)
+
+    def get_profile(self):
+        if self.request.user.is_anonymous:
+            profile = UserProfile.get_sys_profile()
+        else:
+            profile = self.request.user.profile
+        return profile

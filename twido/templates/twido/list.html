@@ -14,12 +14,23 @@
 
         <div class="row">
 
-            <!-- left col -->
-            <div class="col-lg-4 col-md-4">
+            <!-- left sidebar show/hide button -->
+            <div class="hidden-lg hidden-md">
+                <a id="id_sidebar_left_btn" title="{% trans thelist.text|default_if_none:'' %}" class="btn btn-default btn-block dropdown-toggle">
+                    <span class="sr-only">{% trans 'Toggle sidebar' %}</span>
+                    <i class="fa fa-chevron-right"> </i>
+                    <span>{{ thelist.get_name }}</span>
+                </a>
+            </div>
+
+            <!-- left sidebar -->
+            <div id="id_sidebar_left" class="col-lg-4 col-md-4 hidden-sm hidden-xs">
+
                 <!-- menu -->
                 <div class="bs-component">
                     {% include 'twido/includes-list/lists-menu.html' %}
                 </div>
+
 
                 <!-- buttons for list -->
                 <div class="bs-component">
@@ -106,6 +117,7 @@
 
         $("a.btn").tooltip({container: 'body'}).click(function(e){
             var action = $(this).attr('name');
+            if (!action) return;
             form_action.find("input[name='action']").val(action);
             // if action is "del" related, need to confirm
             // if upload, need to let user to choose file.
@@ -155,6 +167,18 @@
             }
         });
 
+        <!-- show/hide sidebar -->
+        $("#id_sidebar_left_btn").click(function(){
+            $(this).tooltip();
+            var sidebar = $("#id_sidebar_left");
+            if (sidebar.hasClass("hidden-sm") && sidebar.hasClass("hidden-xs")) {
+                sidebar.removeClass("hidden-sm").removeClass("hidden-xs");
+                $(this).find('i').attr("class", "fa fa-chevron-down");
+            } else {
+                sidebar.addClass("hidden-sm").addClass("hidden-xs");
+                $(this).find('i').attr("class", "fa fa-chevron-right");
+            }
+        });
     });
 
     function move_task(task_id, list_id) {

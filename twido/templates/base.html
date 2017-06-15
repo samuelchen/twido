@@ -1,8 +1,4 @@
 {% load staticfiles i18n %}{% load bootstrap_themes %}
-{% get_current_language as LANGUAGE_CODE %}{% get_available_languages as LANGUAGES %}
-<!-- Current language: {{ LANGUAGE_CODE }} -->
-<!-- {{ LANGUAGES }} -->
-{#{% language '{{ LANGUAGE_CODE }}' %}#}
 <!DOCTYPE html>
 <html>
 <head lang="{{ LANGUAGE_CODE|default:'en' }}">
@@ -15,12 +11,11 @@
     <script src="{% static 'twido/js/jquery-2.2.4.min.js' %}"></script>
 
     {% bootstrap_styles theme=theme type='min.css' %}
-    {#{% bootstrap_styles theme='simplex' type='css' %}#}
-    {#{% bootstrap_styles theme='simplex' type='less' %}#}
     {% bootstrap_script use_min=True %}
     <link href="{% static 'twido/css/bootstrap3-custom.min.css' %}" rel="stylesheet">  <!-- for simplex theme-->
 
     <link href="{% static 'twido/font/flaticon-avatar/flaticon.css' %}" rel="stylesheet">
+    <link href="{% static 'twido/font/font-awesome-4.7.0/css/font-awesome.min.css' %}" rel="stylesheet">
 {#    <link href="{% static 'twido/font/flaticon-social/flaticon.css' %}" rel="stylesheet">#}
     <link href="{% static 'twido/css/open-sans.css' %}" rel="stylesheet">
     <link href="{% static 'twido/css/main.css' %}" rel="stylesheet">
@@ -28,7 +23,7 @@
     <script src="{% static 'twido/js/js.cookie.js' %}"></script>
     <script src="{% static 'twido/js/main.js' %}"></script>
 
-    {% block head %}{# HEAD BLOCK #}{% endblock %}
+    {% block head %}<!-- HEAD BLOCK -->{% endblock %}
 </head>
 
 {#<body background="{% static 'twido/img/bg.jpg' %}">#}
@@ -38,11 +33,24 @@
 {% include "includes/topnavbar.html" %}
 {% include 'includes/blank-div-row.html' %}
 
-{% block content %}{# CONTENT BLOCK #}{% endblock %}
+{#{% block leftside %}<!-- SIDEBAR BLOCK -->{% endblock %}#}
 
-{% block script %}{# SCRIPT BLOCK #}{% endblock %}
+{% block content %}<!-- CONTENT BLOCK -->{% endblock %}
+
+{% block footer %}
+    <div class="modal-footer">
+{#        <i class="glyphicon glyphicon-copyright-mark"></i>#}
+        <ul class="list-inline">
+        <li>© 2017 SamC, Studio. All copyrights reserved.</li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block script %}<!-- SCRIPT BLOCK -->{% endblock %}
 
 </body>
 
 </html>
-{#{% endlanguage %}#}

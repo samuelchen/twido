@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load i18n %}
+{% extends "base.html" %}{% load i18n staticfiles %}
 
 {% block title %}Login{% endblock %}
 
@@ -67,7 +67,14 @@
                         {# Assumes you setup the password_reset view in your URLconf #}
                         <p><a href="{% url 'register' %}">{% trans 'Sign up' %}</a> | <a href="{% url 'password_reset' %}">
                             {% trans 'Forget password' %}?</a></p>
-
+                    </div>
+                    <div id="id_socials">
+                        <span class="small">{% trans 'Sign in with social account' %}: </span>
+                        {% for code, platform in social_platforms.get_items %}
+                            {% if platform.enabled %}
+                        <a href="{% url 'social' 'login' %}?platform={{ platform.code }}" title="{{ platform.text }}"><i class="{{ platform.icon }} text-info"></i></a>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -79,4 +86,9 @@
 
 {% block script %}
     {# TODO: password encription #}
+    <script language="JavaScript" type="text/javascript">
+        $(document).ready(function(){
+           $("#id_socials").find("a").tooltip();
+        });
+    </script>
 {% endblock %}
