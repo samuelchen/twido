@@ -29,7 +29,7 @@ DEBUG = True if __debug__ and bool(os.getenv('TWIDO_DEBUG', False)) else False
 if DEBUG:
     print('--- DEBUG MODE ---')
 
-ALLOWED_HOSTS = ['mwl2.com', 'localhost', ] if not DEBUG else []
+ALLOWED_HOSTS = ['mwl2.com', 'localhost', '127.0.0.1', ] if not DEBUG else []
 
 # Application definition
 

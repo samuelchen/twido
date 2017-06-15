@@ -2,6 +2,7 @@
 # coding: utf-8
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 from django.db.models import Q
 from django.http import JsonResponse
 from django.urls import reverse
@@ -17,10 +18,10 @@ log = logging.getLogger(__name__)
 
 
 class I18N_MSGS(object):
-    profile_saved_success = _('Profile is saved successfully.'),
+    profile_saved_success = _('Profile is saved successfully.')
     redirect_to_home = _('Will redirect to home page...<br>'
                          'If not start, please <a href="%s">click me to Home page</a>.')
-
+    profile_field_conflict = _('%(field)s "%(value)s" is already existed.')
 
 @method_decorator(login_required, 'dispatch')
 class ProfileView(TemplateView, BaseViewMixin):
@@ -51,12 +52,18 @@ class ProfileView(TemplateView, BaseViewMixin):
         profile.lang = req.get('lang', profile.lang)
         profile.img_url = req.get('img_url', profile.img_url)
 
-        profile.save()
-
-        self.success(I18N_MSGS.profile_saved_success)
-        if 'redirect' in kwargs:
-            self.success(I18N_MSGS.redirect_to_home % url_home)
-
+        try:
+            profile.save()
+            self.success(I18N_MSGS.profile_saved_success)
+            if 'redirect' in kwargs:
+                self.success(I18N_MSGS.redirect_to_home % url_home)
+        except IntegrityError as err:
+            msg = str(err)
+            log.error(msg)
+            field = msg[msg.rfind('.')+1:]
+            self.error(I18N_MSGS.profile_field_conflict % {'field': field, 'value': getattr(profile, field)})
+            if 'redirect' in kwargs:
+                del kwargs['redirect']
         return self.get(request, *args, **kwargs)
 
 

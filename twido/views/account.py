@@ -11,10 +11,11 @@ from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.views import login as login_func_view
 
-from ..models.admins import UserProfileCreationForm
-import logging
 from .base import BaseViewMixin
+from ..models import UserProfileCreationForm
+from ..models import SocialPlatform
 
+import logging
 log = logging.getLogger(__name__)
 
 
@@ -65,6 +66,13 @@ class RegisterView(TemplateView, BaseViewMixin):
 @method_decorator(never_cache, name='dispatch')
 @method_decorator(sensitive_post_parameters(), name='dispatch')
 class LoginView(TemplateView, BaseViewMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super(LoginView, self).get_context_data(**kwargs)
+        if 'social_platforms' not in context:
+            context['social_platforms'] = SocialPlatform
+        return context
+
     def get(self, request, *args, **kwargs):
         context = self.get_context_data()
         return self.login(request, template_name=self.template_name, extra_context=context, **kwargs)
@@ -77,7 +85,6 @@ class LoginView(TemplateView, BaseViewMixin):
               # redirect_field_name=REDIRECT_FIELD_NAME,
               # authentication_form=AuthenticationForm,
               extra_context=None, redirect_authenticated_user=False):
-        print(extra_context)
         return login_func_view(request, template_name=template_name,
                                # redirect_field_name=redirect_field_name,
                                # authentication_form=authentication_form,

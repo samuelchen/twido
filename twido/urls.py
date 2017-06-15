@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^social/$', views.SocialView.as_view(template_name=t('social.html')), name='social'),
     url(r'^social/(?P<action>link)/$', views.SocialView.as_view(template_name=t('social.html')), name='social'),
     url(r'^social/(?P<action>update)/$', views.SocialView.as_view(template_name=t('social.html')), name='social'),
+    url(r'^social/(?P<action>login)/$', views.SocialView.as_view(template_name=t('social.html')), name='social'),
 
     url(r'^list/$', views.ListView.as_view(template_name=t('list.html')), name='list'),
     url(r'^list/(?P<pk>[0-9]+)/$', views.ListView.as_view(template_name=t('list.html')), name='list'),

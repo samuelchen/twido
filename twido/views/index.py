@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+from django.db.models import Q
 
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView
@@ -49,9 +49,9 @@ class IndexView(TemplateView, BaseViewMixin):
 
         sys_profile = UserProfile.get_sys_profile()
         profile_max = 10
-        context['profiles'] = UserProfile.objects.exclude(user=None).order_by('-id')[:profile_max]
+        context['profiles'] = UserProfile.objects.exclude(Q(user=None) | Q(email__contains='@temp')).order_by('-id')[:profile_max]
         social_account_max = profile_max - len(context['profiles'])
-        context['social_accounts'] = SocialAccount.objects.filter(profile=sys_profile).order_by('-id')[:social_account_max]
+        context['social_accounts'] = SocialAccount.objects.filter(Q(profile=sys_profile) | Q(profile__email__contains='@temp')).order_by('-id')[:social_account_max]
 
         formatter = HtmlFormatter(encoding='utf-8', style='emacs', linenos=True)
         lexer = XmlLexer()

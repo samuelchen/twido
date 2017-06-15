@@ -23,11 +23,51 @@ class SocialPlatform(object):
         FACEBOOK: _('Facebook'),
         WEIBO: _('Weibo'),
     }
+    _imgs = {
+        TWITTER: '',
+        FACEBOOK: '',
+        WEIBO: '',
+    }
+    _icons = {
+        TWITTER: 'fa fa-twitter',
+        FACEBOOK: 'fa fa-facebook',
+        WEIBO: 'fa fa-weibo',
+    }
+    _enabled = {
+        TWITTER: True,
+        FACEBOOK: False,
+        WEIBO: False,
+    }
     Choices = _texts.items()
+    _items = {}
+
+    @classmethod
+    def get_items(cls):
+        if not cls._items:
+            for k, v in cls._texts.items():
+                cls._items[k] = {'code': k,
+                                 'text': v,
+                                 'icon': cls.get_icon(k),
+                                 'img': cls.get_img(k),
+                                 'enabled': cls.get_enabled(k),
+                                 }
+        return cls._items.items()
 
     @classmethod
     def get_text(cls, code):
         return cls._texts[code]
+
+    @classmethod
+    def get_img(cls, code):
+        return cls._imgs[code]
+
+    @classmethod
+    def get_icon(cls, code):
+        return cls._icons[code]
+
+    @classmethod
+    def get_enabled(cls, code):
+        return cls._enabled[code]
 
 
 class Gender(object):
@@ -133,3 +173,42 @@ class TaskStatus(object):
     def get_glyphicon(cls, status):
         assert -1 <= status <= 10
         return cls._glyphicons[status]
+
+
+class Visibility(object):
+    """
+    Resource visibility to public/self/group/shared persons.
+    """
+    PUBLIC = 0       # visible to all
+    PRIVATE = 50      # visible to self
+    # PROTECTED = 20    # visible to team/group
+    # SHARED = 30       # visible to shared person only
+    _texts = {
+        PUBLIC: _('public'),
+        PRIVATE: _('private'),
+        # PROTECTED: _('protected'),
+        # SHARED: _('shared'),
+    }
+    _icons = {
+        PUBLIC: 'glyphicon glyphicon-exclamation-sign',
+        PRIVATE: 'glyphicon glyphicon-remove-sign',
+        # PROTECTED: 'glyphicon glyphicon-minus-sign',
+        # SHARED: 'glyphicon glyphicon-plus-sign',
+    }
+    Choices = _texts.items()
+    _items = {}
+
+    @classmethod
+    def get_items(cls):
+        if not cls._items:
+            for k, v in cls._texts.items():
+                cls._items[k] = {'code': k, 'text': v, 'icon': cls.get_icon(k)}
+        return cls._items.items()
+
+    @classmethod
+    def get_text(cls, code):
+        return cls._texts[code]
+
+    @classmethod
+    def get_icon(cls, code):
+        return cls._icons[code]

@@ -14,7 +14,7 @@ from django.utils.functional import SimpleLazyObject
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy, ugettext_noop
 from django.db import transaction
 from .common import ProfileBasedModel, UserProfile
-from .consts import TaskStatus
+from .consts import TaskStatus, Visibility
 from pyutils.langutil import PropertyDict
 from .social import SocialAccount
 from .spider import RawStatus
@@ -29,6 +29,7 @@ class List(ProfileBasedModel):
     """
     name = models.CharField(max_length=100)
     reminder = models.DateTimeField(null=True, blank=True)
+    visibility = models.IntegerField(choices=Visibility.Choices, default=Visibility.PUBLIC, db_index=True)
     related_users = models.TextField(validators=[validate_comma_separated_integer_list], null=True, blank=True,
                                      db_index=True, verbose_name='Related Persons (comma separated)')
     text = models.TextField(null=True, blank=True)
@@ -102,10 +103,11 @@ class Task(ProfileBasedModel):
     """
     created_at = models.DateTimeField(editable=False)
     title = models.CharField(max_length=100)
-    status = models.SmallIntegerField(choices=TaskStatus.Choices, default=TaskStatus.NEW, db_index=True)
+    status = models.IntegerField(choices=TaskStatus.Choices, default=TaskStatus.NEW, db_index=True)
+    visibility = models.IntegerField(choices=Visibility.Choices, default=Visibility.PUBLIC, db_index=True)
     text = models.TextField(null=True, blank=True)
     labels = models.TextField(null=True, blank=True)
-    due = models.DateTimeField(null=True, blank=True)
+    due = models.DateTimeField(null=True, blank=True, db_index=True)
     list = models.ForeignKey(to=List)
 
     content = models.TextField(null=True, blank=True)

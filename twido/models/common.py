@@ -7,6 +7,8 @@ Common models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import AppRegistryNotReady
 from django.db import models
+from django.db import transaction
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.utils.translation import pgettext_lazy
 from .consts import Gender
@@ -52,6 +54,11 @@ class UserProfile(models.Model):
 
     __sys_profile = None
     __sys_profile_uname = '__sys__'
+    # __anonymous_profile = None
+    # __anonymous_profile_uname = '__anonymous'
+
+    __temp_profile_email_suffix = '@temp'
+    __local_profile_email_suffix = '@local'
 
     def save(self, *args, **kwargs):
         if not self.created_at:
@@ -62,11 +69,19 @@ class UserProfile(models.Model):
     def init_data(cls):
         p, created = cls.objects.get_or_create(username=cls.__sys_profile_uname)
         if created:
-            p.email = cls.__sys_profile_uname + '@localhost'
+            p.email = cls.__sys_profile_uname + cls.__local_profile_email_suffix
             p.name = pgettext_lazy('system account name', 'SYS')
             p.save()
             log.info('System profile (%s) is created.' % cls.__sys_profile_uname)
         cls.__sys_profile = p
+
+        # p, created = cls.objects.get_or_create(username=cls.__anonymous_profile_uname)
+        # if created:
+        #     p.email = cls.__anonymous_profile_uname + cls.__local_profile_email_suffix
+        #     p.name = pgettext_lazy('anonymous account name', 'SYS')
+        #     p.save()
+        #     log.info('Anonymous profile (%s) is created.' % cls.__anonymous_profile_uname)
+        # cls.__anonymous_profile = p
 
     @classmethod
     def get_sys_profile(cls):
@@ -77,6 +92,52 @@ class UserProfile(models.Model):
     @classmethod
     def get_sys_profile_username(cls):
         return cls.__sys_profile_uname
+
+    @property
+    def is_sys(self):
+        return self == self.get_sys_profile()
+
+    # @classmethod
+    # def get_anonymous_profile(cls):
+    #     if cls.__anonymous_profile is None:
+    #         cls.init_data()
+    #     return cls.__anonymous_profile
+    #
+    # @classmethod
+    # def get_anonymous_profile_username(cls):
+    #     return cls.__anonymous_profile_uname
+
+    @property
+    def is_temp(self):
+        return self.email.endswith(self.__temp_profile_email_suffix)
+
+    @classmethod
+    def register_temp(cls, username, platform='', commit=True, **kwargs):
+        if not platform:
+            platform = cls.__local_profile_email_suffix
+        email = username + '.' + platform + cls.__temp_profile_email_suffix
+        username = username + '.' + platform
+        profile, password = cls.register(email=email, username=username, commit=commit, **kwargs)
+        return profile, password
+
+    @classmethod
+    @transaction.atomic
+    def register(cls, email, username='', password='', active=True, commit=True, **kwargs):
+
+        name = email[:email.find('@')]
+        if not username:
+            username = name + str(int(timezone.now().timestamp()))
+        if not password:
+            password = UserModel.objects.make_random_password()
+        user = UserModel(username=email, email=email, is_active=active)
+        user.set_password(password)
+        profile = UserProfile(email=email, username=username, name=name, **kwargs)
+        if commit:
+            with transaction.atomic():
+                user.save()
+                profile.user = user
+                profile.save()
+        return profile, password
 
     def get_email(self):
         return self.email
