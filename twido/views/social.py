@@ -11,16 +11,18 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_variables
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 import simplejson as json
-from tweepy import TweepError
 from .base import BaseViewMixin
 from ..models import UserProfile, SocialPlatform, SocialAccount
 from ..models import replace_profile
-from ..utils import TwitterClientManager
+from ..utils import load_config
+from social.twitter import TwitterClientManager
 
 import logging
 
 log = logging.getLogger(__name__)
+cfg = load_config(settings.CONFIG_FILE)
 
 
 class I18N_MSGS(object):
@@ -160,7 +162,9 @@ class SocialView(TemplateView, BaseViewMixin):
         callback_url = '%s://%s%s?platform=TW' % ('https' if request.is_secure() else 'http',
                                                 request.get_host(), reverse_lazy('social', args=('link',)))
         log.debug('callback url: %s' % callback_url)
-        auth = TwitterClientManager.create_oauth_handler(callback=callback_url)
+        auth = TwitterClientManager.create_oauth_handler(consumer_key=cfg.twitter.consumer_key,
+                                                         consumer_secret=cfg.twitter.consumer_secret,
+                                                         callback=callback_url, proxy=cfg.common.proxy)
         url = auth.get_authorization_url()
         log.debug('authorization_url: %s' % url)
         request_token = auth.request_token
@@ -181,7 +185,9 @@ class SocialView(TemplateView, BaseViewMixin):
         :return: tuple of (access_token, access_secret)
         """
         req = request.GET
-        auth = TwitterClientManager.create_oauth_handler()
+        auth = TwitterClientManager.create_oauth_handler(consumer_key=cfg.twitter.consumer_key,
+                                                         consumer_secret=cfg.twitter.consumer_secret,
+                                                         proxy=cfg.common.proxy)
 
         oauth_token = req.get('oauth_token', '')
         oauth_verifier = req.get('oauth_verifier', '')
@@ -195,7 +201,7 @@ class SocialView(TemplateView, BaseViewMixin):
         auth.request_token = request_token
         try:
             access_data = auth.get_access_token(oauth_verifier)
-        except TweepError as err:
+        except TwitterClientManager.TweepError as err:
             self.error(I18N_MSGS.social_fail_to_get_token)
             log.debug(err)
             log.error('Error! Failed to get access token.')
@@ -214,9 +220,13 @@ class SocialView(TemplateView, BaseViewMixin):
 
         user = None
         try:
-            api = TwitterClientManager.create_api_client(access_token, access_secret)
+            oauth = TwitterClientManager.create_oauth_handler(consumer_key=cfg.twitter.consumer_key,
+                                                              consumer_secret=cfg.twitter.consumer_secret,
+                                                              proxy=cfg.common.proxy)
+            api = TwitterClientManager.create_api_client(oauth_handler=oauth, access_token=access_token,
+                                                         access_token_secret=access_secret, proxy=cfg.common.proxy)
             user = api.verify_credentials()
-        except api.TweepError as err:
+        except TwitterClientManager.TweepError as err:
             msg = str(err)
             log.error(msg)
             err_dict = json.loads(msg)

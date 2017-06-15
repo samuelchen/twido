@@ -72,7 +72,8 @@
                         <span class="small">{% trans 'Sign in with social account' %}: </span>
                         {% for code, platform in social_platforms.get_items %}
                             {% if platform.enabled %}
-                        <a href="{% url 'social' 'login' %}?platform={{ platform.code }}" title="{{ platform.text }}"><i class="{{ platform.icon }} text-info"></i></a>
+                        <a href="{% url 'social' 'login' %}?platform={{ platform.code }}" title="{{ platform.text }}">
+                            <i class="{{ platform.icon }} text-info"></i></a>
                             {% endif %}
                         {% endfor %}
                     </div>
