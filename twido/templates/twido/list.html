@@ -16,7 +16,7 @@
 
             <!-- left sidebar show/hide button -->
             <div class="hidden-lg hidden-md">
-                <a id="id_sidebar_left_btn" title="{% trans thelist.text|default_if_none:'' %}" class="btn btn-default btn-block dropdown-toggle">
+                <a id="id_sidebar_left_btn" title="{% if thelist.is_sys %}{% trans thelist.text|default_if_none:'' %}{% else %}{{ thelist.text|capfirst }}{% endif %}" class="btn btn-default btn-block dropdown-toggle">
                     <span class="sr-only">{% trans 'Toggle sidebar' %}</span>
                     <i class="fa fa-chevron-right"> </i>
                     <span>{{ thelist.get_name }}</span>

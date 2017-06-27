@@ -63,12 +63,38 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 /*}*/
 
 /* corner mark */
+.top-left {
+    font-weight: 600;
+    background-color: #F5F5F5;
+    font-size: 0.7em;
+    top: -1px;
+    left: -1px;
+    padding: 3px 7px;
+    position: absolute;
+    color: #9DA0A4;
+    border: 1px solid #DDD;
+    border-radius: 4px 0;
+}
+
 .top-right {
     font-weight: 600;
     background-color: #F5F5F5;
     font-size: 0.7em;
     top: -1px;
     right: -1px;
+    padding: 3px 7px;
+    position: absolute;
+    color: #9DA0A4;
+    border: 1px solid #DDD;
+    border-radius: 4px 0;
+}
+
+.bottom-left {
+    font-weight: 600;
+    background-color: #F5F5F5;
+    font-size: 0.7em;
+    bottom: -1px;
+    left: -1px;
     padding: 3px 7px;
     position: absolute;
     color: #9DA0A4;
@@ -87,6 +113,43 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     color: #9DA0A4;
     border: 1px solid #DDD;
     border-radius: 4px 0;
+}
+
+.full-left {
+    font-weight: 600;
+    background-color: #F5F5F5;
+    font-size: 0.7em;
+    top: -1px;
+    bottom: -1px;
+    left: -1px;
+    padding: 3px 7px;
+    position: absolute;
+    color: #9DA0A4;
+    border: 1px solid #DDD;
+    border-radius: 4px 0;
+}
+
+.full-right {
+    font-weight: 600;
+    background-color: #F5F5F5;
+    font-size: 0.7em;
+    top: -1px;
+    bottom: -1px;
+    right: -1px;
+    padding: 3px 7px;
+    position: absolute;
+    color: #9DA0A4;
+    border: 1px solid #DDD;
+    border-radius: 4px 0;
+}
+
+.handler-bar {
+  display: block;
+  width: 5px;
+  height: 1px;
+  border-radius: 1px;
+  margin-top: 4px;
+  background-color: #cccccc;
 }
 
 /* for select2 input width with bootstrap3 */

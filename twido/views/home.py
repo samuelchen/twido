@@ -68,7 +68,7 @@ class HomeView(TemplateView, BaseViewMixin):
         context['task_sets'] = task_sets
 
         context['tasks_fields'] = ('status', 'title', 'due')
-        context['tasks_editables'] = ('status', 'title', 'due')
+        context['tasks_editables'] = ('status', 'visibility', 'title', 'due')
         context['tasks_actions'] = ('detail',)
         context['taskstatus'] = TaskStatus
         return context

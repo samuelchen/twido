@@ -79,6 +79,12 @@ class List(ProfileBasedModel):
     def get_related_usernames(self):
         return self.related_users.split(',')
 
+    def get_visibility_text(self):
+        return Visibility.get_text(self.visibility)
+
+    def get_visibility_icon(self):
+        return Visibility.get_icon(self.visibility)
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None, is_default=False):
         if not is_default and self.name.lower() == self.__default_name:
@@ -120,16 +126,30 @@ class Task(ProfileBasedModel):
         super(Task, self).save(*args, **kwargs)
 
     def get_owner_name(self):
-        if self.profile and self.profile != UserProfile.get_sys_profile():
+        if self.profile and not self.profile.is_sys:
             return self.profile.get_name()
         elif self.social_account:
             return self.social_account.name or self.social_account.account
 
+    def get_at_name(self):
+
+        if self.profile.is_faked:
+            uname = self.social_account.account
+        else:
+            uname = self.profile.username
+        return '@' + uname
+
     def get_status_text(self):
         return TaskStatus.get_text(self.status)
 
-    def get_status_glyphicon(self):
-        return TaskStatus.get_glyphicon(self.status)
+    def get_status_icon(self):
+        return TaskStatus.get_icon(self.status)
+
+    def get_visibility_text(self):
+        return Visibility.get_text(self.visibility)
+
+    def get_visibility_icon(self):
+        return Visibility.get_icon(self.visibility)
 
     def get_view_path(self):
         return reverse('task', args=(self.id, ))
@@ -199,6 +219,7 @@ class SysList(object):
             lst, created = self.ListModel.objects.get_or_create(profile=self.profile, name=name)
             if created:
                 lst.text = meta.text
+                lst.visibility = False
                 lst.save()
                 log.debug('list "%s" created.' % lst)
             lst.tasks = meta.tasks

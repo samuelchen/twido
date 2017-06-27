@@ -44,21 +44,25 @@
 
             <div class="col-lg-7 col-lg-offset-1 col-md-7 col-md-offset-1">
                 <div class="row">
-                    {% for task in todos %}
+                    {% for task in tasks %}
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <span class="panel-title">{{ task.title | url2link | safe  }}</span>
                                 <ul class="list-inline small">
-                                    <li class="small">@{{ task.get_owner_name | safe }}</li>
-                                    <li class="small">{{ task.created_at }}</li>
+                                    <li class="small"><a class="text-default" href="#">{{ task.get_at_name | safe }}</a></li>
+                                    <li class="small" data-value="{{ task.created_at|utc }}">{{ task.created_at }}</li>
                                 </ul>
                             </div>
                             {% if task.text %}
                             <div class="panel-body">
-                                {{ task.text | url2link | safe }}
-                                {% for dt in task.dates %}
-                                <p>{{ dt.text }}({{ dt.v }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</p>
-                                {% endfor %}
+                                {% if debug %}
+                                    {{ task.code | url2link | safe }}
+                                    {% for dt in task.dates %}
+                                    <li class="small">{{ dt.text }}({{ dt.v }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</li>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ task.text | url2link }}
+                                {% endif %}
                             </div>
                             {% endif %}
                         </div>

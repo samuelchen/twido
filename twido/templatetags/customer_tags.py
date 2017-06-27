@@ -10,6 +10,9 @@ from django.template.defaultfilters import stringfilter
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 # from django.conf import settings
+
+from ..utils import html_highlight
+
 import re
 
 register = Library()
@@ -112,3 +115,7 @@ def url2link(value):
 #     :return:
 #     """
 #     return re_ishash.sub(lambda m: '<a href="/hash/%s">%s</a>' % (m.group(0), m.group(0)), value)
+
+@register.filter
+def utc(value):
+    return value.isoformat()

@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, Http
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.utils.translation import ugettext_lazy as _
-from ..models import Task, List, TaskStatus
+from ..models import Task, List, TaskStatus, Visibility
 from .base import BaseViewMixin
 from .common import paginate
 
@@ -47,6 +47,10 @@ class TaskView(TemplateView, BaseViewMixin):
             task = get_object_or_404(TaskModel, profile=profile, id=pk)
             context['thetask'] = task
             context['thelist'] = task.list
+            from ..utils import html_highlight
+            tasks, css = html_highlight([context['thetask']])
+            context['thetask'] = tasks[0]
+            context['css'] = css
 
         if 'page' not in context:
             context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=task.list), cur_page=p, entries_per_page=10)
@@ -58,6 +62,9 @@ class TaskView(TemplateView, BaseViewMixin):
         # context['tasks_fields'] = ('status', 'title', 'due')
         # context['tasks_editables'] = ('status', 'title', 'due', 'labels')
         # context['tasks_actions'] = ('detail', 'del')
+
+        if 'visibility' not in context:
+            context['visibility'] = Visibility
 
         return context
 
@@ -110,7 +117,7 @@ class TaskView(TemplateView, BaseViewMixin):
                 value = ','.join(req.getlist('value[]', []))
             if value is not None and value.strip() == '':
                 value = None
-            elif name == 'status':
+            elif name == 'status' or name == 'visibility':
                 value = int(value)
             # print(name, '-', value)
             try:
@@ -122,8 +129,10 @@ class TaskView(TemplateView, BaseViewMixin):
                 return HttpResponseBadRequest(I18N_MSGS.prop_cannot_be % {'prop': name, 'value': value})
 
             data = {
-                'status_icon_class': task.get_status_glyphicon(),
+                'status_icon_class': task.get_status_icon(),
                 'status_text': task.get_status_text(),
+                'visibility_icon_class': task.get_visibility_icon(),
+                'visibility_text': task.get_visibility_text(),
                 'name': name,
                 'value': value
             }

@@ -1,5 +1,6 @@
 {# TodoList detail AJAX form #}
 {# vars: thelist - current list to display #}
+{#       visibility - model Visibility #}
 
 {% load i18n %}<!-- BEGIN list detail setting -->
                         {% if thelist.is_default %}
@@ -26,6 +27,17 @@
                                                   data-url="{{ request.path }}">
                                                 {{ thelist.name }}
                                             </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- visibility -->
+                                    <div class="form-group">
+                                        <label for="visibility" class="col-lg-3 control-label">{% trans 'Visibility' %}</label>
+
+                                        <div class="col-lg-9">
+                                            <span id="visibility" data-type="select" data-pk="{{ thelist.id }}"
+                                                  data-url="{{ request.path }}"><i class="{{ thelist.get_visibility_icon }}">
+                                            </i> {{ thelist.get_visibility_text }}</span>
                                         </div>
                                     </div>
 
@@ -86,8 +98,8 @@
                             <script language="JavaScript" type="text/javascript">
 
                                 $('#name').editable({
-                                    emptytext: "{% trans '(Click to enter list name.)' %}",
-                                    emptyclass: 'text-muted',
+                                    emptytext: "<i>{% trans '(Click to enter list name.)' %}</i>",
+                                    emptyclass: 'text-muted small',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
@@ -96,8 +108,8 @@
                                 });
 
                                 $('#related_users').editable({
-                                    emptytext: "{% trans '(Click to enter related persons. User comma \",\" to split.)' %}",
-                                    emptyclass: 'text-muted',
+                                    emptytext: "<i>{% trans '(Click to enter related persons. User comma \",\" to split.)' %}</i>",
+                                    emptyclass: 'text-muted small',
                                     select2: {
                                         width: '200px',
                                         tags: 'true',
@@ -145,6 +157,28 @@
                                     $("#related_users").text(params.newValue);
                                 });
 
+                                $('#visibility').editable({
+                                    escape: false,
+                                    source: [
+                                        {% for value, text in visibility.Choices %}
+                                            {value: {{ value }}, text: "{{ text }}"},
+                                        {% endfor %}
+                                    ],
+                                    display: function (value, resp) {
+                                        {# Do nothing. Keep for icon display rendering #}
+                                    },
+                                    success: function (response, newValue) {
+                                        if (response.status == 'error')
+                                            return response.msg; //msg will be shown in editable form
+{#                                        $(this).html('<i class="' + response.visibility_icon + '"></i> '#}
+{#                                            + response.visibility_text);#}
+                                    }
+                                }).on('save', function (e, params) {
+                                    console.log('save');
+                                    $(this).html('<i class="' + params.response.visibility_icon_class + '"></i> '
+                                        + params.response.visibility_text);
+                                });
+
                                 $('#reminder').editable({
                                     mode: 'popup',
                                     placement: 'right',
@@ -155,8 +189,8 @@
                                     datetimepicker: {
                                         weekStart: 1
                                     },
-                                    emptytext: "{% trans '(Click to enter reminder date & time.)' %}",
-                                    emptyclass: 'text-muted',
+                                    emptytext: "<i>{% trans '(Click to enter reminder date & time.)' %}</i>",
+                                    emptyclass: 'text-muted small',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
@@ -165,8 +199,8 @@
                                 $('#text').editable({
                                     rows: 4,
                                     tpl: "<textarea style='width: 400px'></textarea>",
-                                    emptytext: "{% trans '(Click to enter long description.)' %}",
-                                    emptyclass: 'text-muted',
+                                    emptytext: "<i>{% trans '(Click to enter long description.)' %}</i>",
+                                    emptyclass: 'text-muted small',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }

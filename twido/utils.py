@@ -8,6 +8,9 @@ Utilities
 import configparser
 from pyutils.langutil import MutableEnum
 
+import logging
+log = logging.getLogger(__name__)
+
 
 def load_config(config_file):
     options = MutableEnum()
@@ -51,3 +54,47 @@ def send_reg_email(email, id, name=None):
     with open(path, 'wt') as f:
         f.write(content)
 
+
+import dateparser
+from pygments.lexers.html import XmlLexer
+from pygments.formatters.html import HtmlFormatter
+from pygments import highlight
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+
+def html_highlight(tasks):
+
+    formatter = HtmlFormatter(encoding='utf-8', nowrap=False, style='emacs', linenos=False)
+    lexer = XmlLexer()
+
+    for task in tasks:
+
+        task.dates = []
+        task.code = None
+
+        if not task.content:
+            continue
+
+        task.code = highlight(task.content, lexer, formatter)
+        # print(task.title)
+        xml = ET.fromstring(task.content)
+        for node in xml.findall("./TEXT/TIMEX3"):
+            dt = MutableEnum()
+            dt.text = node.text
+            # print(node.text)
+            for k, v in node.items():
+                # print('  ', k, v)
+                dt[k] = v
+            if dt.type == 'DATE' and dt.text:
+                try:
+                    dt.v = dateparser.parse(dt.text)
+                    # dt.v = parse_datetime(dt.text)
+                except Exception as err:
+                    log.warn(err)
+                    dt.v = None
+            task.dates.append(dt)
+
+    return tasks, formatter.get_style_defs()

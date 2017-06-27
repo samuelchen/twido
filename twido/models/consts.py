@@ -170,7 +170,7 @@ class TaskStatus(object):
         return cls._texts[status]
 
     @classmethod
-    def get_glyphicon(cls, status):
+    def get_icon(cls, status):
         assert -1 <= status <= 10
         return cls._glyphicons[status]
 
@@ -179,21 +179,21 @@ class Visibility(object):
     """
     Resource visibility to public/self/group/shared persons.
     """
-    PUBLIC = 0       # visible to all
-    PRIVATE = 50      # visible to self
-    # PROTECTED = 20    # visible to team/group
-    # SHARED = 30       # visible to shared person only
+    PRIVATE = 0         # visible to self
+    # SHARED = 40       # visible to shared person only
+    # PROTECTED = 70    # visible to team/group
+    PUBLIC = 100       # visible to all
     _texts = {
-        PUBLIC: _('public'),
-        PRIVATE: _('private'),
+        PUBLIC: pgettext_lazy('visibility', 'Public'),
+        PRIVATE: pgettext_lazy('visibility', 'Private'),
         # PROTECTED: _('protected'),
         # SHARED: _('shared'),
     }
     _icons = {
-        PUBLIC: 'glyphicon glyphicon-exclamation-sign',
-        PRIVATE: 'glyphicon glyphicon-remove-sign',
-        # PROTECTED: 'glyphicon glyphicon-minus-sign',
-        # SHARED: 'glyphicon glyphicon-plus-sign',
+        PUBLIC: 'fa fa-eye',
+        PRIVATE: 'fa fa-eye-slash',
+        # PROTECTED: 'fa fa-low-vision',
+        # SHARED: 'fa fa-low-vision',
     }
     Choices = _texts.items()
     _items = {}
@@ -203,12 +203,14 @@ class Visibility(object):
         if not cls._items:
             for k, v in cls._texts.items():
                 cls._items[k] = {'code': k, 'text': v, 'icon': cls.get_icon(k)}
-        return cls._items.items()
+        return cls._items
 
     @classmethod
     def get_text(cls, code):
+        assert 0 <= code <= 100
         return cls._texts[code]
 
     @classmethod
     def get_icon(cls, code):
+        assert 0 <= code <= 100
         return cls._icons[code]

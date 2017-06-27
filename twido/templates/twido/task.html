@@ -5,16 +5,20 @@
 {% block head %}
 {#    <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>#}
     {% include 'includes/editable-head-ref.html' %}
-
+    {% if debug %}
+    <style type="text/css">
+        {{ css | safe }}
+    </style>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 
-    <div class="bs-docs-section container-fluid container-responsive">
+    <div class="container-fluid container-responsive">
 
         <div class="row">
             <!-- left col -->
-            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
+            <div class="col-lg-3 col-md-4 col-sm-5">
 
 {#                <div class="panel panel-default" name="{{ thetask.list.name }}">#}
 {#                    <div class="panel-heading small">#}
@@ -33,8 +37,8 @@
                         {% for task in page %}
                             <a href="{% url 'task' task.id %}?p={{ page.number }}" class="list-group-item small {% if thetask.id == task.id %}active{% endif %}">
                                 <ul class="list-inline">
-                                    <li><i title={{ task.get_status_text }} class="{{ task.get_status_glyphicon }}"></i></li>
-                                    <li>{{ task.title | url2link | safe }}</li>
+                                    <li><i title={{ task.get_status_text }} class="{{ task.get_status_icon }}"></i></li>
+                                    <li>{{ task.title | safe }}</li>
                                     <li class="top-right">
                                         <span title="{% trans 'Due' %}" class="small">
                                             {{ task.due |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}
@@ -63,7 +67,7 @@
             </div>
 
             <!-- main col -->
-            <div class="col-lg-8 col-md-8 col-sm-7 col-xs-5">
+            <div class="col-lg-8 col-md-7 col-sm-6">
                 <div class="row">
                     {% include 'includes/django-messags-inc.html' %}
                     {% include 'twido/includes-list/task-form.html' %}

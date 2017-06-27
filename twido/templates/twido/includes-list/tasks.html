@@ -6,6 +6,7 @@
 {#       tasks_actions - tuple of supported actions. By default, no action available. ('detail', 'del') #}
 {#       tasks_empty_well - boolean to enable/disable messages when tasks is empty. By default, false. #}
 {#       thetask (optional) - current task. #}
+{#       visibility - model Visibility #}
 
 {% load i18n customer_tags %}<!-- BEGIN of tasks -->
 {#                        <div class="bs-component">#}
@@ -13,9 +14,19 @@
                                 {% for task in page %}
                                     <li data-id="{{ task.id }}" class="list-group-item task-item {% if thetask.id == task.id %}active{% endif %}">
                                         <ul class="list-inline">
+                                            {% if 'move' in tasks_actions %}
+                                            <li class="top-left">
+                                                <i class="fa fa-arrows text-primary"></i>
+                                            </li>
+                                            {% endif %}
+                                            {% if not tasks_fields or 'visibility' in tasks_fields %}
+                                            <li class="bottom-left"><span title="{% trans 'Visibility' %}: {{ task.get_visibility_text }}" data-name="visibility" data-type="select" data-pk="{{ task.id }}"
+                                                  data-url="{{ task.get_view_path }}"><i class="{{ task.get_visibility_icon }}"></i></span></li>
+                                            <li></li>
+                                            {% endif %}
                                             {% if not tasks_fields or 'status' in tasks_fields %}
                                             <li><span title="{% trans 'Status' %}: {{ task.get_status_text }}" data-name="status" data-type="select" data-pk="{{ task.id }}"
-                                                  data-url="{{ task.get_view_path }}"><i class="{{ task.get_status_glyphicon }}"></i></span></li>
+                                                  data-url="{{ task.get_view_path }}"><i class="{{ task.get_status_icon }}"></i></span></li>
                                             {% endif %}
                                             {% if not tasks_fields or 'due' in tasks_fields %}
                                             <li class="top-right"><span title="{% trans 'Due Date' %}" class="small" data-name="due" data-type="datetime" data-pk="{{ task.id }}"
@@ -23,13 +34,14 @@
                                             {% endif %}
                                             {% if not tasks_fields or 'title' in tasks_fields %}
                                             <li><span data-name="title" data-type="text" data-pk="{{ task.id }}"
-                                                  data-url="{{ task.get_view_path }}">{{ task.title | url2link }}</span></li>
+                                                  data-url="{{ task.get_view_path }}">{{ task.title }}</span></li>
                                             {% endif %}
                                             {% if not tasks_fields or 'labels' in tasks_fields %}
                                             <li class="bottom-right"><span title="{% trans 'Labels' %}" data-name="labels" data-type="select2" data-pk="{{ task.id }}"
                                                   data-url="{{ task.get_view_path }}">{{ task.labels| default_if_none:'' }}</span></li>
                                             {% endif %}
                                             {% if tasks_actions %}
+                                            <li></li>
                                             <li class="buttons small" style="white-space: nowrap; display: none;">
                                                 {% if 'detail' in tasks_actions %}
                                                 <a name="detail" href="{{ task.get_view_path }}" title="{% trans 'Detail' %}" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
@@ -57,8 +69,10 @@
                         <script language="JavaScript" type="text/javascript">
 
                             $(document).ready(function(){
-                                make_task_fields_editable([{% for fld in tasks_editables %}"{{ fld }}",{% endfor %}],
-                                [{% for a in tasks_actions %}"{{ a }}",{% endfor %}]);
+                                make_task_fields_editable(
+                                        [{% for fld in tasks_editables %}"{{ fld }}",{% endfor %}],
+                                        [{% for a in tasks_actions %}"{{ a }}",{% endfor %}]
+                                );
                             });
 
 
@@ -87,6 +101,30 @@
                                     }).on('save', function (e, params) {
                                         $(this).html('<i class="' + params.response.status_icon_class + '"></i>')
                                                 .attr("data-original-title", '{% trans 'Status' %}: '+params.response.status_text)
+                                                .tooltip("show");
+                                    });
+                                }
+
+                                var field_visibility = tasks_container.find('span[data-name="visibility"]');
+                                field_visibility.tooltip();
+                                if ($.inArray('visibility', fields) >= 0) {
+                                    field_visibility.editable({
+                                        escape: false,
+                                        source: [
+                                            {% for value, text in visibility.Choices %}
+                                                {value: {{ value }}, text: "{{ text }}"},
+                                            {% endfor %}
+                                        ],
+                                        display: function (value, resp) {
+                                            {# Do nothing. Keep for icon display rendering #}
+                                        },
+                                        success: function (response, newValue) {
+                                            if (response.status == 'error')
+                                                return response.msg; //msg will be shown in editable form
+                                        }
+                                    }).on('save', function (e, params) {
+                                        $(this).html('<i class="' + params.response.visibility_icon_class + '"></i>')
+                                                .attr("data-original-title", '{% trans 'Visibility' %}: '+params.response.visibility_text)
                                                 .tooltip("show");
                                     });
                                 }

@@ -177,6 +177,14 @@ class UserProfile(models.Model):
     def __str__(self):
         return '%s (id=%d)' % (self.email, self.id)
 
+    @classmethod
+    def get_temp_email_suffix(cls):
+        return cls.__temp_profile_email_suffix
+
+    @classmethod
+    def get_local_email_suffix(cls):
+        return cls.__local_profile_email_suffix
+
 
 class ProfileBasedModel(models.Model):
     """

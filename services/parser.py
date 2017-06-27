@@ -5,9 +5,10 @@
 Module to parse a tweets/status
 """
 
-from twido.models import RawStatus, SocialPlatform
+from twido.models import RawStatus, SocialPlatform, Visibility
 from twido.models import SocialAccount, UserProfile
-from twido.models import Todo, Wish, TodoList, WishList
+from twido.models import Task, List
+
 from .storage import StorageType, StorageMixin
 from pyutils.langutil import MutableEnum
 from twido.utils import parse_datetime
@@ -155,13 +156,11 @@ class Parser(StorageMixin):
             m = re_hashtag.search(obj.text)
             if m:
                 hashtag = m.groupdict()['hash'].lower()
-                if hashtag == '#todo':
-                    task = Todo()
-                    task.list = TodoList.get_default(acc.profile)
+                if hashtag in ['#todo', '#wish']:
+                    task = Task()
+                    task.list = List.get_default(acc.profile)
                     task.deadline = None
-                elif hashtag == '#wish':
-                    task = Wish()
-                    task.list = WishList.get_default(acc.profile)
+                    task.labels = hashtag[1:]
                 else:
                     raise AssertionError('re_hashtag is not correct %s. \n %s' % (m, obj.text))
 
@@ -175,7 +174,9 @@ class Parser(StorageMixin):
                 task.title = obj.text
                 task.text = obj.text
                 task.content = text
+                task.visibility = Visibility.PUBLIC     # public if from social platform
                 task.save()
+                log.debug('SAVED task %s. (rawid: %s)' % (task, status.rawid))
             else:
                 log.info('IGNORED due to no hash tags. %s' % status)
 

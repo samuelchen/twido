@@ -19,7 +19,7 @@ from pyutils.django.response import download_file_response
 import simplejson as json
 from pyutils.json import to_serializable
 
-from ..models import Task,  List, TaskStatus, SysList
+from ..models import Task,  List, TaskStatus, SysList, Visibility
 from .base import BaseViewMixin
 from .common import paginate
 
@@ -101,11 +101,12 @@ class ListView(TemplateView, BaseViewMixin):
 
         # variables for tasks.html includes
         context['taskstatus'] = TaskStatus
-        # context['tasks_fields'] = ('status', 'title', 'due', 'labels')
-        context['tasks_editables'] = ('status', 'title', 'due', 'labels')
+        # context['tasks_fields'] = ('status', 'visibility', 'title', 'due', 'labels')
+        context['tasks_editables'] = ('status', 'visibility', 'title', 'due', 'labels')
         context['tasks_actions'] = ('detail', 'del')
         context['tasks_empty_well'] = True
 
+        context['visibility'] = Visibility
         return context
 
     def post(self, request, *args, **kwargs):
@@ -248,25 +249,37 @@ class ListView(TemplateView, BaseViewMixin):
             value = req.get('value', None)
             assert name is not None
 
+            if value is not None and value.strip() == '':
+                value = None
+
             if name in ('id', ):
                 return HttpResponseBadRequest(I18N_MSGS.prop_cannot_change % name)
-            if name == 'related_users':
+            elif name == 'related_users':
                 value = ','.join(req.getlist('value[]', []))
-            if name == 'name' and value.startswith('__'):
+            elif name == 'name' and value.startswith('__'):
                 return HttpResponseBadRequest(I18N_MSGS.list_name_cannot_start_with_dbl_underscore)
+            elif name == 'visibility':
+                value = int(value or Visibility.PRIVATE)
             # TODO: datetime timezone convert
             # if name == 'due':
             #     value = parse_datetime(value).replace(tzinfo=config.timezone) #timezone.utc)
-            if value is not None and value.strip() == '':
-                value = None
+
             try:
                 lst = ListModel.objects.get(id=pk)
                 if lst.is_sys:
                     return HttpResponseBadRequest(I18N_MSGS.list_cannot_change_sys)
                 setattr(lst, name, value)
                 lst.save(update_fields=[name, ])
+                data = {
+                    'visibility_icon_class': lst.get_visibility_icon(),
+                    'visibility_text': lst.get_visibility_text(),
+                    'name': name,
+                    'value': value
+                }
+                return JsonResponse(data)
             except Exception as err:
                 log.exception(err)
                 return HttpResponseBadRequest(I18N_MSGS.prop_cannot_change % (name, value))
+
 
         return HttpResponse('')

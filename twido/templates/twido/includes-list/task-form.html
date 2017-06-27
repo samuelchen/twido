@@ -1,13 +1,13 @@
 {# Task detail AJAX form #}
 {# vars: thetask - current task to display #}
-{% load i18n %}
+{% load i18n customer_tags %}
 <!-- BEGIN task detail setting -->
                             <form class="form-horizontal" method="post" action="{{ request.path }}">
                                 {% csrf_token %}
                                 <fieldset>
-                                    <legend>{{ thetask.title }}</legend>
+                                    <legend>{{ thetask.title | url2link | safe }}</legend>
 
-                                    <!-- name -->
+                                    <!-- title -->
                                     <div class="form-group">
                                         <label for="title" class="col-lg-2 col-md-2 control-label">{% trans 'Task Title' %}</label>
 
@@ -25,9 +25,20 @@
 
                                         <div class="col-lg-10 col-md-10">
                                             <span id="status" data-type="select" data-pk="{{ thetask.id }}"
-                                                  data-url="{{ request.path }}"><i class="{{ thetask.get_status_glyphicon }}">
+                                                  data-url="{{ request.path }}"><i class="{{ thetask.get_status_icon }}">
                                             </i> {{ thetask.get_status_text }}</span>
-{#                                            <span class="help-block">Long description.</span>#}
+                                        </div>
+
+                                    </div>
+
+                                    <!-- visibility -->
+                                    <div class="form-group">
+                                        <label for="visibility" class="col-lg-2 col-md-2 control-label">{% trans 'Visibility' %}</label>
+
+                                        <div class="col-lg-10 col-md-10">
+                                            <span id="visibility" data-type="select" data-pk="{{ thetask.id }}"
+                                                  data-url="{{ request.path }}"><i class="{{ thetask.get_visibility_icon }}">
+                                            </i> {{ thetask.get_visibility_text }}</span>
                                         </div>
 
                                     </div>
@@ -61,11 +72,29 @@
 
                                         <div class="col-lg-10 col-md-10">
                                             <span id="text" data-type="textarea" data-pk="{{ thetask.id }}"
-                                                  data-url="{{ request.path }}">{{ thetask.text | default_if_none:'' }}</span>
+                                                  data-url="{{ request.path }}">{{ thetask.text | default_if_none:'' | urlize }}</span>
 {#                                            <span class="help-block">Long description.</span>#}
                                         </div>
 
                                     </div>
+
+                                    {% if debug %}
+                                    <div class="form-group">
+                                        <label for="content" class="col-lg-2 col-md-2 control-label text-warning">{% trans 'Content' %} (DEBUG only)</label>
+
+                                        <div class="col-lg-10 col-md-10">
+                                            <span id="content" data-type="textarea" data-pk="{{ thetask.id }}"
+                                                  data-url="{{ request.path }}">{{ thetask.code | safe }}</span>
+                                            <ul>
+                                                {% for dt in thetask.dates %}
+                                                    <li class="small">{{ dt.text }} ({{ dt.v | utc }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                            <span class="help-block small">parsed timex3 date info.</span>
+                                        </div>
+
+                                    </div>
+                                    {% endif %}
 
                                     <!-- form buttons -->
 {#                                    <div class="form-group edit">#}
@@ -82,8 +111,8 @@
                             <script language="JavaScript" type="text/javascript">
 
                                 $('#title').editable({
-                                    emptytext: "{% trans '(Click to enter list title.)' %}",
-                                    emptyclass: 'text-muted',
+                                    emptytext: "<i>{% trans '(Click to enter list title.)' %}</i>",
+                                    emptyclass: 'text-muted small',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
@@ -114,6 +143,25 @@
                                     var menu = $('.list-group').find('.active').find('li');
                                     if (menu.length)
                                         menu.first().html('<i class="' + params.response.status_icon_class + '"></i>');
+                                });
+
+                                $('#visibility').editable({
+                                    escape: false,
+                                    source: [
+                                        {% for value, text in visibility.Choices %}
+                                            {value: {{ value }}, text: "{{ text }}"},
+                                        {% endfor %}
+                                    ],
+                                    display: function (value, resp) {
+                                        {# Do nothing. Keep for icon display rendering #}
+                                    },
+                                    success: function (response, newValue) {
+                                        if (response.status == 'error')
+                                            return response.msg; //msg will be shown in editable form
+                                    }
+                                }).on('save', function (e, params) {
+                                    $(this).html('<i class="' + params.response.visibility_icon_class + '"></i> '
+                                        + params.response.visibility_text);
                                 });
 
                                 $('#labels').editable({
@@ -168,16 +216,16 @@
                                     datetimepicker: {
                                         weekStart: 1
                                     },
-                                    emptytext: "{% trans '(Click to enter due date & time.)' %}",
-                                    emptyclass: 'text-muted',
+                                    emptytext: "<i>{% trans '(Click to enter due date & time.)' %}</i>",
+                                    emptyclass: 'text-muted small',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
                                 });
 
                                 $('#text').editable({
-                                    emptytext: "{% trans '(Click to enter long detail text.)' %}",
-                                    emptyclass: 'text-muted',
+                                    emptytext: "<i>{% trans '(Click to enter long detail text.)' %}</i>",
+                                    emptyclass: 'text-muted small',
                                     rows: 4,
                                     tpl: "<textarea style='width: 400px'></textarea>",
                                     success: function (response, newValue) {
