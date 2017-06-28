@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from django.conf import settings
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, get_object_or_404
@@ -8,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from ..models import Task, List, TaskStatus, Visibility
 from .base import BaseViewMixin
 from .common import paginate
+from ..parser import Timex3Parser
 
 import logging
 log = logging.getLogger(__name__)
@@ -45,12 +47,13 @@ class TaskView(TemplateView, BaseViewMixin):
         pk = context['pk']
         if 'thetask' not in context:
             task = get_object_or_404(TaskModel, profile=profile, id=pk)
+
+            if settings.DEBUG:
+                context['code_css'] = Timex3Parser.get_highlight_css()
+                task = Timex3Parser.parse_task(task, include_code=True)
+
             context['thetask'] = task
             context['thelist'] = task.list
-            from ..utils import html_highlight
-            tasks, css = html_highlight([context['thetask']])
-            context['thetask'] = tasks[0]
-            context['css'] = css
 
         if 'page' not in context:
             context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=task.list), cur_page=p, entries_per_page=10)

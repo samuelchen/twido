@@ -3,9 +3,7 @@
 {% block title %}{% endblock %}
 
 {% block head %}
-<style type="text/css">
-    {{ css | safe }}
-</style>
+    {% if debug %}<style type="text/css">{{ code_css | safe }}</style>{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -60,6 +58,7 @@
                                     {% for dt in task.dates %}
                                     <li class="small">{{ dt.text }}({{ dt.v }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</li>
                                     {% endfor %}
+                                    <p class="small">labels: {{ task.labels }}</p>
                                 {% else %}
                                     {{ task.text | url2link }}
                                 {% endif %}

@@ -3,13 +3,8 @@
 {% block title %}{% trans 'Task Detail' %}{% endblock %}
 
 {% block head %}
-{#    <script language="JavaScript" src="{% static 'jqueryui/dragdrop/jquery-ui.min.js' %}"></script>#}
     {% include 'includes/editable-head-ref.html' %}
-    {% if debug %}
-    <style type="text/css">
-        {{ css | safe }}
-    </style>
-    {% endif %}
+    {% if debug %}<style type="text/css">{{ code_css | safe }}</style>{% endif %}
 {% endblock %}
 
 {% block content %}

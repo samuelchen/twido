@@ -9,9 +9,6 @@ from django.template import Library
 from django.template.defaultfilters import stringfilter
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-# from django.conf import settings
-
-from ..utils import html_highlight
 
 import re
 
@@ -102,19 +99,19 @@ def url2link(value):
     return re_isurl.sub(lambda m: '<a href="%s">%s</a>' % (m.group(0), m.group(0)), value)
 
 
-# re_ishash = re.compile(r"(?ish)(\w[#todo|#wish]\w)")
-# @register.filter
-# @stringfilter
-# def hash2link(value):
-#     """
-#     Replace URLs in value to LINKs.
-#     e.g.
-#     value = "Buy a pen tomorrow #todo."
-#     retuns: "Buy a pen tomorrow <a href="#">#todo</a>."
-#     :param value:
-#     :return:
-#     """
-#     return re_ishash.sub(lambda m: '<a href="/hash/%s">%s</a>' % (m.group(0), m.group(0)), value)
+re_ishash = re.compile(r'(?:\A|\s)(?P<hash>#(?:\w|\.|_)+)(?:\s|\Z)', re.IGNORECASE + re.MULTILINE)
+@register.filter
+@stringfilter
+def hash2link(value):
+    """
+    Replace URLs in value to LINKs.
+    e.g.
+    value = "Buy a pen tomorrow #todo."
+    retuns: "Buy a pen tomorrow <a href="#">#todo</a>."
+    :param value:
+    :return:
+    """
+    return re_ishash.sub(lambda m: '<a href="/hash/%s">%s</a>' % (m.group(0), m.group(0)), value)
 
 @register.filter
 def utc(value):
