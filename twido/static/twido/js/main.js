@@ -63,3 +63,4 @@
         t = t + parseInt(plus);
         jq_obj.text(t);
     };
+

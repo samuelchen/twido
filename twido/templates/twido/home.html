@@ -14,7 +14,7 @@
 
         <div class="row">
             <!-- left col -->
-            <div class="col-lg-3 col-md-3">
+            <div class="col-lg-3 col-md-4">
                 <div class="bs-component">
                     {% include 'twido/includes-list/lists-menu.html' %}
 {#                    {% include 'twido/includes-list/wishlists-menu.html' %}#}
@@ -22,7 +22,7 @@
             </div>
 
             <!-- main col -->
-            <div class="col-lg-8 col-md-8">
+            <div class="col-lg-8 col-md-7">
                 <div class="bs-component">
                     {% for taskset in task_sets %}
                         <div class="panel panel-default" name="{{ taskset.title }}">
@@ -63,11 +63,7 @@
             </div>
 
             <!-- right col -->
-            <div class="col-lg-2">
-                <div class="bs-component small">
 
-                </div>
-            </div>
 
         </div>
     </div>

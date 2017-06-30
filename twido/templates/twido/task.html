@@ -25,6 +25,7 @@
                 <div class="panel panel-default" name="{{ thetask.list.name }}">
                     <div class="panel-heading small">
                         <ul class="list-inline">
+                            <li><a href="{% url 'list' thelist.id %}"><i class="glyphicon glyphicon-arrow-left"></i></a></li>
                             <li><h3 class="panel-title">{% if thetask.list.is_default %}{% trans 'Default List' %}{% else %}{{ thetask.list.name|capfirst }}{% endif %}</h3></li>
                         </ul>
                     </div>

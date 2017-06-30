@@ -15,7 +15,7 @@
         <div class="row">
 
             <!-- left sidebar show/hide button -->
-            <div class="hidden-lg hidden-md">
+            <div class="hidden-lg hidden-md hidden-sm">
                 <a id="id_sidebar_left_btn" title="{% if thelist.is_sys %}{% trans thelist.text|default_if_none:'' %}{% else %}{{ thelist.text|capfirst }}{% endif %}" class="btn btn-default btn-block dropdown-toggle">
                     <span class="sr-only">{% trans 'Toggle sidebar' %}</span>
                     <i class="fa fa-chevron-right"> </i>
@@ -24,7 +24,7 @@
             </div>
 
             <!-- left sidebar -->
-            <div id="id_sidebar_left" class="col-lg-4 col-md-4 hidden-sm hidden-xs">
+            <div id="id_sidebar_left" class="col-lg-3 col-md-4 col-sm-5 hidden-xs">
 
                 <!-- menu -->
                 <div class="bs-component">
@@ -66,7 +66,7 @@
             </div>
 
             <!-- main col -->
-            <div class="col-lg-7 col-md-7">
+            <div class="col-lg-8 col-md-7 col-sm-7">
                 <div class="row">
 
                     <div class="bs-component">

@@ -53,18 +53,22 @@
                             </div>
                             {% if task.text %}
                             <div class="panel-body">
-                                {% if debug %}
+                                <p>{{ task.text | url2link }}</p>
+
+                                {% if debug %}<!-- DEBUG: content -->
+                                    <div class="well">
+                                    <label class="text-warning">Content (DEBUG only):</label>
                                     {{ task.code | url2link | safe }}
                                     {% for dt in task.dates %}
                                     <li class="small">{{ dt.text }}({{ dt.v }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</li>
                                     {% endfor %}
-                                    <p class="small">labels: {{ task.labels }}</p>
-                                {% else %}
-                                    {{ task.text | url2link }}
+                                    <li class="small">labels: {{ task.labels }}</li>
+                                    </div>
                                 {% endif %}
                             </div>
                             {% endif %}
                         </div>
+
                     {% endfor %}
                 </div>
             </div>

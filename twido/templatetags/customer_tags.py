@@ -4,6 +4,7 @@
 """
 customer tags for template
 """
+import datetime
 
 from django.template import Library
 from django.template.defaultfilters import stringfilter
@@ -115,4 +116,7 @@ def hash2link(value):
 
 @register.filter
 def utc(value):
+    if not value:
+        return value
+    assert isinstance(value, datetime.datetime) or isinstance(value, datetime.date) or isinstance(value, datetime.time)
     return value.isoformat()

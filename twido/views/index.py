@@ -47,7 +47,7 @@ class IndexView(TemplateView, BaseViewMixin):
         context['tasks'] = Task.objects.filter(visibility=Visibility.PUBLIC).order_by('-created_at')[:10]
         if settings.DEBUG:
             for task in context['tasks']:
-                Timex3Parser.parse_task(include_code=True)
+                Timex3Parser.parse_task(task, include_code=True)
                 tasks.append(task)
             context['tasks'] = tasks
             context['code_css'] = Timex3Parser.get_highlight_css()

@@ -45,12 +45,18 @@
 
                                     <!-- due -->
                                     <div class="form-group">
-                                        <label for="due" class="col-lg-2 col-md-2 control-label">{% trans 'Deadline' %}</label>
+                                        <label for="due" class="col-lg-2 col-md-2 control-label">{% trans 'Due Date' %}</label>
 
                                         <div class="col-lg-10 col-md-10">
                                             <span id="due" data-type="datetime" data-pk="{{ thetask.id }}"
                                                   data-url="{{ request.path }}">{{ thetask.due | default_if_none:'' }}</span>
-{#                                            <span class="help-block">The time to remind me.</span>#}
+                                            {% if thetask.dates %}<div class="small">
+{#                                                <label class="text-muted">{% trans "possible due candidates" %}:</label>#}
+                                                {% for dt in thetask.dates %}
+                                                <a name="due-candidates" class="label label-default" title="{% trans 'text' %}: {{ dt.text }}" data-value="{{ dt.v | utc }}">{{ dt.v }}</a>
+                                                {% endfor %}
+                                            </div>{% endif %}
+{#                                            <span class="help-block">{% trans 'Enter the due date to remind.' %}{% trans 'Or select from the date/time candidates.' %}</span>#}
                                         </div>
                                     </div>
 
@@ -83,8 +89,7 @@
                                         <label for="content" class="col-lg-2 col-md-2 control-label text-warning">{% trans 'Content' %} (DEBUG only)</label>
 
                                         <div class="col-lg-10 col-md-10">
-                                            <span id="content" data-type="textarea" data-pk="{{ thetask.id }}"
-                                                  data-url="{{ request.path }}">{{ thetask.code | safe }}</span>
+                                            <span id="content">{{ thetask.code | safe }}</span>
                                             <ul>
                                                 {% for dt in thetask.dates %}
                                                     <li class="small">{{ dt.text }} ({{ dt.v | utc }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</li>
@@ -216,11 +221,46 @@
                                     datetimepicker: {
                                         weekStart: 1
                                     },
-                                    emptytext: "<i>{% trans '(Click to enter due date & time.)' %}</i>",
+                                    emptytext: "<i>({% trans 'Click to enter due date & time.' %} {% trans 'Or select from the candidates extracted from task.' %})</i>",
                                     emptyclass: 'text-muted small',
                                     success: function (response, newValue) {
                                         if (response.status == 'error') return response.msg; //msg will be shown in editable form
                                     }
+                                });
+
+                                $('[name="due-candidates"]').tooltip().click(function(){
+                                    var fld = $('#due');
+                                    var url = fld.data('url');
+                                    var pk  = fld.data('pk');
+                                    var origin_value = fld.data('value');
+                                    var value = $(this).data('value');
+                                    var text = $(this).text();
+
+                                    var panel = fld.parent();
+                                    panel.addClass('overlay');
+
+                                    $.ajax(url, {
+                                        method: "POST",
+                                        data: {
+                                            pk: pk,
+                                            name: 'due',
+                                            value: value
+                                        },
+                                        success: function (response) {
+                                            console.log(response);
+                                            fld.text(text);
+                                        },
+                                        error: function (response) {
+                                            if (response.readyState == 0 && response.status == 0)
+                                                _error('{% trans "Fail to connect server. Please check your network." %}');
+                                            else
+                                                _error(response.responseText);
+                                        },
+                                        complete: function (data) {
+                                            panel.removeClass('overlay');
+                                        }
+                                    });
+
                                 });
 
                                 $('#text').editable({

@@ -23,7 +23,8 @@ log = logging.getLogger(__name__)
 
 class Timex3Parser(object):
 
-    _formatter = HtmlFormatter(encoding='utf-8', nowrap=False, style='emacs', linenos=False)
+    _formatter = HtmlFormatter(encoding='utf-8', nowrap=False, style='emacs', linenos=False,
+                               prestyles='font-size: 12px;')
     _lexer = XmlLexer()
     _css = _formatter.get_style_defs()
 
@@ -34,10 +35,9 @@ class Timex3Parser(object):
 
     @classmethod
     def parse_task(cls, task, include_dates=True, include_title=True, include_labels=True, include_code=False):
-        assert task and task.content
 
-        if include_code: task.code = cls.highlight(task.content)
-        if include_dates: task.dates = cls.parse_dates(task.content)
+        if include_code: task.code = cls.highlight(task.content) if task.content else ''
+        if include_dates: task.dates = cls.parse_dates(task.content) if task.content else []
         if include_labels: task.labels = ','.join(cls.parse_hash_tags(task.text))
         if include_title: task.title = cls.parse_text(task.title)
 
@@ -57,8 +57,9 @@ class Timex3Parser(object):
         """
         tags = []
 
-        for m in cls._re_hash.findall(text):
-            tags.append(m[1:])      # ignore leading "#"
+        if text:
+            for m in cls._re_hash.findall(text):
+                tags.append(m[1:])      # ignore leading "#"
 
         return tags
 
@@ -81,12 +82,16 @@ class Timex3Parser(object):
                 dt[k] = v
             if dt.type == 'DATE' and dt.text:
                 try:
+                    # TODO: need to be parsed depends on date (when crawling)
                     dt.v = dateparser.parse(dt.text)
                     # dt.v = parse_datetime(dt.text)
                 except Exception as err:
                     log.warn(err)
                     dt.v = None
-            dates.append(dt)
+            else:
+                log.warn('ignored date type: %s' % dt.type)
+            if dt.v:
+                dates.append(dt)
 
         return dates
 

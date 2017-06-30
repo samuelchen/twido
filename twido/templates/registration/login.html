@@ -69,11 +69,11 @@
                             {% trans 'Forget password' %}?</a></p>
                     </div>
                     <div id="id_socials">
-                        <span class="small">{% trans 'Sign in with social account' %}: </span>
+                        <span class="">{% trans 'Sign in with' %}: </span>
                         {% for code, platform in social_platforms.get_items %}
                             {% if platform.enabled %}
                         <a href="{% url 'social' 'login' %}?platform={{ platform.code }}" title="{{ platform.text }}">
-                            <i class="{{ platform.icon }} text-info"></i></a>
+                            <i class="{{ platform.icon }} text-info" style="font-size: 18px"></i></a>
                             {% endif %}
                         {% endfor %}
                     </div>
