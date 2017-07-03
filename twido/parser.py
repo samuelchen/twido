@@ -5,12 +5,11 @@
 Parse given TIMEX3 XML and text to give out dates, simple text, tags and etc.
 """
 import re
-
-import dateparser
+import parsedatetime
+from datetime import datetime
 from pygments.lexers.html import XmlLexer
 from pygments.formatters.html import HtmlFormatter
 from pygments import highlight
-from pyutils.langutil import MutableEnum
 
 try:
     import xml.etree.cElementTree as ET
@@ -39,13 +38,13 @@ class Timex3Parser(object):
         if include_code: task.code = cls.highlight(task.content) if task.content else ''
         if include_dates: task.dates = cls.parse_dates(task.content) if task.content else []
         if include_labels: task.labels = ','.join(cls.parse_hash_tags(task.text))
-        if include_title: task.title = cls.parse_text(task.title)
+        if include_title: task.title = cls.parse_text(task.title) or task.title
 
         return task
 
     @classmethod
     def parse_text(cls, text):
-        simple_text = text
+        simple_text = None
         return simple_text
 
     @classmethod
@@ -59,7 +58,7 @@ class Timex3Parser(object):
 
         if text:
             for m in cls._re_hash.findall(text):
-                tags.append(m[1:])      # ignore leading "#"
+                tags.append(m[1:].lower())      # ignore leading "#"
 
         return tags
 
@@ -71,27 +70,140 @@ class Timex3Parser(object):
         :return:
         """
         dates = []
+        cal = parsedatetime.Calendar()
 
         xml = ET.fromstring(timex3_xml)
+
+        # base time
+        node = xml.findtext("./DATE")
+        base_time = datetime.strptime(node, '%a %b %d %H:%M:%S %z %Y')
+
+        '''
+        Fail dates:
+
+            DURATION PT24H 24 hours
+            DURATION P1D day
+            SET P1D each day
+            DURATION P1D day
+            SET P1D Daily
+            DURATION PT1M a Minute
+            DURATION P1D day
+            DURATION P1W Week
+            DURATION P1W Week
+            DURATION P1D day
+            DURATION P1D day
+            DURATION P1D Day
+            SET P1D Daily
+            DURATION P1D Day
+            SET P1D Daily
+            SET P1W Weekly
+            SET P1W Weekly
+            DURATION P22Y 22-year-old
+            SET P1D daily
+            DURATION P1W week
+            SET TMO every morning
+            DURATION P1W week
+            SET TMO every morning
+            DURATION P1W week
+            SET TMO every morning
+            DURATION P1D a day
+            TIME T19:00 7pm
+            DURATION PXY years
+            SET P1D Daily
+            SET P1D daily
+            DURATION P1D One day
+            DURATION P1D day
+            DURATION P1D a day
+            DURATION P1W a week
+            DURATION P1M a month
+            DURATION P1M a month
+            DURATION PXY years
+            DURATION P1D DAY
+            TIME T19:00 7pm
+            TIME TMO morning
+            DURATION P21D Less than 21 days
+            DURATION PT19S the last 19 seconds
+            SET P1D Daily
+            DURATION P1D day
+            DURATION PXY years
+            DURATION P1D Day
+            SET P1D Daily
+            DURATION P1D Day
+            SET P1D Daily
+            DURATION PXD days
+            DURATION PT3M 3 mins
+            DURATION P1W a week
+            SET P1D daily
+            SET P1D daily
+            TIME TMO Morning
+            DURATION P1W week
+            DURATION PT40S more than 40 seconds
+            SET P1D daily
+            DURATION P1W Week
+            SET P1D daily
+            SET P1D daily
+            DURATION P1W Week
+            DURATION P9W 9 weeks
+            DURATION P9W 9 weeks
+            DURATION P1D one day
+            DURATION P1D day
+            DURATION P1D Day
+            SET P1D Daily
+            DURATION P1D day
+            DURATION PXD few days
+            SET P1D every day
+            SET P1D every day
+            SET P1W Weekly
+            TIME TMO the next morning
+            TIME TEV evening
+            DURATION P1D day
+            TIME TMO morning
+        '''
+
         for node in xml.findall("./TEXT/TIMEX3"):
-            dt = MutableEnum()
-            dt.text = node.text
-            # print(node.text)
+            dt = {}
+            dt['text'] = node.text
             for k, v in node.items():
-                # print('  ', k, v)
                 dt[k] = v
-            if dt.type == 'DATE' and dt.text:
-                try:
-                    # TODO: need to be parsed depends on date (when crawling)
-                    dt.v = dateparser.parse(dt.text)
-                    # dt.v = parse_datetime(dt.text)
-                except Exception as err:
-                    log.warn(err)
-                    dt.v = None
-            else:
-                log.warn('ignored date type: %s' % dt.type)
-            if dt.v:
-                dates.append(dt)
+            tp = dt['type']
+            if dt['text']:
+                if tp == 'DATE':
+                    try:
+                        # TODO: need to be parsed depends on date (when crawling)
+                        value = dt['value']
+                        # if value == 'PRESENT_REF':
+                        #     v = dateparser.parse(dt['date'])
+                        # elif value == 'PAST_REF':
+                        #     v = None
+                        #     pass
+                        # elif value == 'FUTURE_REF':
+                        #     v = None
+                        #     pass
+                        # elif value == 'XXXX':
+                        #     v = dateparser.parse(dt['text'])
+                        if value.startswith('XXXX-'):
+                            # token = value.split('-')[1]
+                            v = None
+                            pass
+                        else:
+                            v = datetime(*cal.parse(dt['text'], sourceTime=base_time)[0][:6])
+                        dt['v'] = v
+                    except Exception as err:
+                        log.warn(err)
+                        dt['v'] = None
+                elif tp == 'TIME':
+                    dt['v'] = datetime(*cal.parse(dt['text'], sourceTime=base_time)[0][:6])
+                elif tp == 'DURATION':
+                    pass
+                elif tp == 'SET':
+                    pass
+                else:
+                    pass
+
+                if 'v' in dt and dt['v']:
+                    dates.append(dt)
+                else:
+                    log.warn('Fail/ignored date: %s %s %s' % (dt['type'], dt['value'], dt['text']))
 
         return dates
 

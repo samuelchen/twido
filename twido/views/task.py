@@ -50,7 +50,7 @@ class TaskView(TemplateView, BaseViewMixin):
 
             if settings.DEBUG:
                 context['code_css'] = Timex3Parser.get_highlight_css()
-                task = Timex3Parser.parse_task(task, include_code=True)
+                # task = Timex3Parser.parse_task(task, include_code=True)
 
             context['thetask'] = task
             context['thelist'] = task.list

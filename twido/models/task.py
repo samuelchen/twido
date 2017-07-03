@@ -19,7 +19,10 @@ from pyutils.langutil import PropertyDict
 from .social import SocialAccount
 from .spider import RawStatus
 
+import simplejson as json
 import logging
+from twido.parser import Timex3Parser
+
 log = logging.getLogger(__name__)
 
 
@@ -115,9 +118,9 @@ class Task(ProfileBasedModel):
     labels = models.TextField(null=True, blank=True)
     due = models.DateTimeField(null=True, blank=True, db_index=True)
     list = models.ForeignKey(to=List)
+    social_account = models.ForeignKey(to=SocialAccount, db_index=True, null=True, blank=True)
 
     content = models.TextField(null=True, blank=True)
-    social_account = models.ForeignKey(to=SocialAccount, db_index=True, null=True, blank=True)
     raw = models.OneToOneField(to=RawStatus, null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -156,6 +159,36 @@ class Task(ProfileBasedModel):
 
     def __str__(self):
         return '%s (id=%d)' % (self.title, self.id)
+
+
+class TaskMeta(models.Model):
+    task = models.OneToOneField(to=Task, related_name='meta')
+    timex = models.TextField(null=True, blank=True)
+    dates = models.TextField(null=True, blank=True)
+    tags = models.TextField(null=True, blank=True)
+    persons = models.TextField(null=True, blank=True)
+    simple_text = models.TextField(null=True, blank=True)
+
+    _tags = []
+    _dates = []
+
+    def highlight_timex(self):
+        return Timex3Parser.highlight(self.timex)
+
+    def get_dates(self):
+        if not self._dates:
+            self._dates = json.loads(self.dates)
+        return self._dates
+
+    def get_tags(self):
+        if not self._tags:
+            self._tags = json.loads(self.tags)
+        return self._tags
+
+    def save(self, *args, **kwargs):
+        super(TaskMeta, self).save(*args, **kwargs)
+        self._tags = []
+        self._dates = []
 
 
 class SysList(object):

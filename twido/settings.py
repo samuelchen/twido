@@ -169,21 +169,21 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)-8s [%(asctime)s] %(name)-30s [%(lineno)d] %(message)s'
         },
-        # 'colored': {
-        #     'format': '%(levelname)-8s [%(asctime)s] %(name)s.%(funcName)s [%(lineno)d] %(message)s',
-        #     # color reference: https://pypi.python.org/pypi/termcolor
-        #     # 'LEVEL': ('fg-color', 'bg-color', ['attr1', 'attr2', ...])
-        #     '()': 'pyutils.logger.ColorFormatter',
-        #     'colors': {
-        #         'TRACE': ('grey', None, []),
-        #         'DEBUG': ('grey', None, ['bold']),
-        #         'INFO': (None, None, []),
-        #         'WARNING': ('yellow', None, []),
-        #         'ERROR': ('red', None, []),
-        #         'CRITICAL': ('red', 'white', []),
-        #
-        #     }
-        # },
+        'colored': {
+            'format': '%(levelname)-8s [%(asctime)s] %(name)s.%(funcName)s [%(lineno)d] %(message)s',
+            # color reference: https://pypi.python.org/pypi/termcolor
+            # 'LEVEL': ('fg-color', 'bg-color', ['attr1', 'attr2', ...])
+            '()': 'pyutils.logger.ColorFormatter',
+            'colors': {
+                'TRACE': ('grey', None, []),
+                'DEBUG': ('grey', None, ['bold']),
+                'INFO': (None, None, []),
+                'WARNING': ('yellow', None, []),
+                'ERROR': ('red', None, []),
+                'CRITICAL': ('red', 'white', []),
+
+            }
+        },
     },
     'handlers': {
         'console': {
@@ -198,7 +198,7 @@ LOGGING = {
         },
         'twido': {
             'handlers': ['console'],
-            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'level': 'DEBUG' if DEBUG else 'INFO',
         },
         'services': {
             'handlers': ['console'],

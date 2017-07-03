@@ -2,7 +2,7 @@ django==1.10
 tweepy>=3.5.0
 simplejson
 requests
-dateparser
+parsedatetime
 #mysqlclient
 gunicorn
 
@@ -12,6 +12,8 @@ django-simple-email-confirmation
 # debug & test
 django-debug-toolbar
 pygments
+
+#dateparser
 
 #jinja2
 #egenix-mx-base

@@ -13,6 +13,8 @@ from .base import BaseViewMixin
 from ..parser import Timex3Parser
 
 import logging
+from twido.views import paginate
+
 log = logging.getLogger(__name__)
 
 
@@ -32,6 +34,7 @@ class IndexView(TemplateView, BaseViewMixin):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
 
+        p = self.request.GET.get('p', 1)   # current page
         sys_profile = UserProfile.get_sys_profile()
         profile_max = 10
         context['profiles'] = UserProfile.objects.exclude(
@@ -43,12 +46,12 @@ class IndexView(TemplateView, BaseViewMixin):
             Q(profile=sys_profile) | Q(profile__email__contains=UserProfile.get_temp_email_suffix())
         ).order_by('-id')[:social_account_max]
 
-        tasks = []
-        context['tasks'] = Task.objects.filter(visibility=Visibility.PUBLIC).order_by('-created_at')[:10]
+        tasks = Task.objects.filter(visibility=Visibility.PUBLIC)
         if settings.DEBUG:
-            for task in context['tasks']:
-                Timex3Parser.parse_task(task, include_code=True)
-                tasks.append(task)
-            context['tasks'] = tasks
+            tasks = tasks.filter(meta__timex__contains='TIMEX3')
+        tasks = paginate(tasks.order_by('-created_at'), cur_page=p, entries_per_page=10)
+        context['page'] = context['tasks'] = tasks
+
+        if settings.DEBUG:
             context['code_css'] = Timex3Parser.get_highlight_css()
         return context

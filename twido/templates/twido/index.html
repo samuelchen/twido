@@ -45,32 +45,35 @@
                     {% for task in tasks %}
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <span class="panel-title">{{ task.title | url2link | safe  }}</span>
+                                <span class="panel-title">{{ task.title | safe | urlize }}</span>
                                 <ul class="list-inline small">
                                     <li class="small"><a class="text-default" href="#">{{ task.get_at_name | safe }}</a></li>
                                     <li class="small" data-value="{{ task.created_at|utc }}">{{ task.created_at }}</li>
                                 </ul>
                             </div>
+
                             {% if task.text %}
                             <div class="panel-body">
-                                <p>{{ task.text | url2link }}</p>
-
-                                {% if debug %}<!-- DEBUG: content -->
-                                    <div class="well">
-                                    <label class="text-warning">Content (DEBUG only):</label>
-                                    {{ task.code | url2link | safe }}
-                                    {% for dt in task.dates %}
-                                    <li class="small">{{ dt.text }}({{ dt.v }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</li>
-                                    {% endfor %}
-                                    <li class="small">labels: {{ task.labels }}</li>
-                                    </div>
-                                {% endif %}
+                                <p>{{ task.text | urlize }}</p>
                             </div>
+                            {% endif %}
+
+                            {% if debug %}<!-- DEBUG: content -->
+                                <div class="well">
+                                <label class="text-warning">Content (DEBUG only):</label>
+                                {{ task.meta.highlight_timex | safe }}
+                                {% for dt in task.meta.get_dates %}
+                                <li class="small">{{ dt.text }}({{ dt.v }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</li>
+                                {% endfor %}
+                                <p class="small">tags: {% for tag in task.meta.get_tags %}<span class="label label-default">{{ tag }}</span>{% endfor %}</p>
+                                </div>
                             {% endif %}
                         </div>
 
                     {% endfor %}
                 </div>
+
+                {% include 'includes/paginatition.html' %}
             </div>
 
             <div class="col-lg-3 col-md-3">

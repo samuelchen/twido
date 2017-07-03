@@ -89,12 +89,13 @@
                                         <label for="content" class="col-lg-2 col-md-2 control-label text-warning">{% trans 'Content' %} (DEBUG only)</label>
 
                                         <div class="col-lg-10 col-md-10">
-                                            <span id="content">{{ thetask.code | safe }}</span>
+                                            <span id="content">{{ thetask.meta.hilight_timex | safe }}</span>
                                             <ul>
-                                                {% for dt in thetask.dates %}
+                                                {% for dt in thetask.meta.get_dates %}
                                                     <li class="small">{{ dt.text }} ({{ dt.v | utc }}): tid={{ dt.tid }} type={{ dt.type }} value={{ dt.value }}</li>
                                                 {% endfor %}
                                             </ul>
+                                            <p class="small">tags: {% for tag in task.meta.get_tags %}<span class="label label-default">{{ tag }}</span>{% endfor %}</p>
                                             <span class="help-block small">parsed timex3 date info.</span>
                                         </div>
 

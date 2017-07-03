@@ -4,10 +4,14 @@
 """
 Module to parse a tweets/status
 """
+from django.db import transaction
+from pyutils.json import to_serializable
 
 from twido.models import RawStatus, SocialPlatform, Visibility
 from twido.models import SocialAccount, UserProfile
 from twido.models import Task, List
+from twido.models.task import TaskMeta
+from twido.parser import Timex3Parser
 
 from .storage import StorageType, StorageMixin
 from pyutils.langutil import MutableEnum
@@ -144,26 +148,24 @@ class Parser(StorageMixin):
             log.debug('Created status %s' % status)
 
         try:
-            text, succeed = self._parse_text(obj.text, obj.created_at)
+            xml, succeed = self._parse_text(obj.text, obj.created_at)
             if not succeed:
-                log.error('FAILED. %s. %s' % (status, text))
+                log.error('FAILED. %s. %s' % (status, xml))
                 return False
         except requests.exceptions.ConnectionError as err:
             log.error('CONNECTION lost. %s. %s' % (status, err))
             return False
 
+        # TODO: parse in a thread/process
         try:
-            m = re_hashtag.search(obj.text)
-            if m:
-                hashtag = m.groupdict()['hash'].lower()
-                if hashtag in ['#todo', '#wish']:
-                    task = Task()
-                    task.list = List.get_default(acc.profile)
-                    task.deadline = None
-                    task.labels = hashtag[1:]
-                else:
-                    raise AssertionError('re_hashtag is not correct %s. \n %s' % (m, obj.text))
+            meta = TaskMeta()
+            valid_tags = {'todo', 'wish'}
+            tags = Timex3Parser.parse_hash_tags(obj.text)
+            if valid_tags & set(tags):
 
+                task = Task()
+                task.list = List.get_default(acc.profile)
+                task.deadline = None
                 task.profile = acc.profile
                 task.social_account = acc
                 task.raw = status
@@ -172,13 +174,22 @@ class Parser(StorageMixin):
                 else:
                     task.created_at = obj.created_at.replace(tzinfo=utc)
                 task.title = obj.text
-                task.text = obj.text
-                task.content = text
+                task.text = ''
                 task.visibility = Visibility.PUBLIC     # public if from social platform
-                task.save()
+                task.labels = ','.join(tags)
+
+                meta.tags = json.dumps(tags, indent=2)
+                meta.dates = json.dumps(Timex3Parser.parse_dates(xml), indent=2, default=to_serializable)
+                meta.simple_text = Timex3Parser.parse_text(obj.text)
+                meta.timex = xml
+                with transaction.atomic():
+                    task.save()
+                    meta.task = task
+                    meta.save()
+
                 log.debug('SAVED task %s. (rawid: %s)' % (task, status.rawid))
             else:
-                log.info('IGNORED due to no hash tags. %s' % status)
+                log.info('IGNORED due to no valid hash tags (%s). %s' % (valid_tags, status))
 
         except IntegrityError as err:
             log.error('IGNORED due to duplicated. %s. Error:%s' % (status, err))
