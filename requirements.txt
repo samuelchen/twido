@@ -5,6 +5,7 @@ requests
 parsedatetime
 #mysqlclient
 gunicorn
+termcolor
 
 django-bootstrap-themes
 django-simple-email-confirmation

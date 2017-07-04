@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 10:50+0800\n"
+"POT-Creation-Date: 2017-07-04 14:38+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,20 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\account\admin.py:102 .\account\admin.py:113
-msgid "Permissions"
-msgstr ""
-
-#: .\account\admin.py:103 .\account\admin.py:114
-msgid "Important dates"
-msgstr ""
-
-#: .\settings\dev.py:27
+#: .\settings\dev.py:25
 msgid "MWL"
 msgstr ""
 
 #: .\settings\prod.py:9
 msgid "My Wonderful Life 2"
+msgstr ""
+
+#: .\twido\admin.py:103 .\twido\admin.py:114
+msgid "Permissions"
+msgstr ""
+
+#: .\twido\admin.py:104 .\twido\admin.py:115
+msgid "Important dates"
 msgstr ""
 
 #: .\twido\models\admins.py:28 .\twido\templates\registration\login.html:34
@@ -52,7 +52,7 @@ msgstr ""
 msgid "Email is required."
 msgstr ""
 
-#: .\twido\models\common.py:66
+#: .\twido\models\common.py:73
 msgctxt "system account name"
 msgid "SYS"
 msgstr ""
@@ -70,108 +70,118 @@ msgstr ""
 msgid "Weibo"
 msgstr ""
 
-#: .\twido\models\consts.py:42
+#: .\twido\models\consts.py:82
 #: .\twido\templates\twido\includes-setting\_dropdown.sample.html:51
 msgid "Male"
 msgstr ""
 
-#: .\twido\models\consts.py:43
+#: .\twido\models\consts.py:83
 #: .\twido\templates\twido\includes-setting\_dropdown.sample.html:57
 msgid "Female"
 msgstr ""
 
-#: .\twido\models\consts.py:44
+#: .\twido\models\consts.py:84
 msgctxt "gender"
 msgid "Neither"
 msgstr ""
 
-#: .\twido\models\consts.py:45
+#: .\twido\models\consts.py:85
 msgctxt "gender"
 msgid "Private"
 msgstr ""
 
-#: .\twido\models\consts.py:109
+#: .\twido\models\consts.py:149
 msgid "New"
 msgstr ""
 
-#: .\twido\models\consts.py:110
+#: .\twido\models\consts.py:150
 msgid "Started"
 msgstr ""
 
-#: .\twido\models\consts.py:111
+#: .\twido\models\consts.py:151
 msgid "Paused"
 msgstr ""
 
-#: .\twido\models\consts.py:112
+#: .\twido\models\consts.py:152
 msgid "Done"
 msgstr ""
 
-#: .\twido\models\consts.py:113
+#: .\twido\models\consts.py:153
 msgid "Cancelled"
 msgstr ""
 
-#: .\twido\models\consts.py:114
+#: .\twido\models\consts.py:154
 msgid "Expired"
 msgstr ""
 
-#: .\twido\models\task.py:50
+#: .\twido\models\consts.py:187
+msgctxt "visibility"
+msgid "Public"
+msgstr ""
+
+#: .\twido\models\consts.py:188
+msgctxt "visibility"
+msgid "Private"
+msgstr ""
+
+#: .\twido\models\task.py:54
 msgid "The default list contains unlisted tasks."
 msgstr ""
 
-#: .\twido\models\task.py:69
+#: .\twido\models\task.py:73
 msgctxt "sys list"
 msgid "default"
 msgstr ""
 
-#: .\twido\models\task.py:154
+#: .\twido\models\task.py:209
 msgctxt "sys list"
 msgid "today"
 msgstr ""
 
-#: .\twido\models\task.py:155
+#: .\twido\models\task.py:210
 msgid "Tasks need to be done by today. (including expired)"
 msgstr ""
 
-#: .\twido\models\task.py:160
+#: .\twido\models\task.py:215
 msgctxt "sys list"
 msgid "soon"
 msgstr ""
 
-#: .\twido\models\task.py:161
+#: .\twido\models\task.py:216
 msgid "Tasks in near future (including those without deadline)"
 msgstr ""
 
-#: .\twido\models\task.py:166
+#: .\twido\models\task.py:221
 msgctxt "sys list"
 msgid "expired"
 msgstr ""
 
-#: .\twido\models\task.py:167
+#: .\twido\models\task.py:222
 msgid "Tasks passed the deadline."
 msgstr ""
 
-#: .\twido\models\task.py:172
+#: .\twido\models\task.py:227
 msgctxt "sys list"
 msgid "all"
 msgstr ""
 
-#: .\twido\models\task.py:173
+#: .\twido\models\task.py:228
 msgid "All my tasks."
 msgstr ""
 
-#: .\twido\settings.py:149
+#: .\twido\settings.py:147
 msgid "TWIDO"
 msgstr ""
 
-#: .\twido\settings.py:159
+#: .\twido\settings.py:157
 msgid "Chinese Simplified"
 msgstr ""
 
-#: .\twido\settings.py:160
+#: .\twido\settings.py:158
 msgid "Chinese Traditional"
 msgstr ""
 
-#: .\twido\settings.py:161
+#: .\twido\settings.py:159
 msgid "English"
 msgstr ""
 
@@ -185,18 +195,8 @@ msgid "Home"
 msgstr ""
 
 #: .\twido\templates\includes\topnavbar.html:25
-#: .\twido\templates\twido\includes-list\lists-menu.html:10
+#: .\twido\templates\twido\includes-list\lists-menu.html:21
 msgid "Lists"
-msgstr ""
-
-#: .\twido\templates\includes\topnavbar.html:48
-msgid "Search"
-msgstr ""
-
-#: .\twido\templates\includes\topnavbar.html:50
-#: .\twido\templates\registration\login.html:58
-#: .\twido\templates\registration\register.html:70
-msgid "Submit"
 msgstr ""
 
 #: .\twido\templates\includes\topnavbar.html:69
@@ -268,10 +268,19 @@ msgstr ""
 msgid "Remember me"
 msgstr ""
 
+#: .\twido\templates\registration\login.html:58
+#: .\twido\templates\registration\register.html:70
+msgid "Submit"
+msgstr ""
+
 #: .\twido\templates\registration\login.html:59
 #: .\twido\templates\registration\profile.html:131
 #: .\twido\templates\registration\register.html:71
 msgid "Reset"
+msgstr ""
+
+#: .\twido\templates\registration\login.html:72
+msgid "Sign in with"
 msgstr ""
 
 #: .\twido\templates\registration\profile.html:38
@@ -356,29 +365,48 @@ msgstr ""
 msgid "Sign in"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:7
-#: .\twido\templates\twido\task.html:22
+#: .\twido\templates\twido\includes-list\list-form.html:8
+#: .\twido\templates\twido\task.html:29
 msgid "Default List"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:20
+#: .\twido\templates\twido\includes-list\list-form.html:23
 msgid "List Name"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:32
+#: .\twido\templates\twido\includes-list\list-form.html:35
+#: .\twido\templates\twido\includes-list\task-form.html:36
+#: .\twido\templates\twido\includes-list\tasks.html:23
+#: .\twido\templates\twido\includes-list\tasks.html:127
+msgid "Visibility"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\list-form.html:46
 msgid "Reminder"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:43
+#: .\twido\templates\twido\includes-list\list-form.html:57
 msgid "Related Persons"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\list-form.html:62
+#: .\twido\templates\twido\includes-list\list-form.html:76
 msgid "Description"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\lists-menu.html:23
-msgid "Query Lists"
+#: .\twido\templates\twido\includes-list\list-form.html:101
+msgid "(Click to enter list name.)"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\list-form.html:111
+msgid "(Click to enter related persons. User comma \\\",\\\" to split.)"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\list-form.html:192
+msgid "(Click to enter reminder date & time.)"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\list-form.html:202
+msgid "(Click to enter long description.)"
 msgstr ""
 
 #: .\twido\templates\twido\includes-list\task-form.html:12
@@ -386,52 +414,81 @@ msgid "Task Title"
 msgstr ""
 
 #: .\twido\templates\twido\includes-list\task-form.html:24
-#: .\twido\templates\twido\includes-list\tasks.html:16
-#: .\twido\templates\twido\includes-list\tasks.html:88
+#: .\twido\templates\twido\includes-list\tasks.html:28
+#: .\twido\templates\twido\includes-list\tasks.html:103
 msgid "Status"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\task-form.html:37
-msgid "Deadline"
+#: .\twido\templates\twido\includes-list\task-form.html:48
+#: .\twido\templates\twido\includes-list\tasks.html:32
+msgid "Due Date"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\task-form.html:48
-#: .\twido\templates\twido\includes-list\tasks.html:28
+#: .\twido\templates\twido\includes-list\task-form.html:56
+msgid "text"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\task-form.html:65
+#: .\twido\templates\twido\includes-list\tasks.html:40
 msgid "Labels"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\task-form.html:60
+#: .\twido\templates\twido\includes-list\task-form.html:77
 msgid "Detail Text"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:20
-#: .\twido\templates\twido\includes-list\tasks.html:149
-#: .\twido\templates\twido\task.html:32
-msgid "Due"
+#: .\twido\templates\twido\includes-list\task-form.html:89
+msgid "Content"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:34
+#: .\twido\templates\twido\includes-list\task-form.html:120
+msgid "(Click to enter list title.)"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\task-form.html:225
+msgid "Click to enter due date & time."
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\task-form.html:225
+msgid "Or select from the candidates extracted from task."
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\task-form.html:256
+msgid "Fail to connect server. Please check your network."
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\task-form.html:268
+msgid "(Click to enter long detail text.)"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\tasks.html:47
 msgid "Detail"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:37
+#: .\twido\templates\twido\includes-list\tasks.html:50
 msgid "Delete"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:48
+#: .\twido\templates\twido\includes-list\tasks.html:61
 msgid "List is empty. Please add task by clicking the button."
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:184
+#: .\twido\templates\twido\includes-list\tasks.html:190
+#: .\twido\templates\twido\task.html:39
+msgid "Due"
+msgstr ""
+
+#: .\twido\templates\twido\includes-list\tasks.html:225
+#: .\twido\templates\twido\task.html:102
 msgid "DANGER : Delete this task"
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:215
+#: .\twido\templates\twido\includes-list\tasks.html:256
 #, python-brace-format
 msgid "Task \"{0}\" deleted."
 msgstr ""
 
-#: .\twido\templates\twido\includes-list\tasks.html:220
+#: .\twido\templates\twido\includes-list\tasks.html:261
 #, python-brace-format
 msgid "Fail to delete task \"{0}\". <br>Status: {1} <br>Content: {2}"
 msgstr ""
@@ -477,60 +534,64 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:30
+#: .\twido\templates\twido\list.html:20
+msgid "Toggle sidebar"
+msgstr ""
+
+#: .\twido\templates\twido\list.html:41
 msgid "Create a new list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:30
+#: .\twido\templates\twido\list.html:41
 msgid "Create List"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:32
+#: .\twido\templates\twido\list.html:43
 msgid "Delete current list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:32
+#: .\twido\templates\twido\list.html:43
 msgid "Delete List"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:34
+#: .\twido\templates\twido\list.html:45
 msgid "Export current list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:34
+#: .\twido\templates\twido\list.html:45
 msgid "Export List"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:35
+#: .\twido\templates\twido\list.html:46
 msgid "Import a list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:35
+#: .\twido\templates\twido\list.html:46
 msgid "Import List"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:75 .\twido\templates\twido\task.html:50
+#: .\twido\templates\twido\list.html:92 .\twido\templates\twido\task.html:58
 msgid "Add a task to current list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:75
+#: .\twido\templates\twido\list.html:92
 msgid "Create Task"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:114
+#: .\twido\templates\twido\list.html:133
 msgid "DANGER : Delete list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:115
+#: .\twido\templates\twido\list.html:134
 msgid "All tasks in this list will be moved to default list"
 msgstr ""
 
-#: .\twido\templates\twido\list.html:166
+#: .\twido\templates\twido\list.html:197
 #, python-brace-format
 msgid "Task \"{0}\" moved to list \"{1}\"."
 msgstr ""
 
-#: .\twido\templates\twido\list.html:171
+#: .\twido\templates\twido\list.html:202
 #, python-brace-format
 msgid "Fail to move task \"{0}\". <br>Status: {1} <br>Content: {2}"
 msgstr ""
@@ -543,46 +604,46 @@ msgstr ""
 msgid "Task Detail"
 msgstr ""
 
-#: .\twido\templates\twido\task.html:50
+#: .\twido\templates\twido\task.html:58
 msgid "Add Task"
 msgstr ""
 
-#: .\twido\templates\twido\task.html:52
+#: .\twido\templates\twido\task.html:59
 msgid "Delete current task"
 msgstr ""
 
-#: .\twido\templates\twido\task.html:52
+#: .\twido\templates\twido\task.html:59
 msgid "Delete Task"
 msgstr ""
 
-#: .\twido\views\account.py:22
+#: .\twido\views\account.py:23
 msgid "Registration succeed."
 msgstr ""
 
-#: .\twido\views\account.py:23
+#: .\twido\views\account.py:24
 #, python-format
 msgid "Redirect to profile updating page ... <br>If redirection did not start, please <a href=\"%s\">click me to profile</a>."
 msgstr ""
 
-#: .\twido\views\home.py:16
+#: .\twido\views\home.py:17
 msgid "Come on, you are about to completed all the tasks!"
 msgstr ""
 
-#: .\twido\views\home.py:17
+#: .\twido\views\home.py:18
 msgid "Cheers, you have completed all the tasks for today!"
 msgstr ""
 
-#: .\twido\views\home.py:20
+#: .\twido\views\home.py:21
 #, python-format
 msgid "Tasks in %d days (including those without deadline)"
 msgstr ""
 
-#: .\twido\views\home.py:25
+#: .\twido\views\home.py:26
 #, python-format
 msgid "Tasks passed the deadline. Restart them or you may want to mark all these tasks \"%(expire)s\" or \"%(cancel)s\"."
 msgstr ""
 
-#: .\twido\views\list.py:33
+#: .\twido\views\list.py:33 .\twido\views\task.py:26
 #, python-format
 msgid "Invalid request. (action=%s)"
 msgstr ""
@@ -612,7 +673,7 @@ msgstr ""
 msgid "List name can not start with double underscores \"__\" ."
 msgstr ""
 
-#: .\twido\views\list.py:44
+#: .\twido\views\list.py:44 .\twido\views\task.py:23
 msgid "New Task"
 msgstr ""
 
@@ -634,53 +695,71 @@ msgctxt "list prefix"
 msgid "imported"
 msgstr ""
 
-#: .\twido\views\profile.py:20
+#: .\twido\views\profile.py:21
 msgid "Profile is saved successfully."
 msgstr ""
 
-#: .\twido\views\profile.py:21
+#: .\twido\views\profile.py:22
 #, python-format
 msgid "Will redirect to home page...<br>If not start, please <a href=\"%s\">click me to Home page</a>."
 msgstr ""
 
-#: .\twido\views\social.py:26
-msgid "Denied!"
-msgstr ""
-
-#: .\twido\views\social.py:27
-msgid "Fail to link social account."
-msgstr ""
-
-#: .\twido\views\social.py:28
-msgid "Conflict. This social account is linked with another user."
+#: .\twido\views\profile.py:24
+#, python-format
+msgid "%(field)s \"%(value)s\" is already existed."
 msgstr ""
 
 #: .\twido\views\social.py:29
+msgid "Denied!"
+msgstr ""
+
+#: .\twido\views\social.py:30
+msgid "Fail to link social account."
+msgstr ""
+
+#: .\twido\views\social.py:31
+msgid "Conflict. This social account is linked with another user."
+msgstr ""
+
+#: .\twido\views\social.py:32
 #, python-format
 msgid "Too frequent (3 hours). Last time was at %s."
 msgstr ""
 
-#: .\twido\views\social.py:30
+#: .\twido\views\social.py:33
 msgid "You need to link your social account first."
 msgstr ""
 
-#: .\twido\views\social.py:31
+#: .\twido\views\social.py:34
 msgid "You are successfully linked to your social account."
 msgstr ""
 
-#: .\twido\views\social.py:32
+#: .\twido\views\social.py:35
 msgid "Your social profile is updated."
 msgstr ""
 
-#: .\twido\views\social.py:33
+#: .\twido\views\social.py:36
 msgid "Error! Failed to get access token."
 msgstr ""
 
-#: .\twido\views\task.py:18
+#: .\twido\views\social.py:238
+msgid "Twitter service error:"
+msgstr ""
+
+#: .\twido\views\social.py:285
+#, python-format
+msgid "Your user profile is created. <br>Password is \"%s\". Please remember and change it."
+msgstr ""
+
+#: .\twido\views\task.py:20
 msgid "Primary key is None"
 msgstr ""
 
-#: .\twido\views\task.py:19
+#: .\twido\views\task.py:21
 #, python-format
 msgid "\"%(prop)s\" can not be \"%(value)s\""
+msgstr ""
+
+#: .\twido\views\task.py:24
+msgid "New task created."
 msgstr ""
