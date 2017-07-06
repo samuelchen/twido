@@ -216,4 +216,4 @@ LOGGING = {
 }
 
 
-CONFIG_FILE = os.getenv('CONFIG_FILE', 'config.ini')
+CONFIG_FILE = os.path.join(BASE_DIR, os.getenv('CONFIG_FILE', 'config.ini'))

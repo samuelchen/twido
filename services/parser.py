@@ -86,7 +86,7 @@ class Parser(StorageMixin):
         status_obj.user = MutableEnum(status_obj.user)
         status_obj._json = status_json
 
-        log.info('Parsing %s' % status_obj.id_str)
+        log.debug('Parsing %s' % status_obj.id_str)
 
         acc = self._parse_social_account(status_obj.user)
         return self._parse_task(status_obj, acc)
