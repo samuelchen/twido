@@ -203,7 +203,7 @@ class Timex3Parser(object):
                 if 'v' in dt and dt['v']:
                     dates.append(dt)
                 else:
-                    log.warn('Fail/ignored date: %s %s %s' % (dt['type'], dt['value'], dt['text']))
+                    log.warn('Fail/ignored date: %s' % dt)
 
         return dates
 
