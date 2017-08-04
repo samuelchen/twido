@@ -1,21 +1,27 @@
-django==1.10
+django==1.10.7
 tweepy>=3.5.0
 simplejson
 requests
 parsedatetime
-#mysqlclient
 gunicorn
-termcolor
+termcolor       # color term logging
 
 django-bootstrap-themes
-django-simple-email-confirmation
+
+# API
+djangorestframework>=3.6.3
+markdown       # Markdown support for the browsable API.
+django-filter  # Filtering support
 
 # debug & test
 django-debug-toolbar
 pygments
 
-#dateparser
 
+# not required
+#dateparser
 #jinja2
 #egenix-mx-base
 #sutime
+#django-simple-email-confirmation
+#mysqlclient

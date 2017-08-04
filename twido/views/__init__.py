@@ -12,3 +12,4 @@ from .social import SocialView
 from .list import ListView
 from .task import TaskView
 from .account import RegisterView, LoginView
+from .api import APIView
