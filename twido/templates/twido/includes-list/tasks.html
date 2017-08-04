@@ -33,7 +33,8 @@
                                                   data-url="{{ task.get_view_path }}">{{ task.due |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}</span></li>
                                             {% endif %}
                                             {% if not tasks_fields or 'title' in tasks_fields %}
-                                            <li><span data-name="title" data-type="text" data-pk="{{ task.id }}"
+                                            <li class="task-{{ task.get_status_text|lower }} {% if task.status == taskstatus.DONE %}text-muted{% elif task.status == taskstatus.EXPIRED %}text-danger{% endif %}">
+                                                <span data-name="title" data-type="text" data-pk="{{ task.id }}"
                                                   data-url="{{ task.get_view_path }}">{{ task.title }}</span></li>
                                             {% endif %}
                                             {% if not tasks_fields or 'labels' in tasks_fields %}
@@ -58,7 +59,7 @@
                             </ul>
                             {% if tasks_empty_well and not page %}
                             <div class="well">
-                                {% trans 'List is empty. Please add task by clicking the button.' %}
+                                {% trans 'List is empty. Please add select/create a list to add your task.' %}
                             </div>
                             {% endif %}
 {#                        </div>#}

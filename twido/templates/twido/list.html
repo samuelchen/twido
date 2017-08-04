@@ -42,8 +42,10 @@
                             {% if not thelist.is_sys %}
                             <a name="del" title="{% trans 'Delete current list' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete List' %}</a>
                             {% endif %}
+                        </div>
+                        <div class="btn-group btn-group-justified btn-group-sm">
                             <a name="export" title="{% trans 'Export current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Export List' %}</a>
-                            <a name="import" title="{% trans 'Import a list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Import List' %}</a>
+                            <a name="import" title="{% trans 'Import a list from file which was exported' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Import List' %}</a>
                         </div>
                     </form>
                 </div>

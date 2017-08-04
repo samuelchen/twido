@@ -154,3 +154,27 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 /* for select2 input width with bootstrap3 */
 /*input[placeholder] { width: 100% !important; }*/
+
+
+.task-new {}
+
+.task-done {
+    /*text-decoration-line: line-through;*/
+    font-style:italic;
+}
+
+.task-expired {
+    text-decoration: underline;
+}
+
+.task-cancelled {
+    text-decoration-line: line-through;
+}
+
+.task-started {
+    font-weight: bold;
+    /*text-shadow: 1px 1px;*/
+}
+.task-paused {
+    font-style: italic;
+}
