@@ -158,7 +158,7 @@ class TaskStatus(object):
         STARTED: 'glyphicon glyphicon-play text-info',
         PAUSED: 'glyphicon glyphicon-pause text-default',
         DONE: 'glyphicon glyphicon-ok text-success',
-        CANCEL: 'glyphicon glyphicon-remove text-muted',
+        CANCEL: 'glyphicon glyphicon-ban-circle text-muted',
         EXPIRED: 'glyphicon glyphicon-exclamation-sign text-danger',
     }
     Choices = _texts.items()

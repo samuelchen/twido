@@ -1,0 +1,69 @@
+{# List action buttons #}
+{# vars: thelist - (optional) current list to display #}
+
+{% load i18n %}<!-- BEGIN list buttons -->
+
+
+                <!-- buttons for list -->
+                <div class="bs-component">
+                    <form id="id_form_list_action" action="{% if thelist %}{% url 'list' thelist.id %}{% else %}{% url 'list' %}{% endif %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action">
+                        <div class="btn-group btn-group-justified btn-group-sm">
+                            <a name="add" title="{% trans 'Create a new list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Create List' %}</a>
+                            {% if thelist and not thelist.is_sys %}
+                            <a name="del" title="{% trans 'Delete current list' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete List' %}</a>
+                            {% endif %}
+                        </div>
+                        <div class="btn-group btn-group-justified btn-group-sm">
+                            {% if thelist %}
+                            <a name="export" title="{% trans 'Export current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Export List' %}</a>
+                            {% endif %}
+                            <a name="import" title="{% trans 'Import a list from file which was exported' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Import List' %}</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- upload form for import -->
+                <form id="id_form_upload" method="post" action="{% url 'list' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {#  TODO: handle big file / streaming #}
+                    <input type="hidden" name="action" value="import">
+                    <input type="file" id="id_file_upload" name="choose_file" onchange="$(this).closest('form').submit();" style="display: none" />
+                </form>
+
+                <script language="JavaScript" type="text/javascript">
+
+                    $(document).ready(function(){
+
+                        var form_list_actions = $("#id_form_list_action");
+
+                        form_list_actions.find("a.btn").tooltip({container: 'body'}).click(function(e){
+                            var action = $(this).attr('name');
+                            if (!action) return;
+                            form_list_actions.find("input[name='action']").val(action);
+                            // if action is "del" related, need to confirm
+                            // if upload, need to let user to choose file.
+                            if ($.inArray(action, ['del', 'del-task', 'import']) < 0) form_list_actions.submit();
+                {#            $(this).disable();#}
+                        });
+
+                        form_list_actions.find('a[name="del"]').confirmation({
+                            onConfirm: function () {
+                                form_list_actions.submit();
+                            },
+                            html: 'true',
+                            title: '<span class="text-danger">{% trans 'DANGER : Delete list' %} "{{ thelist.name }}(id:{{ thelist.id }})" ?</span>'
+                                        +'<p/><p class="small">{% trans 'All tasks in this list will be moved to default list' %}',
+                            placement: 'right'
+                        });
+
+                        form_list_actions.find('a[name="import"]').click(function(e){
+                            var choose_file = $('input[name="choose_file"]');
+                            choose_file.click();
+                        });
+
+                    });
+
+                </script>
+<!-- END list buttons -->

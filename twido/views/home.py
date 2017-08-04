@@ -12,13 +12,14 @@ from pyutils.langutil import MutableEnum
 
 
 class I18N_MSGS(object):
+    # TODO: the name must match SysList names
     home_tasks = {
         '__today': MutableEnum(
             text=_('Come on, you are about to completed all the tasks!'),
             empty=_('Cheers, you have completed all the tasks for today!'),
         ),
-        '__soon': MutableEnum(
-            text=_('Tasks in %d days (including those without deadline)'),
+        '__coming': MutableEnum(
+            text=_('Tasks in %d days or without a due date.'),
             text_args=SysList.soon_days,
             empty='',
         ),
@@ -50,10 +51,12 @@ class HomeView(TemplateView, BaseViewMixin):
         task_sets = []
         for name, lst in sys_list.all.items():
             if lst.name not in I18N_MSGS.home_tasks:
-                I18N_MSGS.home_tasks[lst.name] = MutableEnum(
-                    text=lst.text,
-                    empty='',
-                )
+                # I18N_MSGS.home_tasks[lst.name] = MutableEnum(
+                #     text=lst.text,
+                #     empty='',
+                # )
+                continue        # not include
+
             task_set = {
                 'name': lst.name,
                 'title': lst.get_name,

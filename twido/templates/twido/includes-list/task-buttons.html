@@ -1,0 +1,35 @@
+{# Task action buttons #}
+{# vars: thelist - (optional) current list to display #}
+
+{% load i18n %}
+<!-- BEGIN  Task buttons -->
+
+                        <!-- buttons for task -->
+                        <form id="id_form_task_action" action="{% if thelist %}{% url 'list' thelist.id %}{% else %}{% url 'list' %}{% endif %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action">
+                            <div class="btn-group btn-group-justified btn-group-sm">
+                                {% if not thelist.is_sys or thelist.is_default %}
+                                <a name="add-task" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
+                                {% endif %}
+                            </div>
+                        </form>
+
+                        <script language="JavaScript" type="text/javascript">
+                            $(document).ready(function() {
+
+                                var form_task_actions = $("#id_form_task_action");
+
+                                form_task_actions.find("a.btn").tooltip({container: 'body'}).click(function (e) {
+                                    var action = $(this).attr('name');
+                                    if (!action) return;
+                                    form_task_actions.find("input[name='action']").val(action);
+                                    // if action is "del" related, need to confirm
+                                    // if upload, need to let user to choose file.
+                                    if ($.inArray(action, ['del', 'del-task', 'import']) < 0) form_task_actions.submit();
+                                    {#            $(this).disable();#}
+                                });
+                            });
+
+                        </script>
+<!-- END  Task buttons -->

@@ -47,6 +47,14 @@
                                                 {% if 'detail' in tasks_actions %}
                                                 <a name="detail" href="{{ task.get_view_path }}" title="{% trans 'Detail' %}" class="label label-info small"><i class="glyphicon glyphicon-list-alt"></i></a>
                                                 {% endif %}
+
+                                                {% if 'status' in tasks_editables %}
+                                                <a name="mark-start" data-pk="{{ task.id }}" data-value="{{ taskstatus.STARTED }}" title="{% trans 'Start' %}" class="label label-info small"><i class="glyphicon glyphicon-play"></i></a>
+                                                <a name="mark-pause" data-pk="{{ task.id }}" data-value="{{ taskstatus.PAUSED }}"  title="{% trans 'Pause' %}" class="label label-info small"><i class="glyphicon glyphicon-pause"></i></a>
+                                                <a name="mark-done" data-pk="{{ task.id }}" data-value="{{ taskstatus.DONE }}"  title="{% trans 'Mark done' %}" class="label label-info small"><i class="glyphicon glyphicon-ok"></i></a>
+                                                <a name="mark-cancel" data-pk="{{ task.id }}" data-value="{{ taskstatus.CANCEL }}"  title="{% trans 'Cancel' %}" class="label label-info small"><i class="glyphicon glyphicon-ban-circle"></i></a>
+                                                {% endif %}
+
                                                 {% if 'del' in tasks_actions %}
                                                 <a name="del-task" data-task-id="{{ task.id }}"  title="{% trans 'Delete' %}" class="label label-danger small"><i class="glyphicon glyphicon-remove"></i></a>
                                                 {% endif %}
@@ -59,7 +67,7 @@
                             </ul>
                             {% if tasks_empty_well and not page %}
                             <div class="well">
-                                {% trans 'List is empty. Please add select/create a list to add your task.' %}
+                                {% trans 'List is empty. Please add your task by selecting/creating a list.' %}
                             </div>
                             {% endif %}
 {#                        </div>#}
@@ -210,7 +218,10 @@
                                         };
                                     }).mouseout(function (e) {
                                         $(this).find(".buttons").hide();
-                                    }).find("a[name='del-task']").confirmation({
+                                    }).find("a[name^='mark-']").click(function(){
+                                        set_status($(this).data('pk'), $(this).data('value'));
+                                    });
+                                    tasks_container.find("a[name='del-task']").confirmation({
                                         onShow: function(e, obj) {
                                             $(obj).closest('ul').unbind('mouseout');
                                         },
@@ -243,6 +254,36 @@
                                 }
                             }
 
+                            function set_status(task_id, status) {
+                                var entry = $("ul[name='tasks_incl']").find('li[data-id="'+ task_id+'"]');
+                                var item = entry.find('span[data-name="status"]');
+                                var endpoint = "/task/" + task_id + "/";
+
+                                $.ajax(endpoint, {
+                                    method: 'POST',
+                                    data: {
+                                        pk: task_id,
+                                        name: "status",
+                                        value: status
+
+                                    },
+                                    success: function (resp) {
+                                        item.find('i').removeClass().addClass(resp.status_icon_class);
+                                        entry.find('span[data-name="title"]')
+                                    },
+                                    error: function (resp) {
+                                        console.log(resp);
+                                        entry.fadeOut().fadeIn().fadeOut().fadeIn();
+                                        if (resp.readyState == 0)
+                                            _error('{% trans "Connection error." %}');
+                                        else
+                                            _error('{% trans 'Error set status. <br>Status: {1} <br>Content: {2}' %}'.f(
+                                                        resp.status, resp.statusText), true);    // message incl
+                                        return resp.status + ' ' + resp.statusText;
+                                    }
+                                });
+                            }
+
                             function del_task(task_id) {
                                 var entry = $("ul[name='tasks_incl']").find("[data-id='" + task_id + "']");
                                 var task_name = entry.find("span[data-name='title']").text();
@@ -259,9 +300,12 @@
                                         entry.fadeOut();
                                     },
                                     error: function (resp) {
-                                        _error('{% trans 'Fail to delete task "{0}". <br>Status: {1} <br>Content: {2}' %}'.f(
-                                                task_name, resp.status, resp.statusText),
-                                                true);    // message incl
+                                        if (resp.readyState == 0)
+                                            _error('{% trans "Connection error." %}');
+                                        else
+                                            _error('{% trans 'Fail to delete task "{0}". <br>Status: {1} <br>Content: {2}' %}'.f(
+                                                            task_name, resp.status, resp.statusText),
+                                                    true);    // message incl
                                         entry.fadeOut().fadeIn().fadeOut().fadeIn();
                                         return resp.status + ' ' + resp.statusText;
                                     }

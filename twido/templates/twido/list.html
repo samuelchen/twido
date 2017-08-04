@@ -31,32 +31,8 @@
                     {% include 'twido/includes-list/lists-menu.html' %}
                 </div>
 
-
-                <!-- buttons for list -->
-                <div class="bs-component">
-                    <form id="id_form_action" action="{{ request.path }}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action">
-                        <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add" title="{% trans 'Create a new list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-list"></i> {% trans 'Create List' %}</a>
-                            {% if not thelist.is_sys %}
-                            <a name="del" title="{% trans 'Delete current list' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete List' %}</a>
-                            {% endif %}
-                        </div>
-                        <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="export" title="{% trans 'Export current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Export List' %}</a>
-                            <a name="import" title="{% trans 'Import a list from file which was exported' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-export"></i> {% trans 'Import List' %}</a>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- upload form for import -->
-                <form id="id_form_upload" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {#  TODO: handle big file / streaming #}
-                    <input type="hidden" name="action" value="import">
-                    <input type="file" id="id_file_upload" name="choose_file" onchange="$(this).closest('form').submit();" style="display: none" />
-                </form>
+                <!-- list action buttons -->
+                {% include 'twido/includes-list/list-buttons.html' %}
 
                 <!-- list form -->
                 {% if not thelist.is_sys %}
@@ -73,7 +49,6 @@
 
                     <div class="bs-component">
 
-{#                        <h2 id="listname" class="text-center">{{ thelist.name | upper }}</h2>#}
                         <div class="panel">
                             {% include 'includes/django-messags-inc.html' %}
                         </div>
@@ -83,17 +58,18 @@
                         <div class="bs-component">
                         {% include 'twido/includes-list/list-form.html' %}
                         </div>
+                        {% else %}
+                            <div class="text-center hidden-sm hidden-xs">
+                                <H3>{{ thelist.name }}</H3>
+                                <span class="help-block">{{ thelist.text | default_if_none:'' }}</span>
+                            </div>
                         {% endif %}
 
                         <!-- tasks in the list -->
                         {% include 'twido/includes-list/tasks.html' %}
 
                         <!-- buttons for task -->
-                        <div class="btn-group btn-group-justified btn-group-sm">
-                            {% if not thelist.is_sys or thelist.is_default %}
-                            <a name="add-task" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
-                            {% endif %}
-                        </div>
+                        {% include 'twido/includes-list/task-buttons.html' %}
                     </div>
 
                 </div>
@@ -113,35 +89,6 @@
     $(document).ready(function(){
 
         $(".editable").addClass('no_underline').css("cursor", "pointer");
-
-
-        var form_action = $("#id_form_action");
-
-        $("a.btn").tooltip({container: 'body'}).click(function(e){
-            var action = $(this).attr('name');
-            if (!action) return;
-            form_action.find("input[name='action']").val(action);
-            // if action is "del" related, need to confirm
-            // if upload, need to let user to choose file.
-            if ($.inArray(action, ['del', 'del-task', 'import']) < 0) form_action.submit();
-{#            $(this).disable();#}
-        });
-
-        form_action.find('a[name="del"]').confirmation({
-            onConfirm: function () {
-                form_action.submit();
-            },
-            html: 'true',
-            title: '<span class="text-danger">{% trans 'DANGER : Delete list' %} "{{ thelist.name }}(id:{{ thelist.id }})" ?</span>'
-                        +'<p/><p class="small">{% trans 'All tasks in this list will be moved to default list' %}',
-            placement: 'right'
-        });
-
-        form_action.find('a[name="import"]').click(function(e){
-            var choose_file = $('input[name="choose_file"]');
-            choose_file.click();
-        });
-
 
         {# --- drag & drop to move --- #}
         $("[name='tasks_incl']").find(".list-group-item").draggable({

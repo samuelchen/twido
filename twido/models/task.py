@@ -210,11 +210,11 @@ class SysList(object):
                 text=ugettext_noop('Tasks need to be done by today. (including expired)'),
                 tasks=SimpleLazyObject(self.__get_today_tasks)
             )),
-            ('__soon', PropertyDict(
-                name='__soon',
-                title=pgettext_lazy('sys list', 'soon'),    # for i18n text generation usage
-                text=ugettext_noop('Tasks in near future (including those without deadline)'),
-                tasks=SimpleLazyObject(self.__get_soon_tasks)
+            ('__coming', PropertyDict(
+                name='__coming',
+                title=pgettext_lazy('sys list', 'coming'),    # for i18n text generation usage
+                text=ugettext_noop('Tasks in near future'),
+                tasks=SimpleLazyObject(self.__get_coming_tasks)
             )),
             ('__expired', PropertyDict(
                 name='__expired',
@@ -265,7 +265,7 @@ class SysList(object):
         tomorrow = today + timedelta(days=1)
         return self.TaskModel.objects.filter(profile=self.profile, due__range=(today, tomorrow))
 
-    def __get_soon_tasks(self):
+    def __get_coming_tasks(self):
         now = timezone.now()
         soon = now + timedelta(days=self.soon_days)
         return self.TaskModel.objects.filter(profile=self.profile).filter(
