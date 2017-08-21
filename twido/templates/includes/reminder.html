@@ -26,6 +26,9 @@
                                 n.onclick = function(){
                                     window.location = $(obj).attr('href');
                                 };
+                                n.onclose = function(){
+                                    //TODO: do not notify again.
+                                };
                                 return n;
                             }
 
@@ -62,7 +65,7 @@
                                     var url = $(obj).attr('href');
                                     due = new Date(due);
                                     var duration = due - new Date();    // millisecond already
-                                    duration -= 300000;  // alert before 5 min. TOOD: make it in setting.
+                                    duration -= 300000;  // alert before 5 min. //TODO: make it in setting.
                                     if (duration < 0)
                                         duration = 1000;
                                     setTimeout(function(){
