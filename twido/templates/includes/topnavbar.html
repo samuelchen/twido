@@ -37,6 +37,10 @@
 {#                        </li>#}
                         {% endif %}
 
+                        {% if request.user.is_authenticated %}
+                            {% include 'includes/reminder.html' %}
+                        {% endif %}
+
                         {% if debug %}
                         {% include 'includes/topnavbar-debug.html' %}
                         {% endif %}

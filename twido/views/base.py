@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+from django.db.models import Q
 from django.views.generic.base import ContextMixin
 from django.contrib import messages
 from django.utils import translation
+from django.conf import settings
+from django.utils import timezone
+
 from ..models import Config
 from ..models import UserProfile
-from django.conf import settings
+from ..models import Task, TaskStatus
 
 
 class BaseViewMixin(ContextMixin):
@@ -37,6 +40,10 @@ class BaseViewMixin(ContextMixin):
             context['website'] = {
                 'name': settings.WEBSITE_NAME
             }
+
+        if 'expiring_tasks' not in context:
+            context['expiring_tasks'] = self.get_expiring_tasks()
+
         return context
 
     def info(self, message, tags=''):
@@ -61,3 +68,11 @@ class BaseViewMixin(ContextMixin):
         else:
             profile = self.request.user.profile
         return profile
+
+    def get_expiring_tasks(self, hours=3, days=0):
+        profile = self.get_profile()
+        start = timezone.now()
+        end = start + timezone.timedelta(days=days, hours=hours)
+        tasks = Task.objects.filter(profile=profile, due__gte=start, due__lte=end).filter(
+            ~Q(status=TaskStatus.CANCEL) & ~Q(status=TaskStatus.DONE)).order_by('due')
+        return tasks

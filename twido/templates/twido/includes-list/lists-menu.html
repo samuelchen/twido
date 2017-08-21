@@ -5,7 +5,7 @@
 
 {% load i18n %}<!-- BEGIN lists menu -->
 
-                    <div class="btn-group btn-group-sm" name="sys_lists_incl">
+                    <div class="btn-group-sm" name="sys_lists_incl">
                         {% for lst in sys_lists.values %}
                             <a href="{% url 'list' lst.id %}" data-id="{{ lst.id }}" data-name="{{ lst.name }}"
                                class="btn {% if thelist.id == lst.id %}active{% endif %}">

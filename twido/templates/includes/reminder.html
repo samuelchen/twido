@@ -1,0 +1,77 @@
+{% load i18n staticfiles customer_tags %}
+
+    {% if expiring_tasks %}
+                        <li id="id_reminder" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false"><i class="glyphicon glyphicon-calendar"></i> {% trans 'Expiring' %}<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+
+                                {% for task in expiring_tasks %}
+                                <li class="small"><a name="due" href="{% url 'task' task.id %}"><span data-name="title">{{ task.title }}</span> - <span data-name="due" data-value="{{ task.due|utc }}">{{ task.due }}</span></a></li>
+                                {% endfor %}
+
+                            </ul>
+                        </li>
+
+                        <script language="JavaScript">
+                            var website_name = "{{ website.name }}";
+
+                            function notify(title, message, url){
+                                var n = new Notification(title + ' - ' + website_name, {
+                                    tag: website_name,
+                                    lang: "utf-8",
+                                    icon: "{% static 'twido/img/favicon.ico' %}",
+                                    body: message
+                                });
+                                n.onclick = function(){
+                                    window.location = $(obj).attr('href');
+                                };
+                                return n;
+                            }
+
+                            function allow_notification(){
+                                Notification.requestPermission(function(status){
+                                    console.log(status);
+                                    if(Notification.permission !== status){
+                                        Notification.permission = status;
+                                    }
+
+                                    if(status === "granted"){
+                                        var n = new Notification("{% trans "Task Reminder" %} - " + website_name, {
+                                            tag: website_name,
+                                            icon: "{% static 'twido/img/favicon.ico' %}",
+                                            body: "{% trans "Welcome! You will be notified when your task is going to be due." %}"
+                                        });
+                                    }
+                                });
+                            }
+
+                            $(document).ready(function(){
+                                {# visit chrome://settings/content/notifications to un-block #}
+
+                                if (Notification.permission !== "granted") {
+                                    $("#id_reminder").find("ul").append(
+                                            '<li class="divider"></li>' +
+                                            '<li class="small"><a class="btn" onclick="allow_notification()">' +
+                                            '<i class="fa fa-bell"></i> {% trans "Allow task due notification in browser" %}' + '</a></li>');
+                                }
+
+                                $("#id_reminder").find("ul").find("li a[name='due']").each(function(idx, obj){
+                                    var title = $(obj).find("span[data-name='title']").text();
+                                    var due = $(obj).find("span[data-name='due']").data('value');
+                                    var url = $(obj).attr('href');
+                                    due = new Date(due);
+                                    var duration = due - new Date();    // millisecond already
+                                    duration -= 300000;  // alert before 5 min. TOOD: make it in setting.
+                                    if (duration < 0)
+                                        duration = 1000;
+                                    setTimeout(function(){
+                                        notify('{% trans 'Task is expiring' %}: ',
+                                                title + '\n' + due.toLocaleString(),
+                                                url);
+                                    }, duration)
+                                });
+                            });
+                        </script>
+
+    {% endif %}
