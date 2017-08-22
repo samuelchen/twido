@@ -10,7 +10,7 @@
 
 {% load i18n customer_tags %}<!-- BEGIN of tasks -->
 {#                        <div class="bs-component">#}
-                            <ul class="list-group" name="tasks_incl">
+                            <ul class="list-group" name="tasks_incl" style="overflow-y: auto; max-height: 500px;">
                                 {% for task in page %}
                                     <li data-id="{{ task.id }}" class="list-group-item task-item {% if thetask.id == task.id %}active{% endif %}">
                                         <ul class="list-inline">
@@ -71,9 +71,9 @@
                             </div>
                             {% endif %}
 {#                        </div>#}
-                        <div class="text-center">
-                            {% include 'includes/paginatition.html' %}
-                        </div>
+{#                        <div class="text-center">#}
+{#                            {% include 'includes/paginatition.html' %}#}
+{#                        </div>#}
 
                         <script language="JavaScript" type="text/javascript">
 

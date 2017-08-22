@@ -34,16 +34,8 @@
 
                     <script language="JavaScript" type="text/javascript">
                         $(document).ready(function(){
-                            var menu_container = $('[name="lists_incl"]');
-                            scroll_to_div(menu_container, menu_container.find(".list-group-item.active"));
+                            var list_menu = $('[name="lists_incl"]');
+                            scroll_to_item(list_menu, list_menu.find(".list-group-item.active"));
                         });
-                        function scroll_to_div(container, div) {
-                            // jquery obj
-                            if (container.length && div.length) {
-                                container.animate({
-                                    scrollTop: div.offset().top - container.offset().top
-                                });
-                            }
-                        }
                     </script>
 <!-- END lists menu -->

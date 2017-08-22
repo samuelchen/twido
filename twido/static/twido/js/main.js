@@ -64,3 +64,20 @@
         jq_obj.text(t);
     };
 
+
+    // --- scroll a item in a container to top ---
+    // --- container generally with style "overflow-y: auto; max-height: 400px;"
+    // --- e.g.
+    // ---      var menu_container = $('[name="lists_incl"]');
+    // ---      scroll_to_item(menu_container, menu_container.find(".list-group-item.active"));
+
+    function scroll_to_item(container, item) {
+        // arguments are jquery objects
+        if (container.length && item.length) {
+            if (item.offset().top - container.offset().top - container.height() > 0) {
+                container.animate({
+                    scrollTop: item.offset().top - container.offset().top
+                });
+            };
+        }
+    };

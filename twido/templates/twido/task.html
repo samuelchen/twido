@@ -29,7 +29,7 @@
                             <li><h3 class="panel-title">{% if thetask.list.is_default %}{% trans 'Default List' %}{% else %}{{ thetask.list.name|capfirst }}{% endif %}</h3></li>
                         </ul>
                     </div>
-                    <ul class="list-group">
+                    <ul class="list-group" id="tasks_incl" style=" overflow-y: auto; overflow-x: hidden; max-height: 400px;">
                         {% for task in page %}
                             <a href="{% url 'task' task.id %}?p={{ page.number }}" class="list-group-item small {% if thetask.id == task.id %}active{% endif %}">
                                 <ul class="list-inline">
@@ -44,9 +44,9 @@
                             </a>
                         {% endfor %}
                     </ul>
-                    <div class="text-center">
-                        {% include 'includes/paginatition.html' %}
-                    </div>
+{#                    <div class="text-center">#}
+{#                        {% include 'includes/paginatition.html' %}#}
+{#                    </div>#}
                 </div>
 
                 <div class="bs-component">
@@ -102,6 +102,9 @@
                 title: '<span class="text-danger">{% trans 'DANGER : Delete this task' %} "{{ thetask.name }}(id:{{ thetask.id }})" ?</span>',
                 placement: 'bottom'
             });
+
+            var tasks_menu = $('#tasks_incl');
+            scroll_to_item(tasks_menu, tasks_menu.find(".list-group-item.active"));
         });
 
     </script>

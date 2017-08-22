@@ -93,11 +93,13 @@ class ListView(TemplateView, BaseViewMixin):
 
         # tasks in current page
         if thelist.is_sys and not thelist.is_default:
-            context['page'] = paginate(sys_list[thelist.name].tasks,
-                                       cur_page=p, entries_per_page=10)
+            # context['page'] = paginate(sys_list[thelist.name].tasks,
+            #                            cur_page=p, entries_per_page=10)
+            context['page'] = paginate(sys_list[thelist.name].tasks)
         else:
-            context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=thelist).select_related('list'),
-                                       cur_page=p, entries_per_page=10)
+            # context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=thelist).order_by('-timestamp').select_related('list'),
+            #                            cur_page=p, entries_per_page=10)
+            context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=thelist).select_related('list'))
 
         # variables for tasks.html includes
         context['taskstatus'] = TaskStatus

@@ -56,7 +56,8 @@ class TaskView(TemplateView, BaseViewMixin):
             context['thelist'] = task.list
 
         if 'page' not in context:
-            context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=task.list), cur_page=p, entries_per_page=10)
+            # context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=task.list), cur_page=p, entries_per_page=10)
+            context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=task.list), cur_page=p)
 
         if 'taskstatus' not in context:
             context['taskstatus'] = TaskStatus
