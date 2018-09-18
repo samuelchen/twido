@@ -142,9 +142,9 @@ class TaskStatus(object):
     NEW = 0
     STARTED = 1
     PAUSED = 2
-    DONE = 9
-    EXPIRED = 10
-    CANCEL = -1
+    EXPIRED = 9
+    DONE = 10
+    CANCEL = 11
     _texts = {
         NEW: _('New'),
         STARTED: _('Started'),
@@ -166,12 +166,12 @@ class TaskStatus(object):
 
     @classmethod
     def get_text(cls, status):
-        assert -1 <= status <= 10
+        assert TaskStatus.NEW <= status <= TaskStatus.CANCEL
         return cls._texts[status]
 
     @classmethod
     def get_icon(cls, status):
-        assert -1 <= status <= 10
+        assert TaskStatus.NEW <= status <= TaskStatus.CANCEL
         return cls._glyphicons[status]
 
 

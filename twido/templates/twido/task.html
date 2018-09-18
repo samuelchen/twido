@@ -29,12 +29,13 @@
                             <li><h3 class="panel-title">{% if thetask.list.is_default %}{% trans 'Default List' %}{% else %}{{ thetask.list.name|capfirst }}{% endif %}</h3></li>
                         </ul>
                     </div>
-                    <ul class="list-group" id="tasks_incl" style=" overflow-y: auto; overflow-x: hidden; max-height: 400px;">
+                    <ul class="list-group" name="tasks_incl" style=" overflow-y: auto; overflow-x: hidden; max-height: 400px;">
                         {% for task in page %}
-                            <a href="{% url 'task' task.id %}?p={{ page.number }}" class="list-group-item small {% if thetask.id == task.id %}active{% endif %}">
+                            <a href="{% url 'task' task.id %}?p={{ page.number }}"
+                               class="list-group-item small {% if thetask.id == task.id %}active{% endif %}">
                                 <ul class="list-inline">
                                     <li><i title={{ task.get_status_text }} class="{{ task.get_status_icon }}"></i></li>
-                                    <li>{{ task.title | safe }}</li>
+                                    <li data-name="title">{{ task.title | safe }}</li>
                                     <li class="top-right">
                                         <span title="{% trans 'Due' %}" class="small">
                                             {{ task.due |default_if_none:'<i class="glyphicon glyphicon-time"></i>' }}
@@ -50,15 +51,16 @@
                 </div>
 
                 <div class="bs-component">
-                    <form id="id_form_action" action="{{ request.path }}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action">
-                        <input type="hidden" name="list_id" value="{{ thetask.list_id }}">
-                        <div class="btn-group btn-group-justified btn-group-sm">
-                            <a name="add-task" title="{% trans 'Add a task to current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Add Task' %}</a>
-                            <a name="del-task" title="{% trans 'Delete current task' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete Task' %}</a>
-                        </div>
-                    </form>
+{#                    <form id="id_form_action" action="{{ request.path }}" method="post">#}
+{#                        {% csrf_token %}#}
+{#                        <input type="hidden" name="action">#}
+{#                        <input type="hidden" name="list_id" value="{{ thetask.list_id }}">#}
+{#                        <div class="btn-group btn-group-justified btn-group-sm">#}
+{#                            <a name="add-task" title="{% trans 'Add a task to current list' %}" class="btn btn-default btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Add Task' %}</a>#}
+{#                            <a name="del-task" title="{% trans 'Delete current task' %}" data-toggle="confirmation" class="btn btn-default btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete Task' %}</a>#}
+{#                        </div>#}
+{#                    </form>#}
+                    {% include 'twido/includes-list/task-buttons.html' %}
                 </div>
             </div>
 
@@ -103,7 +105,7 @@
                 placement: 'bottom'
             });
 
-            var tasks_menu = $('#tasks_incl');
+            var tasks_menu = $('[name="tasks_incl"]');
             scroll_to_item(tasks_menu, tasks_menu.find(".list-group-item.active"));
         });
 

@@ -95,11 +95,11 @@ class ListView(TemplateView, BaseViewMixin):
         if thelist.is_sys and not thelist.is_default:
             # context['page'] = paginate(sys_list[thelist.name].tasks,
             #                            cur_page=p, entries_per_page=10)
-            context['page'] = paginate(sys_list[thelist.name].tasks)
+            context['page'] = sys_list[thelist.name].tasks
         else:
             # context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=thelist).order_by('-timestamp').select_related('list'),
             #                            cur_page=p, entries_per_page=10)
-            context['page'] = paginate(TaskModel.objects.filter(profile=profile, list=thelist).select_related('list'))
+            context['page'] = TaskModel.objects.filter(profile=profile, list=thelist).select_related('list').order_by('status', '-timestamp')
 
         # variables for tasks.html includes
         context['taskstatus'] = TaskStatus
@@ -221,7 +221,7 @@ class ListView(TemplateView, BaseViewMixin):
 
             elif action == 'add-task':
                 task = TaskModel.objects.create(profile=profile, list_id=pk, title=I18N_MSGS.task_new_name)
-                return redirect(self.get_view_name(), pk=pk)
+                return redirect(task.get_view_path())
             elif action == 'del-task':
                 task_id = req.get('task_id', None)
                 task = get_object_or_404(TaskModel, profile=profile, id=task_id)

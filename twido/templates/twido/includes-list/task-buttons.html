@@ -12,6 +12,9 @@
                                 {% if not thelist.is_sys or thelist.is_default %}
                                 <a name="add-task" title="{% trans 'Add a task to current list' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-plus"></i> {% trans 'Create Task' %}</a>
                                 {% endif %}
+                                {% if thetask %}
+                                <a name="del-task" title="{% trans 'Delete current task' %}" class="btn btn-info btn-block"><i class="glyphicon glyphicon-remove"></i> {% trans 'Delete Task' %}</a>
+                                {% endif %}
                             </div>
                         </form>
 
@@ -29,7 +32,56 @@
                                     if ($.inArray(action, ['del', 'del-task', 'import']) < 0) form_task_actions.submit();
                                     {#            $(this).disable();#}
                                 });
+                                form_task_actions.find("a[name='del-task']").confirmation({
+{#                                    onShow: function(e, obj) {#}
+{#                                        $(obj).closest('ul').unbind('mouseout');#}
+{#                                    },#}
+{#                                    onHide: function(e, obj) {#}
+{#                                        $(obj).closest('ul').bind('mouseout', function (e) {#}
+{#                                            $(this).find(".buttons").hide();#}
+{#                                        });#}
+{#                                    },#}
+                                    onConfirm: function (e, obj) {
+                                        del_selected_task(obj.data('task-id'));
+                                    },
+                                    html: 'true',
+                                    title: '<span class="text-danger">{% trans 'DANGER : Delete this task' %} ?</span>',
+                                    placement: 'bottom'
+                                });
                             });
 
+
+                            function del_selected_task(task_id) {
+                                var entry = $("[name='tasks_incl']").find(".active");
+                                var task_name = entry.find("[data-name='title']").text();
+
+                                if (entry.length == 0) {
+                                    _error('{% trans "No task selected. please select one to delete." %}');
+                                    return;
+                                }
+
+                                $.ajax("{{ request.path }}", {
+                                    method: 'POST',
+                                    data: {
+                                        action: "del-task",
+                                        task_id: task_id
+                                    },
+                                    success: function (resp) {
+                                        _success('{% trans 'Task "{0}" deleted.' %}'.f(task_name), true);  // message incl
+                                        console.debug('Task "' + task_name + '" (id=' + task_id + ') deleted.');
+                                        entry.fadeOut();
+                                    },
+                                    error: function (resp) {
+                                        if (resp.readyState == 0)
+                                            _error('{% trans "Connection error." %}');
+                                        else
+                                            _error('{% trans 'Fail to delete task "{0}". <br>Status: {1} <br>Content: {2}' %}'.f(
+                                                            task_name, resp.status, resp.statusText),
+                                                    true);    // message incl
+                                        entry.fadeOut().fadeIn().fadeOut().fadeIn();
+                                        return resp.status + ' ' + resp.statusText;
+                                    }
+                                });
+                            }
                         </script>
 <!-- END  Task buttons -->
